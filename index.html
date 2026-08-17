@@ -1,0 +1,1598 @@
+{\rtf1\ansi\ansicpg950\cocoartf2868
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 <!DOCTYPE html>\
+<html lang="zh-TW">\
+<head>\
+  <meta charset="UTF-8">\
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">\
+  <title>BeyStudioX \uc0\u25136 \u39717 \u32000 \u37636 \u22120 </title>\
+\
+  <!-- Tailwind CSS -->\
+  <script src="https://cdn.tailwindcss.com"></script>\
+  <script>\
+    tailwind.config = \{\
+      theme: \{\
+        extend: \{\
+          colors: \{\
+            appDark: '#090a0f',\
+            appCard: '#121622',\
+            appCardLight: '#1a202c',\
+            beyGreen: '#84cc16',\
+            beyGreenNeon: '#88ff00',\
+            beyYellow: '#facc15',\
+            beyRed: '#ef4444',\
+          \}\
+        \}\
+      \}\
+    \}\
+  </script>\
+  <!-- Vue 3 -->\
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>\
+  <!-- FontAwesome -->\
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">\
+\
+  <style>\
+    [v-cloak] \{ display: none; \}\
+    body \{ \
+      background-color: #090a0f; \
+      color: #f8fafc; \
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;\
+      user-select: none;\
+    \}\
+\
+    .app-header-notch \{\
+      background: radial-gradient(circle at top, #1a2333 0%, #090a0f 70%);\
+    \}\
+\
+    .glow-green \{\
+      box-shadow: 0 0 15px rgba(136, 255, 0, 0.4);\
+    \}\
+    .glow-yellow \{\
+      box-shadow: 0 0 15px rgba(250, 204, 21, 0.4);\
+    \}\
+    .glow-red \{\
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);\
+    \}\
+\
+    ::-webkit-scrollbar \{\
+      width: 4px;\
+    \}\
+    ::-webkit-scrollbar-track \{\
+      background: #090a0f;\
+    \}\
+    ::-webkit-scrollbar-thumb \{\
+      background: #2a3447;\
+      border-radius: 4px;\
+    \}\
+  </style>\
+</head>\
+<body class="min-h-screen text-slate-100 pb-28">\
+\
+  <div id="app" v-cloak class="max-w-md sm:max-w-xl mx-auto px-3 pt-3">\
+\
+    <!-- \uc0\u38914 \u37096  App \u32147 \u20856  Header \u21312 \u22602  -->\
+    <header class="app-header-notch rounded-2xl p-4 mb-4 border border-slate-800 relative overflow-hidden shadow-2xl">\
+      <div class="absolute -right-8 -top-8 w-28 h-28 bg-beyGreenNeon/10 rounded-full blur-2xl"></div>\
+\
+      <div class="flex items-center justify-between relative z-10 mb-2">\
+        <div class="flex items-center gap-2">\
+          <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-beyGreenNeon font-black text-xs">\
+            <i class="fa-solid fa-bolt"></i>\
+          </div>\
+          <div>\
+            <div class="text-xs text-slate-400 font-bold tracking-widest uppercase">BEYBATTLE PASS</div>\
+            <div class="text-base font-extrabold tracking-wide text-white leading-none">BeyStudioX</div>\
+          </div>\
+        </div>\
+\
+        <div class="flex items-center gap-1.5 px-2.5 py-1 bg-black/80 rounded-full border border-slate-700 text-[10px] font-bold text-slate-300">\
+          <span :class="['w-2 h-2 rounded-full', isCloudSynced ? 'bg-beyGreenNeon animate-pulse' : 'bg-amber-400']"></span>\
+          <span>\{\{ isCloudSynced ? '\uc0\u38642 \u31471 \u21516 \u27493 \u20013 ' : '\u36617 \u20837 \u20013 ...' \}\}</span>\
+        </div>\
+      </div>\
+\
+      <div class="mt-3 bg-black/60 rounded-xl p-2.5 border border-slate-800/80 flex items-center justify-between">\
+        <div class="flex items-center gap-2">\
+          <span class="px-2 py-0.5 bg-beyYellow text-slate-950 font-black text-[11px] rounded">X</span>\
+          <span class="text-xs font-bold text-slate-200">Beyblade X \uc0\u25136 \u39717 \u32000 \u37636 \u31995 \u32113 </span>\
+        </div>\
+        <a href="https://beyblade.phstudy.org/index.html" target="_blank" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-bold rounded-full border border-slate-600 transition flex items-center gap-1">\
+          \uc0\u22294 \u37969 \u24235  <i class="fa-solid fa-chevron-right text-[9px]"></i>\
+        </a>\
+      </div>\
+    </header>\
+\
+    <!-- 1. \uc0\u26032 \u22686 \u38464 \u34746 \u37197 \u32622 \u38913 \u38754  -->\
+    <section v-if="currentTab === 'create'" class="space-y-4">\
+      <div class="bg-appCard border border-slate-800 rounded-3xl p-5 shadow-2xl relative overflow-hidden">\
+        \
+        <div class="flex items-center justify-between mb-4">\
+          <span class="px-3 py-1 bg-beyYellow/20 border border-beyYellow/50 text-beyYellow text-xs font-black rounded-full uppercase tracking-wider">\
+            <i class="fa-solid fa-plus-circle mr-1"></i> \uc0\u26032 \u22686 \u38464 \u34746 \u32068 \u21512 \
+          </span>\
+          <button @click="showDbModal = true" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 font-bold">\
+            <i class="fa-solid fa-window-maximize text-cyan-400"></i> \uc0\u20839 \u24314 \u22294 \u37969 \
+          </button>\
+        </div>\
+\
+        <form @submit.prevent="saveConfiguration" class="space-y-4">\
+          \
+          <!-- \uc0\u29305 \u27530 \u23660 \u24615 \u20999 \u25563 \u27161 \u31844  (CX / \u19968 \u39636 \u24335 \u22266 \u37782  2\u25799 1) -->\
+          <div class="grid grid-cols-2 gap-2 bg-black/50 p-2 rounded-2xl border border-slate-800">\
+            <label \
+              @click="toggleType('isCX')"\
+              :class="[\
+                'flex items-center justify-center gap-2 p-2 rounded-xl text-xs font-bold transition select-none cursor-pointer', \
+                form.isCX ? 'bg-amber-500/20 text-beyYellow border border-amber-500/50' : 'text-slate-400 hover:text-slate-200',\
+                form.isIntegratedRatchet ? 'opacity-40 cursor-not-allowed' : ''\
+              ]">\
+              <i :class="['fa-solid', form.isCX ? 'fa-circle-dot text-beyYellow' : 'fa-circle text-slate-600']"></i>\
+              <span>CX \uc0\u38464 \u34746  (+\u36628 \u21161 \u25136 \u20995 )</span>\
+            </label>\
+\
+            <label \
+              @click="toggleType('isIntegratedRatchet')"\
+              :class="[\
+                'flex items-center justify-center gap-2 p-2 rounded-xl text-xs font-bold transition select-none cursor-pointer', \
+                form.isIntegratedRatchet ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50' : 'text-slate-400 hover:text-slate-200',\
+                form.isCX ? 'opacity-40 cursor-not-allowed' : ''\
+              ]">\
+              <i :class="['fa-solid', form.isIntegratedRatchet ? 'fa-circle-dot text-cyan-400' : 'fa-circle text-slate-600']"></i>\
+              <span>\uc0\u19968 \u39636 \u24335 \u22266 \u37782  (\u28961 \u22266 \u37782 )</span>\
+            </label>\
+          </div>\
+\
+          <!-- \uc0\u38646 \u20214 \u36984 \u25799 \u22635 \u23531 \u21312 \u22495  -->\
+          <div class="space-y-3">\
+            \
+            <!-- \uc0\u19978 \u33995  (Blade) -->\
+            <div class="p-3 bg-appCardLight/80 rounded-2xl border border-slate-700/80 space-y-2">\
+              <div class="flex justify-between items-center text-xs">\
+                <span class="font-extrabold text-slate-200 flex items-center gap-1">\
+                  <span class="w-1.5 h-3 bg-red-500 rounded-full"></span> \uc0\u19978 \u33995  (Blade)\
+                </span>\
+                <span v-if="memoryStore.blades && memoryStore.blades.length > 0" class="text-[10px] text-beyGreenNeon font-bold">\uc0\u27511 \u21490 \u35352 \u25014 \u24235  (\{\{ memoryStore.blades.length \}\})</span>\
+              </div>\
+              \
+              <select v-if="memoryStore.blades && memoryStore.blades.length > 0" v-model="selectedMemoryBlade" @change="applyPartMemory('blade')" class="w-full bg-black/60 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none">\
+                <option value="">-- \uc0\u24118 \u20837 \u27511 \u21490 \u35352 \u25014 \u19978 \u33995  --</option>\
+                <option v-for="item in memoryStore.blades" :key="item.name" :value="item.name">\{\{ item.name \}\}</option>\
+              </select>\
+              \
+              <input type="text" v-model="form.bladeName" placeholder="\uc0\u19978 \u33995 \u21517 \u31281  (\u20363 \u22914 : \u39764 \u23566 \u31070 \u26454 )" class="w-full bg-black/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-beyGreenNeon" required>\
+              <input type="text" v-model="form.bladeImg" placeholder="\uc0\u22294 \u29255 \u32178 \u22336  (URL)" class="w-full bg-black/80 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-400 placeholder-slate-600 focus:outline-none focus:border-beyGreenNeon">\
+            </div>\
+\
+            <!-- \uc0\u36628 \u21161 \u25136 \u20995  (Assist Blade) -->\
+            <div v-if="form.isCX" class="p-3 bg-amber-950/20 rounded-2xl border border-amber-500/40 space-y-2">\
+              <div class="flex justify-between items-center text-xs">\
+                <span class="font-extrabold text-beyYellow flex items-center gap-1">\
+                  <span class="w-1.5 h-3 bg-beyYellow rounded-full"></span> \uc0\u36628 \u21161 \u25136 \u20995  (Assist)\
+                </span>\
+                <span v-if="memoryStore.assists && memoryStore.assists.length > 0" class="text-[10px] text-beyYellow font-bold">\uc0\u27511 \u21490 \u35352 \u25014 </span>\
+              </div>\
+              <select v-if="memoryStore.assists && memoryStore.assists.length > 0" v-model="selectedMemoryAssist" @change="applyPartMemory('assist')" class="w-full bg-black/60 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none">\
+                <option value="">-- \uc0\u24118 \u20837 \u27511 \u21490 \u35352 \u25014 \u36628 \u21161 \u25136 \u20995  --</option>\
+                <option v-for="item in memoryStore.assists" :key="item.name" :value="item.name">\{\{ item.name \}\}</option>\
+              </select>\
+              <input type="text" v-model="form.assistName" placeholder="\uc0\u36628 \u21161 \u25136 \u20995 \u21517 \u31281 " class="w-full bg-black/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-beyYellow" required>\
+              <input type="text" v-model="form.assistImg" placeholder="\uc0\u22294 \u29255 \u32178 \u22336  (URL)" class="w-full bg-black/80 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-400 placeholder-slate-600 focus:outline-none focus:border-beyYellow">\
+            </div>\
+\
+            <!-- \uc0\u22266 \u37782  (Ratchet) -->\
+            <div v-if="!form.isIntegratedRatchet" class="p-3 bg-appCardLight/80 rounded-2xl border border-slate-700/80 space-y-2">\
+              <div class="flex justify-between items-center text-xs">\
+                <span class="font-extrabold text-slate-200 flex items-center gap-1">\
+                  <span class="w-1.5 h-3 bg-blue-500 rounded-full"></span> \uc0\u22266 \u37782  (Ratchet)\
+                </span>\
+                <span v-if="memoryStore.ratchets && memoryStore.ratchets.length > 0" class="text-[10px] text-beyGreenNeon font-bold">\uc0\u27511 \u21490 \u35352 \u25014 </span>\
+              </div>\
+              <select v-if="memoryStore.ratchets && memoryStore.ratchets.length > 0" v-model="selectedMemoryRatchet" @change="applyPartMemory('ratchet')" class="w-full bg-black/60 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none">\
+                <option value="">-- \uc0\u24118 \u20837 \u27511 \u21490 \u35352 \u25014 \u22266 \u37782  --</option>\
+                <option v-for="item in memoryStore.ratchets" :key="item.name" :value="item.name">\{\{ item.name \}\}</option>\
+              </select>\
+              <input type="text" v-model="form.ratchetName" placeholder="\uc0\u22266 \u37782 \u21517 \u31281  (\u20363 \u22914 : 1-60)" class="w-full bg-black/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-beyGreenNeon" required>\
+              <input type="text" v-model="form.ratchetImg" placeholder="\uc0\u22294 \u29255 \u32178 \u22336  (URL)" class="w-full bg-black/80 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-400 placeholder-slate-600 focus:outline-none focus:border-beyGreenNeon">\
+            </div>\
+\
+            <!-- \uc0\u36600 \u24515  (Bit) -->\
+            <div class="p-3 bg-appCardLight/80 rounded-2xl border border-slate-700/80 space-y-2">\
+              <div class="flex justify-between items-center text-xs">\
+                <span class="font-extrabold text-slate-200 flex items-center gap-1">\
+                  <span class="w-1.5 h-3 bg-emerald-500 rounded-full"></span> \uc0\u36600 \u24515  (Bit)\
+                </span>\
+                <span v-if="memoryStore.bits && memoryStore.bits.length > 0" class="text-[10px] text-beyGreenNeon font-bold">\uc0\u27511 \u21490 \u35352 \u25014 </span>\
+              </div>\
+              <select v-if="memoryStore.bits && memoryStore.bits.length > 0" v-model="selectedMemoryBit" @change="applyPartMemory('bit')" class="w-full bg-black/60 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none">\
+                <option value="">-- \uc0\u24118 \u20837 \u27511 \u21490 \u35352 \u25014 \u36600 \u24515  --</option>\
+                <option v-for="item in memoryStore.bits" :key="item.name" :value="item.name">\{\{ item.name \}\}</option>\
+              </select>\
+              <input type="text" v-model="form.bitName" placeholder="\uc0\u36600 \u24515 \u21517 \u31281  (\u20363 \u22914 : H)" class="w-full bg-black/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-beyGreenNeon" required>\
+              <input type="text" v-model="form.bitImg" placeholder="\uc0\u22294 \u29255 \u32178 \u22336  (URL)" class="w-full bg-black/80 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-400 placeholder-slate-600 focus:outline-none focus:border-beyGreenNeon">\
+            </div>\
+\
+          </div>\
+\
+          <!-- \uc0\u29983 \u25104 \u20840 \u21517 \u38928 \u35261 \u21312 \u22602  -->\
+          <div class="bg-black/90 p-3.5 rounded-2xl border border-slate-800 flex items-center justify-between">\
+            <span class="text-xs text-slate-400 font-bold">\uc0\u29983 \u25104 \u30340 \u38464 \u34746 \u37197 \u32622 \u20840 \u21517 \u65306 </span>\
+            <span class="text-base font-black text-beyGreenNeon tracking-wide">\{\{ previewFullName || '\uc0\u23578 \u26410 \u23436 \u25104 \u37197 \u32622 ' \}\}</span>\
+          </div>\
+\
+          <!-- \uc0\u38450 \u35206 \u33995 \u35686 \u21578  -->\
+          <div v-if="isDuplicateConfig" class="p-3 bg-red-950/60 border border-red-500/80 rounded-2xl text-red-300 text-xs flex items-center gap-2">\
+            <i class="fa-solid fa-triangle-exclamation text-base text-red-400"></i>\
+            <span>\uc0\u24050 \u23384 \u22312 \u23436 \u20840 \u30456 \u21516 \u30340 \u38464 \u34746 \u32068 \u21512  (\{\{ previewFullName \}\})\u65292 \u35531 \u26356 \u25563 \u38646 \u20214 \u25645 \u37197 \u65281 </span>\
+          </div>\
+\
+          <!-- \uc0\u25353 \u37397  -->\
+          <button type="submit" :disabled="isDuplicateConfig || !previewFullName" class="w-full py-3.5 bg-gradient-to-r from-beyYellow via-amber-400 to-yellow-500 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-600 text-slate-950 font-black rounded-2xl transition shadow-lg flex items-center justify-center gap-2 text-base uppercase tracking-wider">\
+            <i class="fa-solid fa-cloud-arrow-up"></i> \uc0\u30331 \u37636 \u20006 \u20786 \u23384 \u37197 \u32622 \
+          </button>\
+        </form>\
+\
+      </div>\
+    </section>\
+\
+    <!-- 2. \uc0\u29544 \u31435 \u38913 \u38754 \u65306 \u37197 \u32622 \u24235  (\u21547 \u38646 \u20214 \u24494 \u22411 \u22294 \u29255 \u38928 \u35261 ) -->\
+    <section v-if="currentTab === 'config_library'" class="space-y-4">\
+      <div class="bg-appCard border border-slate-800 rounded-3xl p-4 shadow-2xl space-y-4">\
+        \
+        <div class="flex flex-col gap-2">\
+          <div class="flex items-center justify-between">\
+            <span class="text-xs font-black text-beyYellow tracking-widest uppercase flex items-center gap-1.5">\
+              <span class="w-2 h-2 rounded-full bg-beyYellow"></span> \uc0\u38464 \u34746 \u19978 \u33995 \u24235  (\{\{ filteredGroupedConfigs.length \}\} \u31278 \u19978 \u33995 )\
+            </span>\
+            <button @click="currentTab = 'create'" class="px-3 py-1 bg-black text-slate-200 text-xs font-bold rounded-full border border-slate-700 hover:border-beyYellow transition">\
+              + \uc0\u26032 \u22686 \u37197 \u32622 \
+            </button>\
+          </div>\
+\
+          <div class="text-[10px] text-slate-400 flex items-center justify-between px-1">\
+            <span><i class="fa-solid fa-arrow-down-wide-short mr-1 text-beyGreenNeon"></i> \uc0\u38928 \u35373 \u25490 \u24207 \u65306 \u32317 \u22238 \u21512 \u25976 \u30001 \u22810 \u21040 \u23569 </span>\
+          </div>\
+\
+          <!-- \uc0\u38364 \u37749 \u23383 \u25628 \u23563 \u21015  -->\
+          <div class="relative w-full mt-0.5">\
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-500 text-xs"></i>\
+            <input type="text" v-model="searchQuery" placeholder="\uc0\u25628 \u23563 \u19978 \u33995 \u12289 \u22266 \u37782 \u25110 \u36600 \u24515 ..." class="w-full bg-black/80 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-beyGreenNeon">\
+          </div>\
+        </div>\
+\
+        <div v-if="filteredGroupedConfigs.length === 0" class="text-center py-12 text-slate-500 border border-dashed border-slate-800 rounded-2xl text-xs">\
+          \{\{ searchQuery ? '\uc0\u25628 \u23563 \u19981 \u21040 \u31526 \u21512 \u38364 \u37749 \u23383 \u30340 \u38464 \u34746 \u37197 \u32622 ' : '\u23578 \u26410 \u30331 \u37636 \u20219 \u20309 \u38464 \u34746 \u37197 \u32622 ' \}\}\
+        </div>\
+\
+        <!-- \uc0\u20197 \u12300 \u19978 \u33995 \u12301 \u28858 \u20027 \u30340 \u28687 \u35261 \u21345 \u29255  -->\
+        <div v-else class="space-y-4">\
+          <div v-for="group in filteredGroupedConfigs" :key="group.bladeName" class="bg-black/60 border border-slate-800 rounded-2xl overflow-hidden shadow-xl transition">\
+            \
+            <!-- \uc0\u19978 \u33995 \u21345 \u29255 \u27161 \u38957  -->\
+            <div @click="toggleBladeGroup(group.bladeName)" class="p-3.5 cursor-pointer hover:bg-slate-900/80 transition space-y-2">\
+              \
+              <div class="flex items-center justify-between">\
+                <div class="flex items-center gap-2">\
+                  <span class="text-base font-black text-white tracking-wide"><i class="fa-solid fa-shield-halved text-beyGreenNeon mr-1.5"></i>\{\{ group.bladeName \}\}</span>\
+                  <span class="text-[10px] bg-slate-800 text-slate-300 font-bold px-2 py-0.5 rounded-full border border-slate-700">\
+                    \{\{ group.items.length \}\} \uc0\u20491 \u32068 \u21512 \
+                  </span>\
+                </div>\
+                <div class="text-slate-400 text-xs font-bold flex items-center gap-1">\
+                  <span>\{\{ expandedGroups[group.bladeName] ? '\uc0\u25910 \u21512 ' : '\u23637 \u38283 \u32048 \u31680 ' \}\}</span>\
+                  <i :class="['fa-solid text-beyYellow transition-transform duration-200', expandedGroups[group.bladeName] ? 'fa-chevron-up' : 'fa-chevron-down']"></i>\
+                </div>\
+              </div>\
+\
+              <!-- \uc0\u19978 \u33995 \u26680 \u24515 \u35222 \u35258  (70% \u27604 \u37325 \u22823 \u22294 ) \u33287  \u35442 \u19978 \u33995 \u32317 \u22238 \u21512 \u21213 \u29575 \u21450 \u24471 \u22833 \u20998 \u21152 \u32317  -->\
+              <div class="flex items-center gap-3 bg-appCardLight/90 p-2.5 rounded-xl border border-slate-800">\
+                \
+                <!-- \uc0\u22823 \u22294  (70% \u26680 \u24515 \u35222 \u35258 ) -->\
+                <div class="w-[55%] sm:w-[60%] flex flex-col items-center justify-center border-r border-slate-800 pr-2">\
+                  <img :src="group.bladeImg || placeholderImage" class="w-24 h-24 sm:w-28 sm:h-28 object-contain rounded-xl p-1 bg-black border border-slate-800" @error="handleImgError">\
+                </div>\
+\
+                <!-- \uc0\u35442 \u19978 \u33995 \u21152 \u32317 \u32113 \u35336  -->\
+                <div class="w-[45%] sm:w-[40%] flex flex-col justify-center space-y-1.5 text-[10px]">\
+                  <span class="text-slate-400 font-extrabold text-[9px] uppercase tracking-wider block">\uc0\u19978 \u33995 \u22238 \u21512 \u25136 \u32318 \u21152 \u32317 </span>\
+                  \
+                  <div class="bg-black/80 p-1.5 rounded-lg border border-slate-800 text-center flex justify-around items-center">\
+                    <div>\
+                      <span class="block text-slate-500 text-[9px]">\uc0\u32317 \u22238 \u21512 </span>\
+                      <span class="text-xs font-black text-slate-200">\{\{ group.totalRounds \}\}</span>\
+                    </div>\
+                    <div class="h-6 w-px bg-slate-800"></div>\
+                    <div>\
+                      <span class="block text-slate-500 text-[9px]">\uc0\u22238 \u21512 \u21213 \u29575 </span>\
+                      <span class="text-xs font-black text-beyGreenNeon">\{\{ group.roundWinRate \}\}%</span>\
+                    </div>\
+                  </div>\
+\
+                  <div class="bg-black/80 p-1.5 rounded-lg border border-slate-800 text-center">\
+                    <div class="flex justify-between items-center text-[9px] text-slate-400 mb-0.5">\
+                      <span>\uc0\u24471 \u20998 : <strong class="text-red-400 font-extrabold">\{\{ group.totalPtsScored \}\}</strong></span>\
+                      <span>\uc0\u22833 \u20998 : <strong class="text-blue-400 font-extrabold">\{\{ group.totalPtsLost \}\}</strong></span>\
+                    </div>\
+                    <div class="text-[9px] font-extrabold text-slate-300 border-t border-slate-800/80 pt-0.5 flex justify-between">\
+                      <span>\uc0\u28136 \u21213 \u20998 :</span>\
+                      <span :class="group.netPts >= 0 ? 'text-beyGreenNeon' : 'text-blue-400'">\
+                        \{\{ group.netPts >= 0 ? '+' : '' \}\}\{\{ group.netPts \}\}\
+                      </span>\
+                    </div>\
+                  </div>\
+                </div>\
+\
+              </div>\
+\
+            </div>\
+\
+            <!-- \uc0\u19979 \u25289 \u23637 \u38283 \u21312 \u22602 \u65306 \u21253 \u21547 \u21508 \u38646 \u20214 \u32302 \u22294  + \u21517 \u23383  + \u20491 \u21029 \u21213 \u29575  -->\
+            <div v-if="expandedGroups[group.bladeName]" class="p-3 bg-black/90 border-t border-slate-800 space-y-2.5">\
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block pl-1">\
+                <i class="fa-solid fa-list-ul mr-1 text-beyYellow"></i> \uc0\u21508 \u37197 \u32622 \u32068 \u21512 \u65288 \u21547 \u38646 \u20214 \u32302 \u22294 \u65289 \u65306 \
+              </span>\
+\
+              <div v-for="config in group.items" :key="config.fullName" class="bg-appCardLight/80 border border-slate-800 rounded-xl p-2.5 space-y-2">\
+                \
+                <!-- \uc0\u20491 \u21029 \u37197 \u32622 \u20840 \u21517 \u33287 \u27161 \u31844  -->\
+                <div class="flex items-center justify-between">\
+                  <span class="font-extrabold text-xs text-white break-all">\{\{ config.fullName \}\}</span>\
+                  <span v-if="config.isCX" class="text-[9px] bg-amber-500/20 text-beyYellow px-1.5 py-0.5 rounded border border-amber-500/40 font-bold shrink-0 ml-1">CX</span>\
+                </div>\
+\
+                <!-- \uc0\u38646 \u20214 \u22294 \u25991 \u24494 \u22411 \u32302 \u22294 \u21345 \u29255 \u21312  -->\
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5">\
+                  \
+                  <!-- \uc0\u36628 \u21161 \u25136 \u20995  (\u20677  CX \u39023 \u31034 ) -->\
+                  <div v-if="config.isCX" class="flex items-center gap-1.5 bg-black/80 p-1.5 rounded-lg border border-slate-800">\
+                    <img :src="config.assistImg || placeholderImage" class="w-6 h-6 object-contain rounded bg-slate-900 shrink-0 border border-slate-700/50" @error="handleImgError">\
+                    <div class="truncate leading-tight">\
+                      <span class="block text-[8px] text-beyYellow">\uc0\u36628 \u21161 \u25136 \u20995 </span>\
+                      <span class="text-[10px] font-bold text-slate-200 truncate block">\{\{ config.assistName \}\}</span>\
+                    </div>\
+                  </div>\
+\
+                  <!-- \uc0\u22266 \u37782  -->\
+                  <div class="flex items-center gap-1.5 bg-black/80 p-1.5 rounded-lg border border-slate-800">\
+                    <img v-if="!config.isIntegratedRatchet" :src="config.ratchetImg || placeholderImage" class="w-6 h-6 object-contain rounded bg-slate-900 shrink-0 border border-slate-700/50" @error="handleImgError">\
+                    <div class="truncate leading-tight">\
+                      <span class="block text-[8px] text-slate-500">\uc0\u22266 \u37782 </span>\
+                      <span class="text-[10px] font-bold text-slate-200 truncate block">\{\{ config.isIntegratedRatchet ? '\uc0\u19968 \u39636 \u24335 ' : config.ratchetName \}\}</span>\
+                    </div>\
+                  </div>\
+\
+                  <!-- \uc0\u36600 \u24515  -->\
+                  <div class="flex items-center gap-1.5 bg-black/80 p-1.5 rounded-lg border border-slate-800">\
+                    <img :src="config.bitImg || placeholderImage" class="w-6 h-6 object-contain rounded bg-slate-900 shrink-0 border border-slate-700/50" @error="handleImgError">\
+                    <div class="truncate leading-tight">\
+                      <span class="block text-[8px] text-slate-500">\uc0\u36600 \u24515 </span>\
+                      <span class="text-[10px] font-bold text-slate-200 truncate block">\{\{ config.bitName \}\}</span>\
+                    </div>\
+                  </div>\
+\
+                </div>\
+\
+                <!-- \uc0\u21508 \u37197 \u32622 \u35443 \u32048 \u22238 \u21512 \u25976 \u25818  -->\
+                <div class="grid grid-cols-2 gap-1.5 bg-black/80 p-2 rounded-lg border border-slate-800 text-[10px] font-mono">\
+                  <div class="flex justify-between items-center bg-slate-900/80 px-2 py-1 rounded border border-slate-800">\
+                    <span class="text-slate-400">\uc0\u22238 \u21512 \u21213 \u25943 :</span>\
+                    <span>\
+                      <strong class="text-red-400">\{\{ getStat(config.fullName).roundWins \}\}W</strong>\
+                      <span class="text-slate-600 mx-0.5">/</span>\
+                      <strong class="text-blue-400">\{\{ getStat(config.fullName).roundLosses \}\}L</strong>\
+                      <span class="text-beyGreenNeon ml-1">(\{\{ getStat(config.fullName).roundWinRate \}\}%)</span>\
+                    </span>\
+                  </div>\
+\
+                  <div class="flex justify-between items-center bg-slate-900/80 px-2 py-1 rounded border border-slate-800">\
+                    <span class="text-slate-400">\uc0\u24471 /\u22833 \u20998 :</span>\
+                    <span>\
+                      <strong class="text-red-400">+\{\{ getStat(config.fullName).ptsScored \}\}</strong>\
+                      <span class="text-slate-600 mx-0.5">/</span>\
+                      <strong class="text-blue-400">-\{\{ getStat(config.fullName).ptsLost \}\}</strong>\
+                      <span :class="['ml-1 font-bold', getStat(config.fullName).netPts >= 0 ? 'text-beyGreenNeon' : 'text-blue-400']">\
+                        (\{\{ getStat(config.fullName).netPts >= 0 ? '+' : '' \}\}\{\{ getStat(config.fullName).netPts \}\})\
+                      </span>\
+                    </span>\
+                  </div>\
+                </div>\
+\
+                <div class="flex justify-end pt-0.5">\
+                  <button @click.stop="promptDeleteConfig(config.fullName)" class="text-[10px] text-red-400 hover:text-red-300 font-medium flex items-center gap-1">\
+                    <i class="fa-solid fa-trash-can"></i> \uc0\u21034 \u38500 \u27492 \u32068 \u21512 \
+                  </button>\
+                </div>\
+\
+              </div>\
+            </div>\
+\
+          </div>\
+        </div>\
+\
+      </div>\
+    </section>\
+\
+    <!-- 3. \uc0\u25136 \u39717 \u32000 \u37636 \u33287 \u23565 \u25136 \u38913 \u38754  -->\
+    <section v-if="currentTab === 'battle'" class="space-y-4">\
+      \
+      <!-- \uc0\u24314 \u31435 \u23565 \u25136 \u38754 \u26495  -->\
+      <div v-if="!activeMatch" class="bg-appCard border border-slate-800 rounded-3xl p-5 shadow-2xl space-y-4">\
+        \
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">\
+          <div>\
+            <span class="text-xs font-black text-beyGreenNeon tracking-widest uppercase block">BATTLE MATCH</span>\
+            <h2 class="text-lg font-black text-white">\uc0\u23565 \u25136 \u27604 \u36093 \u23565 \u27770 </h2>\
+          </div>\
+          <span class="px-2.5 py-1 bg-beyGreen/20 text-beyGreenNeon text-[10px] font-bold rounded-full border border-beyGreen/40">\
+            4\uc0\u20998 \u32080 \u26463 \u21046 \
+          </span>\
+        </div>\
+\
+        <form @submit.prevent="startMatch" class="space-y-4">\
+          <div class="space-y-3">\
+            <div>\
+              <label class="block text-xs font-bold mb-1 text-slate-300">\uc0\u27604 \u36093 \u21517 \u31281 </label>\
+              <input type="text" v-model="matchSetup.name" placeholder="\uc0\u20363 \u22914 : 8\u26376 17\u26085 \u31532 4\u22580 \u27604 \u36093 " class="w-full bg-black/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-beyGreenNeon" required>\
+            </div>\
+            <div>\
+              <label class="block text-xs font-bold mb-1 text-slate-300">\uc0\u27604 \u36093 \u26085 \u26399 </label>\
+              <input type="date" v-model="matchSetup.date" class="w-full bg-black/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-beyGreenNeon" required>\
+            </div>\
+          </div>\
+\
+          <div class="border-t border-slate-800 pt-3 space-y-3">\
+            <label class="block text-xs font-black text-beyYellow flex items-center justify-between">\
+              <span><i class="fa-solid fa-layer-group mr-1"></i> \uc0\u36984 \u25799 \u21443 \u25136 \u38538 \u20237  (\u19977 \u38982 \u38464 \u34746 \u19981 \u21487 \u37325 \u35079 )\u65306 </span>\
+              <span v-if="hasDuplicateInMatchSetup" class="text-[10px] text-red-400 font-bold"><i class="fa-solid fa-triangle-exclamation"></i> \uc0\u36984 \u21462 \u20102 \u37325 \u35079 \u38464 \u34746 \u65281 </span>\
+            </label>\
+\
+            <div v-if="configurations.length === 0" class="p-4 bg-black/50 rounded-2xl text-slate-500 text-center text-xs border border-slate-800">\
+              \uc0\u35531 \u20808 \u30331 \u37636 \u38464 \u34746 \u37197 \u32622 \u24460 \u20877 \u38283 \u22987 \u23565 \u25136 \u65281 \
+            </div>\
+\
+            <div v-else class="space-y-2">\
+              <div v-for="slot in [0, 1, 2]" :key="slot" class="bg-black/60 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between gap-2">\
+                <span class="text-xs font-extrabold text-slate-400 shrink-0">\uc0\u31532  \{\{ slot + 1 \}\} \u38918 \u20301 </span>\
+                \
+                <select v-model="matchSetup.selectedBeyblades[slot]" class="w-full bg-appCard border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-beyGreenNeon" required>\
+                  <option value="" disabled>-- \uc0\u35531 \u36984 \u25799 \u38464 \u34746 \u37197 \u32622  --</option>\
+                  <option \
+                    v-for="config in sortedConfigurationsForSelect" \
+                    :key="config.fullName" \
+                    :value="config.fullName"\
+                    :disabled="isBeybladeSelectedInOtherSlots(config.fullName, slot)"\
+                  >\
+                    \{\{ config.fullName \}\} \{\{ isBeybladeSelectedInOtherSlots(config.fullName, slot) ? '(\uc0\u20854 \u20182 \u38918 \u20301 \u24050 \u36984 )' : '' \}\}\
+                  </option>\
+                </select>\
+              </div>\
+            </div>\
+          </div>\
+\
+          <button type="submit" :disabled="configurations.length === 0 || hasDuplicateInMatchSetup || matchSetup.selectedBeyblades.some(b => !b)" class="w-full py-3.5 bg-gradient-to-r from-beyYellow via-amber-400 to-yellow-500 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-600 font-black text-slate-950 rounded-2xl transition shadow-lg flex items-center justify-center gap-2 text-base uppercase">\
+            <i class="fa-solid fa-gamepad"></i> \uc0\u38283 \u22987 \u23565 \u25136 \
+          </button>\
+        </form>\
+\
+      </div>\
+\
+      <!-- \uc0\u25136 \u39717 \u23565 \u25136 \u23565 \u27770 \u36914 \u34892 \u20013 \u20171 \u38754  -->\
+      <div v-else class="bg-appCard border border-slate-800 rounded-3xl p-4 shadow-2xl space-y-4">\
+        \
+        <!-- \uc0\u23565 \u25136 \u38957 \u37096 \u36039 \u35338  -->\
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800">\
+          <div>\
+            <span class="px-2 py-0.5 bg-beyYellow text-slate-950 font-black text-[10px] rounded mr-1">BATTLE</span>\
+            <span class="text-sm font-extrabold text-white">\{\{ activeMatch.name \}\}</span>\
+            <p class="text-[10px] text-slate-400 mt-0.5"><i class="fa-regular fa-calendar mr-1"></i>\{\{ activeMatch.date \}\}</p>\
+          </div>\
+          <button @click="promptCancelMatch" class="px-3 py-1 bg-black text-slate-400 hover:text-white text-xs font-bold rounded-full border border-slate-700">\
+            \uc0\u25918 \u26820 \u27604 \u36093 \
+          </button>\
+        </div>\
+\
+        <!-- \uc0\u27604 \u20998 \u26680 \u24515 \u21345 \u29255  -->\
+        <div class="grid grid-cols-2 gap-3 bg-black p-4 rounded-2xl border border-slate-800 text-center relative overflow-hidden">\
+          <div class="border-r border-slate-800/80 pr-2">\
+            <div class="text-[10px] text-slate-400 font-bold mb-1 uppercase tracking-wider">My Score (\uc0\u25105 \u26041 )</div>\
+            <div class="text-5xl font-black text-red-500 glow-red leading-none">\{\{ activeMatch.myScore \}\}</div>\
+          </div>\
+          <div class="pl-2">\
+            <div class="text-[10px] text-slate-400 font-bold mb-1 uppercase tracking-wider">Opponent (\uc0\u23565 \u25163 )</div>\
+            <div class="text-5xl font-black text-blue-500 leading-none">\{\{ activeMatch.oppScore \}\}</div>\
+          </div>\
+        </div>\
+\
+        <!-- \uc0\u29554 \u21213 \u32080 \u31639 \u24392 \u31034  -->\
+        <div v-if="matchWinner" class="bg-beyYellow/10 border border-beyYellow p-4 rounded-2xl text-center space-y-2 glow-yellow">\
+          <h3 class="text-xl font-black text-beyYellow">\
+            <i class="fa-solid fa-trophy mr-1"></i> \{\{ matchWinner === 'MY' ? '\uc0\u29554 \u24471 \u27604 \u36093 \u21213 \u21033 \u65281 ' : '\u27604 \u36093 \u33853 \u25943 ' \}\}\
+          </h3>\
+          <p class="text-xs text-slate-300">\uc0\u32317 \u20998 \u25976 \u29575 \u20808 \u36948 \u21040  4 \u20998 \u65292 \u25136 \u32318 \u24050 \u25104 \u21151 \u32000 \u37636 \u65281 </p>\
+          <button @click="finishAndCloseMatch" class="w-full py-2.5 bg-beyYellow text-slate-950 font-black rounded-xl shadow-lg transition text-xs uppercase">\
+            \uc0\u23436 \u25104 \u27604 \u36093 \u20006 \u20786 \u23384 \u32000 \u37636 \
+          </button>\
+        </div>\
+\
+        <!-- \uc0\u30070 \u21069 \u20986 \u22580 \u38464 \u34746  -->\
+        <div v-else class="bg-black/60 p-3.5 rounded-2xl border border-slate-800 space-y-1">\
+          <div class="flex items-center justify-between text-xs">\
+            <span class="text-[11px] font-bold text-slate-400">\
+              \uc0\u31532  \{\{ activeMatch.currentRound \}\} \u36650 \u27425  \'b7 \u30070 \u21069 \u31532  \{\{ activeMatch.currentSlot + 1 \}\} \u38918 \u20301 \u38464 \u34746 \u65306 \
+            </span>\
+            <button v-if="activeMatch.spinsInRound >= 3" @click="showReorderModal = true" class="px-2 py-0.5 bg-amber-500/20 text-beyYellow border border-amber-500/50 text-[10px] font-bold rounded-md">\
+              <i class="fa-solid fa-arrows-rotate mr-1"></i> \uc0\u37325 \u25490 \u38918 \u24207 \
+            </button>\
+          </div>\
+          <div class="text-base font-black text-beyGreenNeon truncate">\
+            \{\{ activeMatch.selectedBeyblades[activeMatch.currentSlot] \}\}\
+          </div>\
+        </div>\
+\
+        <!-- \uc0\u24471 \u20998 \u33287 \u22833 \u20998 \u25511 \u21046 \u21312 \u22602  -->\
+        <div v-if="!matchWinner" class="grid grid-cols-1 sm:grid-cols-2 gap-3">\
+          \
+          <!-- \uc0\u25105 \u26041 \u24471 \u20998 \u25353 \u37397 \u38598  -->\
+          <div class="bg-red-950/20 border border-red-800/40 p-3 rounded-2xl space-y-2">\
+            <div class="text-xs font-extrabold text-red-400 flex items-center justify-between">\
+              <span>\uc0\u25105 \u26041 \u24471 \u20998  (\u21213 \u21033 \u26041 \u24335 )</span>\
+            </div>\
+            <div class="grid grid-cols-2 gap-1.5 text-xs">\
+              <button @click="recordSpin('MY', '\uc0\u36681 \u20572 \u21213 \u21033 ', 1, false)" class="p-2 bg-red-600 hover:bg-red-500 text-white font-black rounded-xl transition shadow">\
+                \uc0\u36681 \u20572  (+1)\
+              </button>\
+              <button @click="recordSpin('MY', '\uc0\u25802 \u39131 \u21213 \u21033 ', 2, false)" class="p-2 bg-red-600 hover:bg-red-500 text-white font-black rounded-xl transition shadow">\
+                \uc0\u25802 \u39131  (+2)\
+              </button>\
+              <button @click="recordSpin('MY', '\uc0\u29190 \u35010 \u21213 \u21033 ', 2, false)" class="p-2 bg-red-600 hover:bg-red-500 text-white font-black rounded-xl transition shadow">\
+                \uc0\u29190 \u35010  (+2)\
+              </button>\
+              <button @click="recordSpin('MY', '\uc0\u26997 \u38480 \u21213 \u21033 ', 3, false)" class="p-2 bg-red-600 hover:bg-red-500 text-white font-black rounded-xl transition shadow">\
+                \uc0\u26997 \u38480  (+3)\
+              </button>\
+            </div>\
+            <button @click="recordSpin('MY', '\uc0\u23565 \u26041 \u22833 \u35492 ', 1, true)" class="w-full p-2 bg-amber-600 hover:bg-amber-500 text-slate-950 font-black text-xs rounded-xl transition border border-amber-400">\
+              \uc0\u23565 \u26041 \u22833 \u35492  (+1) <span class="text-[10px] opacity-80">(\u21516 \u19968 \u38464 \u34746 \u32380 \u32396 )</span>\
+            </button>\
+          </div>\
+\
+          <!-- \uc0\u25105 \u26041 \u22833 \u20998 \u25353 \u37397 \u38598  -->\
+          <div class="bg-blue-950/20 border border-blue-800/40 p-3 rounded-2xl space-y-2">\
+            <div class="text-xs font-extrabold text-blue-400 flex items-center justify-between">\
+              <span>\uc0\u25105 \u26041 \u22833 \u20998  (\u23565 \u25163 \u21213 \u21033 )</span>\
+            </div>\
+            <div class="grid grid-cols-2 gap-1.5 text-xs">\
+              <button @click="recordSpin('OPP', '\uc0\u36681 \u20572 \u21213 \u21033 ', 1, false)" class="p-2 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-xl transition shadow">\
+                \uc0\u36681 \u20572  (-1)\
+              </button>\
+              <button @click="recordSpin('OPP', '\uc0\u25802 \u39131 \u21213 \u21033 ', 2, false)" class="p-2 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-xl transition shadow">\
+                \uc0\u25802 \u39131  (-2)\
+              </button>\
+              <button @click="recordSpin('OPP', '\uc0\u29190 \u35010 \u21213 \u21033 ', 2, false)" class="p-2 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-xl transition shadow">\
+                \uc0\u29190 \u35010  (-2)\
+              </button>\
+              <button @click="recordSpin('OPP', '\uc0\u26997 \u38480 \u21213 \u21033 ', 3, false)" class="p-2 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-xl transition shadow">\
+                \uc0\u26997 \u38480  (-3)\
+              </button>\
+            </div>\
+            <button @click="recordSpin('OPP', '\uc0\u23565 \u26041 \u22833 \u35492 ', 1, true)" class="w-full p-2 bg-amber-600 hover:bg-amber-500 text-slate-950 font-black text-xs rounded-xl transition border border-amber-400">\
+              \uc0\u23565 \u26041 \u22833 \u35492  (-1) <span class="text-[10px] opacity-80">(\u21516 \u19968 \u38464 \u34746 \u32380 \u32396 )</span>\
+            </button>\
+          </div>\
+\
+        </div>\
+\
+        <!-- \uc0\u21363 \u26178 \u27511 \u31243 \u34920  -->\
+        <div class="bg-black/80 border border-slate-800 rounded-2xl p-3">\
+          <span class="text-xs font-bold text-slate-400 mb-2 block">\uc0\u30070 \u21069 \u23565 \u25136 \u27511 \u31243 </span>\
+          <div v-if="activeMatch.logs.length === 0" class="text-[11px] text-slate-600 text-center py-3">\
+            \uc0\u26283 \u28961 \u22238 \u21512 \u32000 \u37636 \
+          </div>\
+          <div v-else class="space-y-1.5 max-h-48 overflow-y-auto pr-1">\
+            <div v-for="(log, idx) in activeMatch.logs" :key="idx" class="text-xs p-2 bg-appCard rounded-xl border border-slate-800 flex justify-between items-center">\
+              <div class="truncate">\
+                <span class="text-slate-500 font-bold mr-1">#\{ idx + 1 \}</span>\
+                <span class="text-slate-200 mr-1.5 font-bold truncate">\{\{ log.beyblade \}\}</span>\
+                <span :class="log.winner === 'MY' ? 'text-red-400 font-bold' : 'text-blue-400 font-bold'">\
+                  [\{\{ log.type \}\} \{\{ log.winner === 'MY' ? '+' : '-' \}\}\{\{ log.pts \}\}]\
+                </span>\
+                <span v-if="log.isFault" class="text-amber-400 font-bold text-[10px] ml-1">(\uc0\u22833 \u35492 )</span>\
+              </div>\
+              <span class="text-slate-400 font-mono text-[10px] shrink-0 ml-1">\{\{ log.myScoreHistory \}\} : \{\{ log.oppScoreHistory \}\}</span>\
+            </div>\
+          </div>\
+        </div>\
+\
+      </div>\
+\
+    </section>\
+\
+    <!-- 4. \uc0\u21213 \u29575 \u32113 \u35336 \u33287 \u27511 \u21490 \u32000 \u37636 \u38913 \u38754  -->\
+    <section v-if="currentTab === 'stats'" class="space-y-4">\
+      \
+      <!-- \uc0\u21508 \u37197 \u32622 \u22238 \u21512 \u21213 \u29575 \u33287 \u24471 \u22833 \u20998 \u20998 \u26512 \u25490 \u34892 \u27036  -->\
+      <div class="bg-appCard border border-slate-800 rounded-3xl p-4 shadow-2xl space-y-3">\
+        <h2 class="text-xs font-black text-beyYellow tracking-widest uppercase flex items-center gap-1.5">\
+          <i class="fa-solid fa-chart-pie"></i> \uc0\u21508 \u38464 \u34746 \u37197 \u32622 \u22238 \u21512 \u21213 \u29575 \u33287 \u24471 \u22833 \u20998 \u20998 \u26512 \
+        </h2>\
+\
+        <div v-if="configurations.length === 0" class="text-center py-8 text-slate-500 border border-dashed border-slate-800 rounded-2xl text-xs">\
+          \uc0\u23578 \u26410 \u30331 \u37636 \u38464 \u34746 \u37197 \u32622 \
+        </div>\
+\
+        <div v-else class="space-y-2.5">\
+          <div v-for="stat in winRates" :key="stat.fullName" class="bg-black/60 border border-slate-800 rounded-2xl p-3 space-y-2">\
+            <div class="flex items-center justify-between border-b border-slate-800 pb-1.5">\
+              <span class="text-sm font-extrabold text-beyGreenNeon break-all">\{\{ stat.fullName \}\}</span>\
+              <span class="text-xs font-black bg-slate-800 text-beyYellow px-2.5 py-0.5 rounded-full border border-slate-700 shrink-0">\
+                \uc0\u22238 \u21512 \u21213 \u29575  \{\{ stat.roundWinRate \}\}%\
+              </span>\
+            </div>\
+\
+            <!-- \uc0\u35443 \u32048 \u32113 \u35336 \u25976 \u25818 \u65306 \u22238 \u21512 \u21213 /\u25943  + \u24471 /\u22833 \u20998 /\u28136 \u21213 \u20998  -->\
+            <div class="grid grid-cols-2 gap-1.5 text-[10px] font-mono">\
+              <div class="bg-appCard p-2 rounded-xl border border-slate-800 space-y-1">\
+                <span class="block text-slate-500 text-[9px]">\uc0\u22238 \u21512 \u21213 \u25943 \u23565 \u27770 </span>\
+                <div class="flex justify-between items-center">\
+                  <span class="text-red-400 font-bold">\uc0\u21213  \{\{ stat.roundWins \}\}</span>\
+                  <span class="text-blue-400 font-bold">\uc0\u25943  \{\{ stat.roundLosses \}\}</span>\
+                  <span class="text-slate-400">\uc0\u32317  \{\{ stat.totalRounds \}\} \u23616 </span>\
+                </div>\
+              </div>\
+\
+              <div class="bg-appCard p-2 rounded-xl border border-slate-800 space-y-1">\
+                <span class="block text-slate-500 text-[9px]">\uc0\u24471 \u20998 \u33287 \u28136 \u21213 \u20998 </span>\
+                <div class="flex justify-between items-center">\
+                  <span class="text-red-400 font-bold">+\{\{ stat.ptsScored \}\}\uc0\u20998 </span>\
+                  <span class="text-blue-400 font-bold">-\{\{ stat.ptsLost \}\}\uc0\u20998 </span>\
+                  <span :class="['font-bold', stat.netPts >= 0 ? 'text-beyGreenNeon' : 'text-blue-400']">\
+                    (\{\{ stat.netPts >= 0 ? '+' : '' \}\}\{\{ stat.netPts \}\})\
+                  </span>\
+                </div>\
+              </div>\
+            </div>\
+          </div>\
+        </div>\
+      </div>\
+\
+      <!-- \uc0\u27511 \u21490 \u25136 \u39717 \u32000 \u37636  -->\
+      <div class="bg-appCard border border-slate-800 rounded-3xl p-4 shadow-2xl space-y-3">\
+        <div class="flex items-center justify-between">\
+          <h2 class="text-xs font-black text-cyan-400 tracking-widest uppercase flex items-center gap-1.5">\
+            <i class="fa-solid fa-clock-rotate-left"></i> \uc0\u23565 \u25136 \u32080 \u26524 \u19968 \u35261  (\{\{ matchHistory.length \}\})\
+          </h2>\
+          <button v-if="matchHistory.length > 0" @click="promptClearHistory" class="text-[11px] text-red-400 hover:text-red-300 font-bold">\
+            \uc0\u28165 \u31354 \u32000 \u37636 \
+          </button>\
+        </div>\
+\
+        <div v-if="matchHistory.length === 0" class="text-center py-8 text-slate-500 border border-dashed border-slate-800 rounded-2xl text-xs">\
+          \uc0\u26283 \u28961 \u27511 \u21490 \u23565 \u25136 \u25136 \u32318 \u32000 \u37636 \
+        </div>\
+\
+        <div v-else class="space-y-3">\
+          <div v-for="(history, hIdx) in matchHistory" :key="history.id || hIdx" class="bg-black/60 border border-slate-800 rounded-2xl p-3 space-y-2">\
+            <div class="flex items-center justify-between border-b border-slate-800 pb-1.5">\
+              <div>\
+                <span class="text-xs font-black text-beyYellow mr-1.5">\{\{ history.name \}\}</span>\
+                <span class="text-[10px] text-slate-500">\{\{ history.date \}\}</span>\
+              </div>\
+              <div class="flex items-center gap-2">\
+                <span :class="['px-2 py-0.5 rounded text-[10px] font-bold', history.winner === 'MY' ? 'bg-red-500/20 text-red-400 border border-red-500/40' : 'bg-blue-500/20 text-blue-400 border border-blue-500/40']">\
+                  \{\{ history.winner === 'MY' ? '\uc0\u21213 \u21033 ' : '\u33853 \u25943 ' \}\}\
+                </span>\
+                <span class="text-sm font-black text-white">\
+                  \{\{ history.myScore \}\} : \{\{ history.oppScore \}\}\
+                </span>\
+                <button @click="promptDeleteSingleHistory(hIdx)" class="text-slate-600 hover:text-red-400 text-xs ml-1" title="\uc0\u21034 \u38500 \u27492 \u31558 \u32000 \u37636 ">\
+                  <i class="fa-solid fa-trash-can"></i>\
+                </button>\
+              </div>\
+            </div>\
+\
+            <div class="text-[10px] text-slate-400">\
+              <span class="font-bold text-slate-300">\uc0\u20986 \u25136 \u38499 \u23481 \u65306 </span>\
+              <div class="flex flex-wrap gap-1 mt-1">\
+                <span v-for="(bName, bIdx) in history.selectedBeyblades" :key="bIdx" class="bg-appCard text-slate-300 px-2 py-0.5 rounded-md border border-slate-800">\
+                  \{\{ bIdx + 1 \}\}. \{\{ bName \}\}\
+                </span>\
+              </div>\
+            </div>\
+\
+            <details class="text-[10px] text-slate-500 pt-1">\
+              <summary class="cursor-pointer font-bold text-cyan-400">\uc0\u26597 \u30475 \u21508 \u22238 \u21512 \u23565 \u27770 \u32048 \u31680  (\{\{ history.logs ? history.logs.length : 0 \}\}\u23616 )</summary>\
+              <div class="mt-1.5 space-y-1 pl-2 border-l border-slate-800">\
+                <div v-for="(log, lIdx) in history.logs" :key="lIdx" class="py-0.5 flex justify-between text-[10px]">\
+                  <span class="truncate">\
+                    #\{\{ history.logs.length - lIdx \}\} [\{\{ log.beyblade \}\}] - \
+                    <span :class="log.winner === 'MY' ? 'text-red-400 font-bold' : 'text-blue-400 font-bold'">\
+                      \{\{ log.type \}\} \{\{ log.winner === 'MY' ? '+' : '-' \}\}\{\{ log.pts \}\}\
+                    </span>\
+                  </span>\
+                  <span class="font-mono text-slate-600 ml-1">\{\{ log.myScoreHistory \}\} : \{\{ log.oppScoreHistory \}\}</span>\
+                </div>\
+              </div>\
+            </details>\
+\
+          </div>\
+        </div>\
+      </div>\
+\
+      <!-- \uc0\u20195 \u30908 \u20633 \u20221 \u33287 \u36996 \u21407 \u24037 \u20855  -->\
+      <div class="bg-appCard border border-slate-800 rounded-3xl p-4 shadow-2xl space-y-3">\
+        <h2 class="text-xs font-black text-slate-300 tracking-widest uppercase flex items-center gap-1.5">\
+          <i class="fa-solid fa-code text-beyGreen"></i> \uc0\u36039 \u26009 \u20633 \u20221 \u33287 \u36996 \u21407 \u20195 \u30908 \
+        </h2>\
+        <p class="text-[11px] text-slate-400">\
+          \uc0\u29986 \u29983 \u20006 \u35079 \u35069 \u20633 \u20221 \u20195 \u30908 \u24460 \u21363 \u21487 \u22312 \u20854 \u20182 \u35037 \u32622 \u19978 \u36028 \u19978 \u36996 \u21407 \u65288 \u27880 \u24847 \u65306 \u21295 \u20837 \u20195 \u30908 \u23559 \u26371 \u23436 \u25972 \u35206 \u33995 \u29694 \u26377 \u33290 \u36039 \u26009 \u65289 \u12290 \
+        </p>\
+\
+        <div class="space-y-2 pt-1 border-t border-slate-800">\
+          <div class="flex items-center justify-between">\
+            <span class="text-[11px] font-bold text-beyGreenNeon">\uc0\u23566 \u20986 \u20633 \u20221 \u20195 \u30908 \u65306 </span>\
+            <button @click="generateExportCode" class="px-3 py-1 bg-beyGreen/20 hover:bg-beyGreen/30 text-beyGreenNeon font-black text-[11px] rounded-lg border border-beyGreen/40 transition">\
+              <i class="fa-solid fa-key mr-1"></i> \uc0\u29986 \u29983 \u26368 \u26032 \u20633 \u20221 \u20195 \u30908 \
+            </button>\
+          </div>\
+\
+          <div v-if="generatedCode" class="space-y-1">\
+            <textarea readonly v-model="generatedCode" rows="2" class="w-full bg-black/90 border border-slate-700 rounded-xl p-2 text-[10px] text-slate-300 font-mono focus:outline-none resize-none break-all"></textarea>\
+            <button @click="copyExportCode" class="w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-[11px] rounded-lg border border-slate-700 transition flex items-center justify-center gap-1">\
+              <i class="fa-solid fa-copy"></i> \{\{ copySuccess ? '\uc0\u24050 \u35079 \u35069 \u33267 \u21098 \u36028 \u31807 \u65281 ' : '\u35079 \u35069 \u20195 \u30908 ' \}\}\
+            </button>\
+          </div>\
+        </div>\
+\
+        <div class="space-y-2 pt-2 border-t border-slate-800">\
+          <span class="text-[11px] font-bold text-beyYellow block">\uc0\u21295 \u20837 \u20195 \u30908 \u35206 \u33995 \u36996 \u21407 \u65306 </span>\
+          <textarea v-model="importCodeInput" rows="2" placeholder="\uc0\u22312 \u27492 \u36028 \u19978 \u20633 \u20221 \u20195 \u30908 ..." class="w-full bg-black/90 border border-slate-700 rounded-xl p-2 text-[10px] text-slate-200 font-mono focus:outline-none focus:border-beyYellow resize-none break-all"></textarea>\
+          <button @click="promptImportCode" :disabled="!importCodeInput.trim()" class="w-full py-2 bg-beyYellow/20 hover:bg-beyYellow/30 disabled:bg-slate-800 disabled:text-slate-600 text-beyYellow font-black text-xs rounded-xl border border-beyYellow/40 transition flex items-center justify-center gap-1.5">\
+            <i class="fa-solid fa-file-import"></i> \uc0\u21295 \u20837 \u20195 \u30908 \u20006 \u35206 \u33995 \u20840 \u31449 \u36039 \u26009 \
+          </button>\
+        </div>\
+      </div>\
+\
+    </section>\
+\
+    <!-- Bottom Dock -->\
+    <nav class="fixed bottom-0 left-0 right-0 z-40 bg-black/95 border-t border-slate-800 px-3 py-2 backdrop-blur-md">\
+      <div class="max-w-md sm:max-w-xl mx-auto flex items-center justify-around">\
+        \
+        <button @click="currentTab = 'create'" :class="['flex flex-col items-center gap-1 transition-all', currentTab === 'create' ? 'text-beyGreenNeon' : 'text-slate-500 hover:text-slate-300']">\
+          <div :class="['w-8 h-8 rounded-full flex items-center justify-center transition', currentTab === 'create' ? 'bg-beyGreenNeon/20 border border-beyGreenNeon glow-green' : '']">\
+            <i class="fa-solid fa-plus text-base"></i>\
+          </div>\
+          <span class="text-[10px] font-bold">\uc0\u26032 \u22686 \u37197 \u32622 </span>\
+        </button>\
+\
+        <button @click="currentTab = 'config_library'" :class="['flex flex-col items-center gap-1 transition-all', currentTab === 'config_library' ? 'text-beyGreenNeon' : 'text-slate-500 hover:text-slate-300']">\
+          <div :class="['w-8 h-8 rounded-full flex items-center justify-center transition', currentTab === 'config_library' ? 'bg-beyGreenNeon/20 border border-beyGreenNeon glow-green' : '']">\
+            <i class="fa-solid fa-boxes-stacked text-base"></i>\
+          </div>\
+          <span class="text-[10px] font-bold">\uc0\u37197 \u32622 \u24235 </span>\
+        </button>\
+\
+        <button @click="currentTab = 'battle'" class="relative -top-3 flex flex-col items-center group">\
+          <div :class="['w-12 h-12 rounded-full bg-slate-900 border-2 flex items-center justify-center shadow-2xl transition transform group-active:scale-95', currentTab === 'battle' ? 'border-beyYellow text-beyYellow bg-black glow-yellow' : 'border-slate-700 text-slate-300']">\
+            <i class="fa-solid fa-trophy text-lg"></i>\
+          </div>\
+          <span :class="['text-[10px] font-black tracking-wider uppercase', currentTab === 'battle' ? 'text-beyYellow' : 'text-slate-500']">\uc0\u23565 \u25136 </span>\
+        </button>\
+\
+        <button @click="currentTab = 'stats'" :class="['flex flex-col items-center gap-1 transition-all', currentTab === 'stats' ? 'text-beyGreenNeon' : 'text-slate-500 hover:text-slate-300']">\
+          <div :class="['w-8 h-8 rounded-full flex items-center justify-center transition', currentTab === 'stats' ? 'bg-beyGreenNeon/20 border border-beyGreenNeon glow-green' : '']">\
+            <i class="fa-solid fa-chart-pie text-base"></i>\
+          </div>\
+          <span class="text-[10px] font-bold">\uc0\u21213 \u29575 \u32113 \u35336 </span>\
+        </button>\
+\
+      </div>\
+    </nav>\
+\
+    <!-- Modal 1: \uc0\u37325 \u26032 \u25490 \u21015 \u38464 \u34746 \u38918 \u24207 \u24392 \u31383  (\u25903 \u25588  Smart Swap \u20301 \u32622 \u23565 \u35519 \u33287  \u8593 /\u8595  \u25353 \u37397 ) -->\
+    <div v-if="showReorderModal" class="fixed inset-0 bg-black/85 flex items-center justify-center p-4 z-50">\
+      <div class="bg-appCard border border-slate-700 rounded-3xl p-5 max-w-sm w-full space-y-4 shadow-2xl">\
+        <h3 class="text-base font-black text-beyYellow flex items-center gap-2">\
+          <i class="fa-solid fa-arrows-rotate"></i> \uc0\u37325 \u26032 \u25490 \u21015 \u23565 \u25136 \u38918 \u24207 \
+        </h3>\
+        <p class="text-xs text-slate-300">\uc0\u19968 \u36650 \u19977 \u38982 \u38464 \u34746 \u24050 \u20986 \u25136 \u23436 \u30050 \u65292 \u35531 \u37325 \u26032 \u35519 \u25972 \u31532 \u20108 \u36650 \u20986 \u22580 \u38918 \u24207 \u65306 </p>\
+\
+        <div class="space-y-2">\
+          <div v-for="(bey, slot) in reorderBeyblades" :key="slot" class="bg-black/60 p-2 rounded-xl border border-slate-800 flex items-center justify-between gap-2">\
+            <span class="text-xs font-extrabold text-slate-400 shrink-0">\uc0\u31532  \{\{ slot + 1 \}\} \u38918 \u20301 </span>\
+            \
+            <!-- \uc0\u36984 \u21934 \u33258 \u21205 \u20301 \u32622 \u23565 \u35519  (Smart Swap) -->\
+            <select \
+              :value="reorderBeyblades[slot]" \
+              @change="onReorderSelect(slot, $event.target.value)"\
+              class="w-full bg-appCard border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-beyYellow"\
+            >\
+              <option v-for="config in activeMatch.selectedBeyblades" :key="config" :value="config">\
+                \{\{ config \}\}\
+              </option>\
+            </select>\
+\
+            <!-- \uc0\u19978 \u31227  / \u19979 \u31227  \u24555 \u36895 \u35519 \u20301 \u25353 \u37397  -->\
+            <div class="flex gap-1 shrink-0">\
+              <button \
+                type="button"\
+                @click="swapReorderSlots(slot, slot - 1)" \
+                :disabled="slot === 0"\
+                class="px-2 py-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-20 text-beyYellow rounded-md text-xs font-bold transition"\
+                title="\uc0\u21521 \u19978 \u31227 \u21205 "\
+              >\
+                <i class="fa-solid fa-arrow-up"></i>\
+              </button>\
+              <button \
+                type="button"\
+                @click="swapReorderSlots(slot, slot + 1)" \
+                :disabled="slot === 2"\
+                class="px-2 py-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-20 text-beyYellow rounded-md text-xs font-bold transition"\
+                title="\uc0\u21521 \u19979 \u31227 \u21205 "\
+              >\
+                <i class="fa-solid fa-arrow-down"></i>\
+              </button>\
+            </div>\
+          </div>\
+        </div>\
+\
+        <div class="flex justify-end gap-2 pt-2">\
+          <button @click="showReorderModal = false" class="px-4 py-2 bg-slate-800 text-xs font-bold text-slate-300 rounded-xl">\
+            \uc0\u21462 \u28040 \
+          </button>\
+          <button @click="confirmReorder" class="px-4 py-2 bg-beyYellow text-slate-950 text-xs font-black rounded-xl shadow">\
+            \uc0\u30906 \u35469 \u38918 \u24207 \u20006 \u32380 \u32396 \
+          </button>\
+        </div>\
+      </div>\
+    </div>\
+\
+    <!-- Modal 2: \uc0\u20839 \u24314 \u36039 \u26009 \u24235 \u32178 \u38913 \u38928 \u35261 \u35222 \u31383  -->\
+    <div v-if="showDbModal" class="fixed inset-0 bg-black/90 flex items-center justify-center p-2 sm:p-4 z-50">\
+      <div class="bg-appCard border border-slate-700 rounded-3xl p-4 w-full max-w-2xl h-[85vh] flex flex-col shadow-2xl">\
+        <div class="flex justify-between items-center pb-3 border-b border-slate-800">\
+          <span class="text-xs font-black text-cyan-400"><i class="fa-solid fa-globe mr-1"></i> phstudy Beyblade \uc0\u22294 \u37969 \u36039 \u26009 \u24235 </span>\
+          <button @click="showDbModal = false" class="text-slate-400 hover:text-white font-bold px-2">\uc0\u10005 </button>\
+        </div>\
+        <div class="flex-1 my-2 bg-white rounded-2xl overflow-hidden relative">\
+          <iframe src="https://beyblade.phstudy.org/index.html" class="w-full h-full border-0"></iframe>\
+        </div>\
+        <div class="text-[11px] text-slate-400 flex items-center justify-between">\
+          <span>* \uc0\u35531 \u25628 \u23563 \u35079 \u35069 \u23565 \u25033 \u38646 \u20214 \u30340 \u22294 \u29255 \u36899 \u32080 \u36028 \u22238 \u35373 \u23450 \u12290 </span>\
+          <button @click="showDbModal = false" class="px-3 py-1 bg-slate-800 text-white rounded-lg">\uc0\u38364 \u38281 \u35222 \u31383 </button>\
+        </div>\
+      </div>\
+    </div>\
+\
+    <!-- Modal 3: \uc0\u36890 \u29992 \u21034 \u38500 /\u35686 \u21578 \u30906 \u35469 \u24392 \u31383  -->\
+    <div v-if="confirmModal.show" class="fixed inset-0 bg-black/85 flex items-center justify-center p-4 z-50">\
+      <div class="bg-appCard border border-red-500/50 rounded-3xl p-5 max-w-xs w-full space-y-3 shadow-2xl text-center">\
+        <div class="w-10 h-10 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mx-auto text-lg">\
+          <i class="fa-solid fa-triangle-exclamation"></i>\
+        </div>\
+        <div>\
+          <h3 class="text-base font-black text-white mb-1">\{\{ confirmModal.title \}\}</h3>\
+          <p class="text-xs text-slate-300 leading-relaxed">\{\{ confirmModal.message \}\}</p>\
+        </div>\
+        <div class="flex justify-center gap-3 pt-2">\
+          <button @click="closeConfirmModal" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 rounded-xl">\
+            \uc0\u21462 \u28040 \
+          </button>\
+          <button @click="executeConfirmAction" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-xs font-black text-white rounded-xl shadow">\
+            \uc0\u30906 \u23450 \u22519 \u34892 \
+          </button>\
+        </div>\
+      </div>\
+    </div>\
+\
+  </div>\
+\
+  <!-- Firebase Cloud Data Store Integration -->\
+  <script type="module">\
+    import \{ initializeApp \} from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';\
+    import \{ getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged \} from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';\
+    import \{ getFirestore, doc, setDoc, onSnapshot \} from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';\
+\
+    const \{ createApp, ref, computed, watch, onMounted \} = Vue;\
+\
+    let db = null;\
+    let auth = null;\
+    let appId = 'beystudiox-default';\
+\
+    if (typeof __firebase_config !== 'undefined' && __firebase_config) \{\
+      try \{\
+        const firebaseConfig = JSON.parse(__firebase_config);\
+        const app = initializeApp(firebaseConfig);\
+        auth = getAuth(app);\
+        db = getFirestore(app);\
+        if (typeof __app_id !== 'undefined' && __app_id) \{\
+          appId = __app_id;\
+        \}\
+      \} catch (e) \{\
+        console.error("Firebase init failed:", e);\
+      \}\
+    \}\
+\
+    createApp(\{\
+      setup() \{\
+        const currentTab = ref('create');\
+        const showDbModal = ref(false);\
+        const showReorderModal = ref(false);\
+        const searchQuery = ref('');\
+        const isCloudSynced = ref(false);\
+        const currentUser = ref(null);\
+\
+        const expandedGroups = ref(\{\});\
+        const toggleBladeGroup = (bladeName) => \{\
+          expandedGroups.value[bladeName] = !expandedGroups.value[bladeName];\
+        \};\
+\
+        const selectedMemoryBlade = ref('');\
+        const selectedMemoryAssist = ref('');\
+        const selectedMemoryRatchet = ref('');\
+        const selectedMemoryBit = ref('');\
+\
+        const generatedCode = ref('');\
+        const importCodeInput = ref('');\
+        const copySuccess = ref(false);\
+\
+        const confirmModal = ref(\{ show: false, title: '', message: '', action: null \});\
+        const triggerConfirm = (title, message, action) => \{ confirmModal.value = \{ show: true, title, message, action \}; \};\
+        const closeConfirmModal = () => \{ confirmModal.value.show = false; confirmModal.value.action = null; \};\
+        const executeConfirmAction = () => \{ if (typeof confirmModal.value.action === 'function') confirmModal.value.action(); closeConfirmModal(); \};\
+\
+        const placeholderImage = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23475569" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>';\
+\
+        const loadLocal = (key, fallback) => \{\
+          try \{\
+            const saved = localStorage.getItem(key);\
+            return saved ? JSON.parse(saved) : fallback;\
+          \} catch (e) \{\
+            return fallback;\
+          \}\
+        \};\
+\
+        const configurations = ref(loadLocal('bey_configs', []));\
+        const memoryStore = ref(loadLocal('bey_part_memory', \{ blades: [], assists: [], ratchets: [], bits: [] \}));\
+        const matchHistory = ref(loadLocal('bey_match_history', []));\
+        const activeMatch = ref(loadLocal('bey_active_match', null));\
+\
+        const syncToCloud = async () => \{\
+          if (!db || !currentUser.value) return;\
+          try \{\
+            const userDocRef = doc(db, 'artifacts', appId, 'users', currentUser.value.uid, 'appData', 'state');\
+            const dataToSave = \{\
+              bey_configs: JSON.parse(JSON.stringify(configurations.value)),\
+              bey_part_memory: JSON.parse(JSON.stringify(memoryStore.value)),\
+              bey_match_history: JSON.parse(JSON.stringify(matchHistory.value)),\
+              bey_active_match: activeMatch.value ? JSON.parse(JSON.stringify(activeMatch.value)) : null,\
+              updatedAt: new Date().toISOString()\
+            \};\
+            await setDoc(userDocRef, dataToSave, \{ merge: true \});\
+            isCloudSynced.value = true;\
+          \} catch (e) \{\
+            console.error("Cloud sync error:", e);\
+          \}\
+        \};\
+\
+        watch(configurations, (val) => \{\
+          try \{ localStorage.setItem('bey_configs', JSON.stringify(val)); \} catch (e) \{\}\
+          syncToCloud();\
+        \}, \{ deep: true \});\
+\
+        watch(memoryStore, (val) => \{\
+          try \{ localStorage.setItem('bey_part_memory', JSON.stringify(val)); \} catch (e) \{\}\
+          syncToCloud();\
+        \}, \{ deep: true \});\
+\
+        watch(matchHistory, (val) => \{\
+          try \{ localStorage.setItem('bey_match_history', JSON.stringify(val)); \} catch (e) \{\}\
+          syncToCloud();\
+        \}, \{ deep: true \});\
+\
+        watch(activeMatch, (val) => \{\
+          try \{\
+            if (val) localStorage.setItem('bey_active_match', JSON.stringify(val));\
+            else localStorage.removeItem('bey_active_match');\
+          \} catch (e) \{\}\
+          syncToCloud();\
+        \}, \{ deep: true \});\
+\
+        onMounted(async () => \{\
+          if (!auth || !db) \{\
+            isCloudSynced.value = true;\
+            return;\
+          \}\
+\
+          try \{\
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) \{\
+              await signInWithCustomToken(auth, __initial_auth_token);\
+            \} else \{\
+              await signInAnonymously(auth);\
+            \}\
+          \} catch (e) \{\
+            console.error("Auth failed:", e);\
+            try \{ await signInAnonymously(auth); \} catch(err) \{\}\
+          \}\
+\
+          onAuthStateChanged(auth, (user) => \{\
+            currentUser.value = user;\
+            if (user) \{\
+              const userDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'appData', 'state');\
+              onSnapshot(userDocRef, (snapshot) => \{\
+                isCloudSynced.value = true;\
+                if (snapshot.exists()) \{\
+                  const cloudData = snapshot.data();\
+                  if (cloudData.bey_configs && JSON.stringify(cloudData.bey_configs) !== JSON.stringify(configurations.value)) \{\
+                    configurations.value = cloudData.bey_configs;\
+                  \}\
+                  if (cloudData.bey_part_memory && JSON.stringify(cloudData.bey_part_memory) !== JSON.stringify(memoryStore.value)) \{\
+                    memoryStore.value = cloudData.bey_part_memory;\
+                  \}\
+                  if (cloudData.bey_match_history && JSON.stringify(cloudData.bey_match_history) !== JSON.stringify(matchHistory.value)) \{\
+                    matchHistory.value = cloudData.bey_match_history;\
+                  \}\
+                  if (cloudData.bey_active_match !== undefined && JSON.stringify(cloudData.bey_active_match) !== JSON.stringify(activeMatch.value)) \{\
+                    activeMatch.value = cloudData.bey_active_match;\
+                  \}\
+                \} else \{\
+                  syncToCloud();\
+                \}\
+              \}, (err) => \{\
+                console.error("Firestore error:", err);\
+                isCloudSynced.value = true;\
+              \});\
+            \}\
+          \});\
+        \});\
+\
+        const generateExportCode = () => \{\
+          const exportObj = \{\
+            bey_configs: configurations.value,\
+            bey_part_memory: memoryStore.value,\
+            bey_match_history: matchHistory.value\
+          \};\
+          try \{\
+            const jsonString = JSON.stringify(exportObj);\
+            generatedCode.value = btoa(encodeURIComponent(jsonString));\
+            copySuccess.value = false;\
+          \} catch (e) \{\
+            triggerConfirm('\uc0\u37679 \u35492 ', '\u28961 \u27861 \u29986 \u29983 \u20633 \u20221 \u20195 \u30908 \u65281 ', () => \{\});\
+          \}\
+        \};\
+\
+        const copyExportCode = () => \{\
+          if (!generatedCode.value) return;\
+          const textarea = document.createElement('textarea');\
+          textarea.value = generatedCode.value;\
+          document.body.appendChild(textarea);\
+          textarea.select();\
+          document.execCommand('copy');\
+          document.body.removeChild(textarea);\
+          copySuccess.value = true;\
+          setTimeout(() => \{ copySuccess.value = false; \}, 3000);\
+        \};\
+\
+        const promptImportCode = () => \{\
+          const codeStr = importCodeInput.value.trim();\
+          if (!codeStr) return;\
+\
+          triggerConfirm(\
+            '\uc0\u35686 \u21578 \u65306 \u35206 \u33995 \u33290 \u26377 \u36039 \u26009 ',\
+            '\uc0\u21295 \u20837 \u20195 \u30908 \u23559 \u26371 \u12304 \u23436 \u20840 \u35206 \u33995 \u12305 \u30446 \u21069 \u30340 \u38464 \u34746 \u37197 \u32622 \u33287 \u27511 \u21490 \u23565 \u25136 \u32000 \u37636 \u65292 \u30906 \u23450 \u35201 \u32380 \u32396 \u22519 \u34892 \u21966 \u65311 ',\
+            () => executeImportCode(codeStr)\
+          );\
+        \};\
+\
+        const executeImportCode = (codeStr) => \{\
+          try \{\
+            const decodedJsonStr = decodeURIComponent(atob(codeStr));\
+            const imported = JSON.parse(decodedJsonStr);\
+\
+            if (imported.bey_configs) configurations.value = imported.bey_configs;\
+            if (imported.bey_part_memory) memoryStore.value = imported.bey_part_memory;\
+            if (imported.bey_match_history) matchHistory.value = imported.bey_match_history;\
+\
+            importCodeInput.value = '';\
+            syncToCloud();\
+            triggerConfirm('\uc0\u25104 \u21151 ', '\u25152 \u26377 \u36039 \u26009 \u24050 \u25104 \u21151 \u20381 \u20195 \u30908 \u36996 \u21407 \u20006 \u35206 \u33995 \u65281 ', () => \{\});\
+          \} catch (e) \{\
+            triggerConfirm('\uc0\u21295 \u20837 \u22833 \u25943 ', '\u28961 \u25928 \u25110 \u25613 \u22750 \u30340 \u20633 \u20221 \u20195 \u30908 \u65292 \u35531 \u27298 \u26597 \u24460 \u20877 \u35430 \u65281 ', () => \{\});\
+          \}\
+        \};\
+\
+        const form = ref(\{\
+          isCX: false,\
+          isIntegratedRatchet: false,\
+          bladeName: '',\
+          bladeImg: '',\
+          assistName: '',\
+          assistImg: '',\
+          ratchetName: '',\
+          ratchetImg: '',\
+          bitName: '',\
+          bitImg: ''\
+        \});\
+\
+        const toggleType = (typeKey) => \{\
+          if (typeKey === 'isCX') \{\
+            form.value.isCX = !form.value.isCX;\
+            if (form.value.isCX) \{\
+              form.value.isIntegratedRatchet = false;\
+            \}\
+          \} else if (typeKey === 'isIntegratedRatchet') \{\
+            form.value.isIntegratedRatchet = !form.value.isIntegratedRatchet;\
+            if (form.value.isIntegratedRatchet) \{\
+              form.value.isCX = false;\
+            \}\
+          \}\
+        \};\
+\
+        const applyPartMemory = (partType) => \{\
+          let selectedVal = '';\
+          let list = [];\
+\
+          if (partType === 'blade') \{\
+            selectedVal = selectedMemoryBlade.value;\
+            list = memoryStore.value.blades || [];\
+          \} else if (partType === 'assist') \{\
+            selectedVal = selectedMemoryAssist.value;\
+            list = memoryStore.value.assists || [];\
+          \} else if (partType === 'ratchet') \{\
+            selectedVal = selectedMemoryRatchet.value;\
+            list = memoryStore.value.ratchets || [];\
+          \} else if (partType === 'bit') \{\
+            selectedVal = selectedMemoryBit.value;\
+            list = memoryStore.value.bits || [];\
+          \}\
+\
+          if (!selectedVal) return;\
+\
+          const found = list.find(item => item.name === selectedVal);\
+          if (found) \{\
+            if (partType === 'blade') \{\
+              form.value.bladeName = found.name;\
+              form.value.bladeImg = found.img || '';\
+              selectedMemoryBlade.value = '';\
+            \} else if (partType === 'assist') \{\
+              form.value.assistName = found.name;\
+              form.value.assistImg = found.img || '';\
+              selectedMemoryAssist.value = '';\
+            \} else if (partType === 'ratchet') \{\
+              form.value.ratchetName = found.name;\
+              form.value.ratchetImg = found.img || '';\
+              selectedMemoryRatchet.value = '';\
+            \} else if (partType === 'bit') \{\
+              form.value.bitName = found.name;\
+              form.value.bitImg = found.img || '';\
+              selectedMemoryBit.value = '';\
+            \}\
+          \}\
+        \};\
+\
+        const previewFullName = computed(() => \{\
+          const blade = (form.value.bladeName || '').trim();\
+          const assist = form.value.isCX ? (form.value.assistName || '').trim() : '';\
+          const ratchet = form.value.isIntegratedRatchet ? '' : (form.value.ratchetName || '').trim();\
+          const bit = (form.value.bitName || '').trim();\
+\
+          if (!blade || !bit) return '';\
+          if (!form.value.isIntegratedRatchet && !ratchet) return '';\
+          if (form.value.isCX && !assist) return '';\
+\
+          return `$\{blade\}$\{assist\}$\{ratchet\}$\{bit\}`;\
+        \});\
+\
+        const isDuplicateConfig = computed(() => \{\
+          if (!previewFullName.value) return false;\
+          return configurations.value.some(c => c.fullName === previewFullName.value);\
+        \});\
+\
+        const updatePartMemory = (category, name, img) => \{\
+          if (!name) return;\
+          if (!memoryStore.value[category]) memoryStore.value[category] = [];\
+          const list = memoryStore.value[category];\
+          const idx = list.findIndex(i => i.name === name);\
+          if (idx >= 0) \{\
+            if (img) list[idx].img = img;\
+          \} else \{\
+            list.push(\{ name, img \});\
+          \}\
+        \};\
+\
+        const saveConfiguration = () => \{\
+          const fullName = previewFullName.value;\
+          if (!fullName || isDuplicateConfig.value) return;\
+\
+          const newConfig = \{\
+            fullName,\
+            isCX: form.value.isCX,\
+            isIntegratedRatchet: form.value.isIntegratedRatchet,\
+            bladeName: form.value.bladeName.trim(),\
+            bladeImg: form.value.bladeImg.trim(),\
+            assistName: form.value.isCX ? form.value.assistName.trim() : '',\
+            assistImg: form.value.isCX ? form.value.assistImg.trim() : '',\
+            ratchetName: form.value.isIntegratedRatchet ? '' : form.value.ratchetName.trim(),\
+            ratchetImg: form.value.isIntegratedRatchet ? '' : form.value.ratchetImg.trim(),\
+            bitName: form.value.bitName.trim(),\
+            bitImg: form.value.bitImg.trim()\
+          \};\
+\
+          updatePartMemory('blades', newConfig.bladeName, newConfig.bladeImg);\
+          if (newConfig.isCX) updatePartMemory('assists', newConfig.assistName, newConfig.assistImg);\
+          if (!newConfig.isIntegratedRatchet) updatePartMemory('ratchets', newConfig.ratchetName, newConfig.ratchetImg);\
+          updatePartMemory('bits', newConfig.bitName, newConfig.bitImg);\
+\
+          configurations.value.push(newConfig);\
+\
+          form.value = \{\
+            isCX: false,\
+            isIntegratedRatchet: false,\
+            bladeName: '',\
+            bladeImg: '',\
+            assistName: '',\
+            assistImg: '',\
+            ratchetName: '',\
+            ratchetImg: '',\
+            bitName: '',\
+            bitImg: ''\
+          \};\
+\
+          currentTab.value = 'config_library';\
+        \};\
+\
+        const promptDeleteConfig = (fullName) => \{\
+          triggerConfirm(\
+            '\uc0\u21034 \u38500 \u38464 \u34746 \u37197 \u32622 ',\
+            `\uc0\u30906 \u23450 \u35201 \u21034 \u38500 \u12300 $\{fullName\}\u12301 \u27492 \u38464 \u34746 \u37197 \u32622 \u21966 \u65311 \u27492 \u21205 \u20316 \u19981 \u21487 \u24489 \u21407 \u12290 `,\
+            () => deleteConfiguration(fullName)\
+          );\
+        \};\
+\
+        const deleteConfiguration = (fullName) => \{\
+          configurations.value = configurations.value.filter(c => c.fullName !== fullName);\
+        \};\
+\
+        const statsMap = computed(() => \{\
+          const map = \{\};\
+          configurations.value.forEach(config => \{\
+            map[config.fullName] = \{\
+              fullName: config.fullName,\
+              totalRounds: 0,\
+              roundWins: 0,\
+              roundLosses: 0,\
+              roundWinRate: '0.0',\
+              ptsScored: 0,\
+              ptsLost: 0,\
+              netPts: 0\
+            \};\
+          \});\
+\
+          matchHistory.value.forEach(match => \{\
+            if (match.logs && Array.isArray(match.logs)) \{\
+              match.logs.forEach(log => \{\
+                const beyName = log.beyblade;\
+                if (map[beyName]) \{\
+                  const pts = log.pts || 0;\
+                  map[beyName].totalRounds++;\
+                  \
+                  if (log.winner === 'MY') \{\
+                    map[beyName].roundWins++;\
+                    map[beyName].ptsScored += pts;\
+                  \} else if (log.winner === 'OPP') \{\
+                    map[beyName].roundLosses++;\
+                    map[beyName].ptsLost += pts;\
+                  \}\
+                \}\
+              \});\
+            \}\
+          \});\
+\
+          Object.keys(map).forEach(bName => \{\
+            const item = map[bName];\
+            item.roundWinRate = item.totalRounds > 0 \
+              ? ((item.roundWins / item.totalRounds) * 100).toFixed(1) \
+              : '0.0';\
+            item.netPts = item.ptsScored - item.ptsLost;\
+          \});\
+\
+          return map;\
+        \});\
+\
+        const getStat = (fullName) => \{\
+          return statsMap.value[fullName] || \{\
+            totalRounds: 0,\
+            roundWins: 0,\
+            roundLosses: 0,\
+            roundWinRate: '0.0',\
+            ptsScored: 0,\
+            ptsLost: 0,\
+            netPts: 0\
+          \};\
+        \};\
+\
+        const filteredGroupedConfigs = computed(() => \{\
+          const query = searchQuery.value.trim().toLowerCase();\
+          \
+          let filtered = configurations.value.filter(c => \{\
+            if (!query) return true;\
+            return c.fullName.toLowerCase().includes(query) ||\
+                   c.bladeName.toLowerCase().includes(query) ||\
+                   c.ratchetName.toLowerCase().includes(query) ||\
+                   c.bitName.toLowerCase().includes(query);\
+          \});\
+\
+          const groups = \{\};\
+          filtered.forEach(item => \{\
+            const bName = item.bladeName || '\uc0\u20854 \u20182 ';\
+            if (!groups[bName]) \{\
+              groups[bName] = \{\
+                bladeName: bName,\
+                bladeImg: item.bladeImg || '',\
+                items: [],\
+                totalRounds: 0,\
+                roundWins: 0,\
+                roundLosses: 0,\
+                roundWinRate: '0.0',\
+                totalPtsScored: 0,\
+                totalPtsLost: 0,\
+                netPts: 0\
+              \};\
+            \}\
+            if (!groups[bName].bladeImg && item.bladeImg) \{\
+              groups[bName].bladeImg = item.bladeImg;\
+            \}\
+            groups[bName].items.push(item);\
+          \});\
+\
+          const resultGroupList = Object.keys(groups).map(bladeName => \{\
+            const grp = groups[bladeName];\
+            \
+            grp.items.sort((a, b) => \{\
+              const statA = getStat(a.fullName);\
+              const statB = getStat(b.fullName);\
+              return statB.totalRounds - statA.totalRounds || parseFloat(statB.roundWinRate) - parseFloat(statA.roundWinRate);\
+            \});\
+\
+            grp.items.forEach(c => \{\
+              const st = getStat(c.fullName);\
+              grp.totalRounds += st.totalRounds;\
+              grp.roundWins += st.roundWins;\
+              grp.roundLosses += st.roundLosses;\
+              grp.totalPtsScored += st.ptsScored;\
+              grp.totalPtsLost += st.ptsLost;\
+            \});\
+\
+            grp.roundWinRate = grp.totalRounds > 0 ? ((grp.roundWins / grp.totalRounds) * 100).toFixed(1) : '0.0';\
+            grp.netPts = grp.totalPtsScored - grp.totalPtsLost;\
+            return grp;\
+          \});\
+\
+          resultGroupList.sort((a, b) => \{\
+            if (b.totalRounds !== a.totalRounds) \{\
+              return b.totalRounds - a.totalRounds;\
+            \}\
+            return parseFloat(b.roundWinRate) - parseFloat(a.roundWinRate);\
+          \});\
+\
+          return resultGroupList;\
+        \});\
+\
+        const sortedConfigurationsForSelect = computed(() => \{\
+          return [...configurations.value].sort((a, b) => \{\
+            const statA = getStat(a.fullName);\
+            const statB = getStat(b.fullName);\
+            return statB.totalRounds - statA.totalRounds;\
+          \});\
+        \});\
+\
+        const matchSetup = ref(\{\
+          name: '',\
+          date: new Date().toISOString().split('T')[0],\
+          selectedBeyblades: ['', '', '']\
+        \});\
+\
+        const isBeybladeSelectedInOtherSlots = (fullName, currentSlotIndex) => \{\
+          return matchSetup.value.selectedBeyblades.some((selectedName, index) => \{\
+            return index !== currentSlotIndex && selectedName === fullName;\
+          \});\
+        \};\
+\
+        const hasDuplicateInMatchSetup = computed(() => \{\
+          const selected = matchSetup.value.selectedBeyblades.filter(b => b !== '');\
+          return new Set(selected).size !== selected.length;\
+        \});\
+\
+        const reorderBeyblades = ref(['', '', '']);\
+\
+        // \uc0\u37325 \u26032 \u25490 \u21015 \u26234 \u24935 \u23565 \u35519  (Smart Swap)\
+        const onReorderSelect = (slotIndex, targetValue) => \{\
+          const currentVal = reorderBeyblades.value[slotIndex];\
+          if (currentVal === targetValue) return;\
+\
+          const otherSlotIndex = reorderBeyblades.value.findIndex((b, idx) => idx !== slotIndex && b === targetValue);\
+          if (otherSlotIndex !== -1) \{\
+            reorderBeyblades.value[otherSlotIndex] = currentVal;\
+          \}\
+          reorderBeyblades.value[slotIndex] = targetValue;\
+        \};\
+\
+        const swapReorderSlots = (idx1, idx2) => \{\
+          if (idx1 < 0 || idx1 >= 3 || idx2 < 0 || idx2 >= 3) return;\
+          const temp = reorderBeyblades.value[idx1];\
+          reorderBeyblades.value[idx1] = reorderBeyblades.value[idx2];\
+          reorderBeyblades.value[idx2] = temp;\
+        \};\
+\
+        const startMatch = () => \{\
+          if (matchSetup.value.selectedBeyblades.some(b => !b) || hasDuplicateInMatchSetup.value) return;\
+\
+          activeMatch.value = \{\
+            id: Date.now(),\
+            name: matchSetup.value.name,\
+            date: matchSetup.value.date,\
+            selectedBeyblades: [...matchSetup.value.selectedBeyblades],\
+            myScore: 0,\
+            oppScore: 0,\
+            currentSlot: 0,\
+            currentRound: 1,\
+            spinsInRound: 0,\
+            logs: []\
+          \};\
+\
+          reorderBeyblades.value = [...matchSetup.value.selectedBeyblades];\
+        \};\
+\
+        const matchWinner = computed(() => \{\
+          if (!activeMatch.value) return null;\
+          if (activeMatch.value.myScore >= 4) return 'MY';\
+          if (activeMatch.value.oppScore >= 4) return 'OPP';\
+          return null;\
+        \});\
+\
+        const recordSpin = (winner, type, pts, isFault) => \{\
+          if (!activeMatch.value || matchWinner.value) return;\
+\
+          const currentBeyName = activeMatch.value.selectedBeyblades[activeMatch.value.currentSlot];\
+\
+          if (winner === 'MY') \{\
+            activeMatch.value.myScore += pts;\
+          \} else \{\
+            activeMatch.value.oppScore += pts;\
+          \}\
+\
+          activeMatch.value.spinsInRound++;\
+\
+          activeMatch.value.logs.unshift(\{\
+            beyblade: currentBeyName,\
+            winner,\
+            type,\
+            pts,\
+            isFault,\
+            myScoreHistory: activeMatch.value.myScore,\
+            oppScoreHistory: activeMatch.value.oppScore\
+          \});\
+\
+          if (!isFault && !matchWinner.value) \{\
+            activeMatch.value.currentSlot = (activeMatch.value.currentSlot + 1) % 3;\
+          \}\
+        \};\
+\
+        const confirmReorder = () => \{\
+          if (!activeMatch.value) return;\
+          activeMatch.value.selectedBeyblades = [...reorderBeyblades.value];\
+          activeMatch.value.currentRound++;\
+          activeMatch.value.spinsInRound = 0;\
+          activeMatch.value.currentSlot = 0;\
+          showReorderModal.value = false;\
+        \};\
+\
+        const finishAndCloseMatch = () => \{\
+          if (!activeMatch.value) return;\
+          matchHistory.value.unshift(\{ ...activeMatch.value, winner: matchWinner.value \});\
+          activeMatch.value = null;\
+          currentTab.value = 'stats';\
+        \};\
+\
+        const promptCancelMatch = () => \{\
+          triggerConfirm(\
+            '\uc0\u25918 \u26820 \u27604 \u36093 ',\
+            '\uc0\u30906 \u23450 \u35201 \u25918 \u26820 \u36914 \u34892 \u20013 \u30340 \u27604 \u36093 \u21966 \u65311 \u20998 \u25976 \u23559 \u19981 \u34987 \u20786 \u23384 \u12290 ',\
+            () => \{\
+              activeMatch.value = null;\
+            \}\
+          );\
+        \};\
+\
+        const promptDeleteSingleHistory = (index) => \{\
+          const match = matchHistory.value[index];\
+          triggerConfirm(\
+            '\uc0\u21034 \u38500 \u23565 \u25136 \u32000 \u37636 ',\
+            `\uc0\u30906 \u23450 \u35201 \u21034 \u38500 \u12300 $\{match.name\}\u12301 \u36889 \u31558 \u23565 \u25136 \u32000 \u37636 \u21966 \u65311 `,\
+            () => \{\
+              matchHistory.value.splice(index, 1);\
+            \}\
+          );\
+        \};\
+\
+        const promptClearHistory = () => \{\
+          triggerConfirm(\
+            '\uc0\u28165 \u31354 \u27511 \u21490 \u23565 \u25136 \u32000 \u37636 ',\
+            '\uc0\u30906 \u23450 \u35201 \u28165 \u31354 \u25152 \u26377 \u30340 \u27511 \u21490 \u23565 \u25136 \u32000 \u37636 \u21966 \u65311 \u30456 \u38364 \u21213 \u29575 \u20063 \u26371 \u27512 \u38646 \u12290 ',\
+            () => \{\
+              matchHistory.value = [];\
+            \}\
+          );\
+        \};\
+\
+        const winRates = computed(() => \{\
+          return configurations.value.map(config => getStat(config.fullName))\
+            .sort((a, b) => b.totalRounds - a.totalRounds || parseFloat(b.roundWinRate) - parseFloat(a.roundWinRate));\
+        \});\
+\
+        const handleImgError = (e) => \{\
+          e.target.src = placeholderImage;\
+        \};\
+\
+        return \{\
+          currentTab,\
+          showDbModal,\
+          showReorderModal,\
+          searchQuery,\
+          confirmModal,\
+          closeConfirmModal,\
+          executeConfirmAction,\
+          placeholderImage,\
+          configurations,\
+          sortedConfigurationsForSelect,\
+          memoryStore,\
+          selectedMemoryBlade,\
+          selectedMemoryAssist,\
+          selectedMemoryRatchet,\
+          selectedMemoryBit,\
+          applyPartMemory,\
+          toggleType,\
+          form,\
+          previewFullName,\
+          isDuplicateConfig,\
+          saveConfiguration,\
+          promptDeleteConfig,\
+          filteredGroupedConfigs,\
+          expandedGroups,\
+          toggleBladeGroup,\
+          getStat,\
+          matchSetup,\
+          isBeybladeSelectedInOtherSlots,\
+          hasDuplicateInMatchSetup,\
+          activeMatch,\
+          matchHistory,\
+          reorderBeyblades,\
+          onReorderSelect,\
+          swapReorderSlots,\
+          startMatch,\
+          matchWinner,\
+          recordSpin,\
+          confirmReorder,\
+          finishAndCloseMatch,\
+          promptCancelMatch,\
+          promptDeleteSingleHistory,\
+          promptClearHistory,\
+          winRates,\
+          handleImgError,\
+          isCloudSynced,\
+          generatedCode,\
+          importCodeInput,\
+          copySuccess,\
+          generateExportCode,\
+          copyExportCode,\
+          promptImportCode\
+        \};\
+      \}\
+    \}).mount('#app');\
+  </script>\
+</body>\
+</html>}
