@@ -24,13 +24,13 @@
       }
     }
   </script>
-  <!-- Vue 3 -->
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <!-- Vue 3 (使用穩定 CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
   <!-- FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <style>
-    [v-cloak] { display: none !important; }
+    [v-cloak] { display: none; }
     body { 
       background-color: #090a0f; 
       color: #f8fafc; 
@@ -68,7 +68,7 @@
 
   <div id="app" v-cloak class="max-w-md sm:max-w-xl mx-auto px-3 pt-3">
 
-    <!-- 頂部 Header -->
+    <!-- 頂部 App Header 區塊 -->
     <header class="app-header-notch rounded-2xl p-4 mb-4 border border-slate-800 relative overflow-hidden shadow-2xl">
       <div class="absolute -right-8 -top-8 w-28 h-28 bg-beyGreenNeon/10 rounded-full blur-2xl"></div>
 
@@ -85,7 +85,7 @@
 
         <div class="flex items-center gap-1.5 px-2.5 py-1 bg-black/80 rounded-full border border-slate-700 text-[10px] font-bold text-slate-300">
           <span class="w-2 h-2 rounded-full bg-beyGreenNeon animate-pulse"></span>
-          <span>本機記憶體同步中</span>
+          <span>資料即時儲存中</span>
         </div>
       </div>
 
@@ -115,6 +115,7 @@
 
         <form @submit.prevent="saveConfiguration" class="space-y-4">
           
+          <!-- 特殊屬性切換標籤 (CX / 一體式固鎖 2擇1) -->
           <div class="grid grid-cols-2 gap-2 bg-black/50 p-2 rounded-2xl border border-slate-800">
             <label 
               @click="toggleType('isCX')"
@@ -763,18 +764,16 @@
           <div v-for="(bey, slot) in reorderBeyblades" :key="slot" class="bg-black/60 p-2 rounded-xl border border-slate-800 flex items-center justify-between gap-2">
             <span class="text-xs font-extrabold text-slate-400 shrink-0">第 {{ slot + 1 }} 順位</span>
             
-            <!-- 選單自動位置對調 (Smart Swap) -->
             <select 
               :value="reorderBeyblades[slot]" 
               @change="onReorderSelect(slot, $event.target.value)"
-              class="w-full bg-appCard border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-beyYellow"
+              class="w-full bg-appCard border border-slate-700 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-beyYellow"
             >
               <option v-for="config in activeMatch.selectedBeyblades" :key="config" :value="config">
                 {{ config }}
               </option>
             </select>
 
-            <!-- 上移 / 下移 快速調位按鈕 -->
             <div class="flex gap-1 shrink-0">
               <button 
                 type="button"
@@ -850,249 +849,125 @@
   </div>
 
   <script>
-    const { createApp, ref, computed, watch } = Vue;
+    document.addEventListener('DOMContentLoaded', () => {
+      const { createApp, ref, computed, watch } = Vue;
 
-    createApp({
-      setup() {
-        const currentTab = ref('create');
-        const showDbModal = ref(false);
-        const showReorderModal = ref(false);
-        const searchQuery = ref('');
-        const isCloudSynced = ref(true);
+      createApp({
+        setup() {
+          const currentTab = ref('create');
+          const showDbModal = ref(false);
+          const showReorderModal = ref(false);
+          const searchQuery = ref('');
 
-        const expandedGroups = ref({});
-        const toggleBladeGroup = (bladeName) => {
-          expandedGroups.value[bladeName] = !expandedGroups.value[bladeName];
-        };
-
-        const selectedMemoryBlade = ref('');
-        const selectedMemoryAssist = ref('');
-        const selectedMemoryRatchet = ref('');
-        const selectedMemoryBit = ref('');
-
-        const generatedCode = ref('');
-        const importCodeInput = ref('');
-        const copySuccess = ref(false);
-
-        const confirmModal = ref({ show: false, title: '', message: '', action: null });
-        const triggerConfirm = (title, message, action) => { confirmModal.value = { show: true, title, message, action }; };
-        const closeConfirmModal = () => { confirmModal.value.show = false; confirmModal.value.action = null; };
-        const executeConfirmAction = () => { if (typeof confirmModal.value.action === 'function') confirmModal.value.action(); closeConfirmModal(); };
-
-        const placeholderImage = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23475569" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>';
-
-        const loadLocal = (key, fallback) => {
-          try {
-            const saved = localStorage.getItem(key);
-            return saved ? JSON.parse(saved) : fallback;
-          } catch (e) {
-            return fallback;
-          }
-        };
-
-        const configurations = ref(loadLocal('bey_configs', []));
-        const memoryStore = ref(loadLocal('bey_part_memory', { blades: [], assists: [], ratchets: [], bits: [] }));
-        const matchHistory = ref(loadLocal('bey_match_history', []));
-        const activeMatch = ref(loadLocal('bey_active_match', null));
-
-        watch(configurations, (val) => {
-          try { localStorage.setItem('bey_configs', JSON.stringify(val)); } catch (e) {}
-        }, { deep: true });
-
-        watch(memoryStore, (val) => {
-          try { localStorage.setItem('bey_part_memory', JSON.stringify(val)); } catch (e) {}
-        }, { deep: true });
-
-        watch(matchHistory, (val) => {
-          try { localStorage.setItem('bey_match_history', JSON.stringify(val)); } catch (e) {}
-        }, { deep: true });
-
-        watch(activeMatch, (val) => {
-          try {
-            if (val) localStorage.setItem('bey_active_match', JSON.stringify(val));
-            else localStorage.removeItem('bey_active_match');
-          } catch (e) {}
-        }, { deep: true });
-
-        const generateExportCode = () => {
-          const exportObj = {
-            bey_configs: configurations.value,
-            bey_part_memory: memoryStore.value,
-            bey_match_history: matchHistory.value
-          };
-          try {
-            const jsonString = JSON.stringify(exportObj);
-            generatedCode.value = btoa(encodeURIComponent(jsonString));
-            copySuccess.value = false;
-          } catch (e) {
-            triggerConfirm('錯誤', '無法產生備份代碼！', () => {});
-          }
-        };
-
-        const copyExportCode = () => {
-          if (!generatedCode.value) return;
-          const textarea = document.createElement('textarea');
-          textarea.value = generatedCode.value;
-          document.body.appendChild(textarea);
-          textarea.select();
-          document.execCommand('copy');
-          document.body.removeChild(textarea);
-          copySuccess.value = true;
-          setTimeout(() => { copySuccess.value = false; }, 3000);
-        };
-
-        const promptImportCode = () => {
-          const codeStr = importCodeInput.value.trim();
-          if (!codeStr) return;
-
-          triggerConfirm(
-            '警告：覆蓋舊有資料',
-            '匯入代碼將會【完全覆蓋】目前的陀螺配置與歷史對戰紀錄，確定要繼續執行嗎？',
-            () => executeImportCode(codeStr)
-          );
-        };
-
-        const executeImportCode = (codeStr) => {
-          try {
-            const decodedJsonStr = decodeURIComponent(atob(codeStr));
-            const imported = JSON.parse(decodedJsonStr);
-
-            if (imported.bey_configs) configurations.value = imported.bey_configs;
-            if (imported.bey_part_memory) memoryStore.value = imported.bey_part_memory;
-            if (imported.bey_match_history) matchHistory.value = imported.bey_match_history;
-
-            importCodeInput.value = '';
-            triggerConfirm('成功', '所有資料已成功依代碼還原並覆蓋！', () => {});
-          } catch (e) {
-            triggerConfirm('匯入失敗', '無效或損壞的備份代碼，請檢查後再試！', () => {});
-          }
-        };
-
-        const form = ref({
-          isCX: false,
-          isIntegratedRatchet: false,
-          bladeName: '',
-          bladeImg: '',
-          assistName: '',
-          assistImg: '',
-          ratchetName: '',
-          ratchetImg: '',
-          bitName: '',
-          bitImg: ''
-        });
-
-        const toggleType = (typeKey) => {
-          if (typeKey === 'isCX') {
-            form.value.isCX = !form.value.isCX;
-            if (form.value.isCX) {
-              form.value.isIntegratedRatchet = false;
-            }
-          } else if (typeKey === 'isIntegratedRatchet') {
-            form.value.isIntegratedRatchet = !form.value.isIntegratedRatchet;
-            if (form.value.isIntegratedRatchet) {
-              form.value.isCX = false;
-            }
-          }
-        };
-
-        const applyPartMemory = (partType) => {
-          let selectedVal = '';
-          let list = [];
-
-          if (partType === 'blade') {
-            selectedVal = selectedMemoryBlade.value;
-            list = memoryStore.value.blades || [];
-          } else if (partType === 'assist') {
-            selectedVal = selectedMemoryAssist.value;
-            list = memoryStore.value.assists || [];
-          } else if (partType === 'ratchet') {
-            selectedVal = selectedMemoryRatchet.value;
-            list = memoryStore.value.ratchets || [];
-          } else if (partType === 'bit') {
-            selectedVal = selectedMemoryBit.value;
-            list = memoryStore.value.bits || [];
-          }
-
-          if (!selectedVal) return;
-
-          const found = list.find(item => item.name === selectedVal);
-          if (found) {
-            if (partType === 'blade') {
-              form.value.bladeName = found.name;
-              form.value.bladeImg = found.img || '';
-              selectedMemoryBlade.value = '';
-            } else if (partType === 'assist') {
-              form.value.assistName = found.name;
-              form.value.assistImg = found.img || '';
-              selectedMemoryAssist.value = '';
-            } else if (partType === 'ratchet') {
-              form.value.ratchetName = found.name;
-              form.value.ratchetImg = found.img || '';
-              selectedMemoryRatchet.value = '';
-            } else if (partType === 'bit') {
-              form.value.bitName = found.name;
-              form.value.bitImg = found.img || '';
-              selectedMemoryBit.value = '';
-            }
-          }
-        };
-
-        const previewFullName = computed(() => {
-          const blade = (form.value.bladeName || '').trim();
-          const assist = form.value.isCX ? (form.value.assistName || '').trim() : '';
-          const ratchet = form.value.isIntegratedRatchet ? '' : (form.value.ratchetName || '').trim();
-          const bit = (form.value.bitName || '').trim();
-
-          if (!blade || !bit) return '';
-          if (!form.value.isIntegratedRatchet && !ratchet) return '';
-          if (form.value.isCX && !assist) return '';
-
-          return `${blade}${assist}${ratchet}${bit}`;
-        });
-
-        const isDuplicateConfig = computed(() => {
-          if (!previewFullName.value) return false;
-          return configurations.value.some(c => c.fullName === previewFullName.value);
-        });
-
-        const updatePartMemory = (category, name, img) => {
-          if (!name) return;
-          if (!memoryStore.value[category]) memoryStore.value[category] = [];
-          const list = memoryStore.value[category];
-          const idx = list.findIndex(i => i.name === name);
-          if (idx >= 0) {
-            if (img) list[idx].img = img;
-          } else {
-            list.push({ name, img });
-          }
-        };
-
-        const saveConfiguration = () => {
-          const fullName = previewFullName.value;
-          if (!fullName || isDuplicateConfig.value) return;
-
-          const newConfig = {
-            fullName,
-            isCX: form.value.isCX,
-            isIntegratedRatchet: form.value.isIntegratedRatchet,
-            bladeName: form.value.bladeName.trim(),
-            bladeImg: form.value.bladeImg.trim(),
-            assistName: form.value.isCX ? form.value.assistName.trim() : '',
-            assistImg: form.value.isCX ? form.value.assistImg.trim() : '',
-            ratchetName: form.value.isIntegratedRatchet ? '' : form.value.ratchetName.trim(),
-            ratchetImg: form.value.isIntegratedRatchet ? '' : form.value.ratchetImg.trim(),
-            bitName: form.value.bitName.trim(),
-            bitImg: form.value.bitImg.trim()
+          const expandedGroups = ref({});
+          const toggleBladeGroup = (bladeName) => {
+            expandedGroups.value[bladeName] = !expandedGroups.value[bladeName];
           };
 
-          updatePartMemory('blades', newConfig.bladeName, newConfig.bladeImg);
-          if (newConfig.isCX) updatePartMemory('assists', newConfig.assistName, newConfig.assistImg);
-          if (!newConfig.isIntegratedRatchet) updatePartMemory('ratchets', newConfig.ratchetName, newConfig.ratchetImg);
-          updatePartMemory('bits', newConfig.bitName, newConfig.bitImg);
+          const selectedMemoryBlade = ref('');
+          const selectedMemoryAssist = ref('');
+          const selectedMemoryRatchet = ref('');
+          const selectedMemoryBit = ref('');
 
-          configurations.value.push(newConfig);
+          const generatedCode = ref('');
+          const importCodeInput = ref('');
+          const copySuccess = ref(false);
 
-          form.value = {
+          const confirmModal = ref({ show: false, title: '', message: '', action: null });
+          const triggerConfirm = (title, message, action) => { confirmModal.value = { show: true, title, message, action }; };
+          const closeConfirmModal = () => { confirmModal.value.show = false; confirmModal.value.action = null; };
+          const executeConfirmAction = () => { if (typeof confirmModal.value.action === 'function') confirmModal.value.action(); closeConfirmModal(); };
+
+          const placeholderImage = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23475569" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>';
+
+          const loadLocal = (key, fallback) => {
+            try {
+              const saved = localStorage.getItem(key);
+              return saved ? JSON.parse(saved) : fallback;
+            } catch (e) {
+              return fallback;
+            }
+          };
+
+          const configurations = ref(loadLocal('bey_configs', []));
+          const memoryStore = ref(loadLocal('bey_part_memory', { blades: [], assists: [], ratchets: [], bits: [] }));
+          const matchHistory = ref(loadLocal('bey_match_history', []));
+          const activeMatch = ref(loadLocal('bey_active_match', null));
+
+          watch(configurations, (val) => {
+            try { localStorage.setItem('bey_configs', JSON.stringify(val)); } catch (e) {}
+          }, { deep: true });
+
+          watch(memoryStore, (val) => {
+            try { localStorage.setItem('bey_part_memory', JSON.stringify(val)); } catch (e) {}
+          }, { deep: true });
+
+          watch(matchHistory, (val) => {
+            try { localStorage.setItem('bey_match_history', JSON.stringify(val)); } catch (e) {}
+          }, { deep: true });
+
+          watch(activeMatch, (val) => {
+            try {
+              if (val) localStorage.setItem('bey_active_match', JSON.stringify(val));
+              else localStorage.removeItem('bey_active_match');
+            } catch (e) {}
+          }, { deep: true });
+
+          const generateExportCode = () => {
+            const exportObj = {
+              bey_configs: configurations.value,
+              bey_part_memory: memoryStore.value,
+              bey_match_history: matchHistory.value
+            };
+            try {
+              const jsonString = JSON.stringify(exportObj);
+              generatedCode.value = btoa(encodeURIComponent(jsonString));
+              copySuccess.value = false;
+            } catch (e) {
+              triggerConfirm('錯誤', '無法產生備份代碼！', () => {});
+            }
+          };
+
+          const copyExportCode = () => {
+            if (!generatedCode.value) return;
+            const textarea = document.createElement('textarea');
+            textarea.value = generatedCode.value;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            copySuccess.value = true;
+            setTimeout(() => { copySuccess.value = false; }, 3000);
+          };
+
+          const promptImportCode = () => {
+            const codeStr = importCodeInput.value.trim();
+            if (!codeStr) return;
+
+            triggerConfirm(
+              '警告：覆蓋舊有資料',
+              '匯入代碼將會【完全覆蓋】目前的陀螺配置與歷史對戰紀錄，確定要繼續執行嗎？',
+              () => executeImportCode(codeStr)
+            );
+          };
+
+          const executeImportCode = (codeStr) => {
+            try {
+              const decodedJsonStr = decodeURIComponent(atob(codeStr));
+              const imported = JSON.parse(decodedJsonStr);
+
+              if (imported.bey_configs) configurations.value = imported.bey_configs;
+              if (imported.bey_part_memory) memoryStore.value = imported.bey_part_memory;
+              if (imported.bey_match_history) matchHistory.value = imported.bey_match_history;
+
+              importCodeInput.value = '';
+              triggerConfirm('成功', '所有資料已成功依代碼還原並覆蓋！', () => {});
+            } catch (e) {
+              triggerConfirm('匯入失敗', '無效或損壞的備份代碼，請檢查後再試！', () => {});
+            }
+          };
+
+          const form = ref({
             isCX: false,
             isIntegratedRatchet: false,
             bladeName: '',
@@ -1103,28 +978,195 @@
             ratchetImg: '',
             bitName: '',
             bitImg: ''
+          });
+
+          const toggleType = (typeKey) => {
+            if (typeKey === 'isCX') {
+              form.value.isCX = !form.value.isCX;
+              if (form.value.isCX) {
+                form.value.isIntegratedRatchet = false;
+              }
+            } else if (typeKey === 'isIntegratedRatchet') {
+              form.value.isIntegratedRatchet = !form.value.isIntegratedRatchet;
+              if (form.value.isIntegratedRatchet) {
+                form.value.isCX = false;
+              }
+            }
           };
 
-          currentTab.value = 'config_library';
-        };
+          const applyPartMemory = (partType) => {
+            let selectedVal = '';
+            let list = [];
 
-        const promptDeleteConfig = (fullName) => {
-          triggerConfirm(
-            '刪除陀螺配置',
-            `確定要刪除「${fullName}」此陀螺配置嗎？此動作不可復原。`,
-            () => deleteConfiguration(fullName)
-          );
-        };
+            if (partType === 'blade') {
+              selectedVal = selectedMemoryBlade.value;
+              list = memoryStore.value.blades || [];
+            } else if (partType === 'assist') {
+              selectedVal = selectedMemoryAssist.value;
+              list = memoryStore.value.assists || [];
+            } else if (partType === 'ratchet') {
+              selectedVal = selectedMemoryRatchet.value;
+              list = memoryStore.value.ratchets || [];
+            } else if (partType === 'bit') {
+              selectedVal = selectedMemoryBit.value;
+              list = memoryStore.value.bits || [];
+            }
 
-        const deleteConfiguration = (fullName) => {
-          configurations.value = configurations.value.filter(c => c.fullName !== fullName);
-        };
+            if (!selectedVal) return;
 
-        const statsMap = computed(() => {
-          const map = {};
-          configurations.value.forEach(config => {
-            map[config.fullName] = {
-              fullName: config.fullName,
+            const found = list.find(item => item.name === selectedVal);
+            if (found) {
+              if (partType === 'blade') {
+                form.value.bladeName = found.name;
+                form.value.bladeImg = found.img || '';
+                selectedMemoryBlade.value = '';
+              } else if (partType === 'assist') {
+                form.value.assistName = found.name;
+                form.value.assistImg = found.img || '';
+                selectedMemoryAssist.value = '';
+              } else if (partType === 'ratchet') {
+                form.value.ratchetName = found.name;
+                form.value.ratchetImg = found.img || '';
+                selectedMemoryRatchet.value = '';
+              } else if (partType === 'bit') {
+                form.value.bitName = found.name;
+                form.value.bitImg = found.img || '';
+                selectedMemoryBit.value = '';
+              }
+            }
+          };
+
+          const previewFullName = computed(() => {
+            const blade = (form.value.bladeName || '').trim();
+            const assist = form.value.isCX ? (form.value.assistName || '').trim() : '';
+            const ratchet = form.value.isIntegratedRatchet ? '' : (form.value.ratchetName || '').trim();
+            const bit = (form.value.bitName || '').trim();
+
+            if (!blade || !bit) return '';
+            if (!form.value.isIntegratedRatchet && !ratchet) return '';
+            if (form.value.isCX && !assist) return '';
+
+            return `${blade}${assist}${ratchet}${bit}`;
+          });
+
+          const isDuplicateConfig = computed(() => {
+            if (!previewFullName.value) return false;
+            return configurations.value.some(c => c.fullName === previewFullName.value);
+          });
+
+          const updatePartMemory = (category, name, img) => {
+            if (!name) return;
+            if (!memoryStore.value[category]) memoryStore.value[category] = [];
+            const list = memoryStore.value[category];
+            const idx = list.findIndex(i => i.name === name);
+            if (idx >= 0) {
+              if (img) list[idx].img = img;
+            } else {
+              list.push({ name, img });
+            }
+          };
+
+          const saveConfiguration = () => {
+            const fullName = previewFullName.value;
+            if (!fullName || isDuplicateConfig.value) return;
+
+            const newConfig = {
+              fullName,
+              isCX: form.value.isCX,
+              isIntegratedRatchet: form.value.isIntegratedRatchet,
+              bladeName: form.value.bladeName.trim(),
+              bladeImg: form.value.bladeImg.trim(),
+              assistName: form.value.isCX ? form.value.assistName.trim() : '',
+              assistImg: form.value.isCX ? form.value.assistImg.trim() : '',
+              ratchetName: form.value.isIntegratedRatchet ? '' : form.value.ratchetName.trim(),
+              ratchetImg: form.value.isIntegratedRatchet ? '' : form.value.ratchetImg.trim(),
+              bitName: form.value.bitName.trim(),
+              bitImg: form.value.bitImg.trim()
+            };
+
+            updatePartMemory('blades', newConfig.bladeName, newConfig.bladeImg);
+            if (newConfig.isCX) updatePartMemory('assists', newConfig.assistName, newConfig.assistImg);
+            if (!newConfig.isIntegratedRatchet) updatePartMemory('ratchets', newConfig.ratchetName, newConfig.ratchetImg);
+            updatePartMemory('bits', newConfig.bitName, newConfig.bitImg);
+
+            configurations.value.push(newConfig);
+
+            form.value = {
+              isCX: false,
+              isIntegratedRatchet: false,
+              bladeName: '',
+              bladeImg: '',
+              assistName: '',
+              assistImg: '',
+              ratchetName: '',
+              ratchetImg: '',
+              bitName: '',
+              bitImg: ''
+            };
+
+            currentTab.value = 'config_library';
+          };
+
+          const promptDeleteConfig = (fullName) => {
+            triggerConfirm(
+              '刪除陀螺配置',
+              `確定要刪除「${fullName}」此陀螺配置嗎？此動作不可復原。`,
+              () => deleteConfiguration(fullName)
+            );
+          };
+
+          const deleteConfiguration = (fullName) => {
+            configurations.value = configurations.value.filter(c => c.fullName !== fullName);
+          };
+
+          const statsMap = computed(() => {
+            const map = {};
+            configurations.value.forEach(config => {
+              map[config.fullName] = {
+                fullName: config.fullName,
+                totalRounds: 0,
+                roundWins: 0,
+                roundLosses: 0,
+                roundWinRate: '0.0',
+                ptsScored: 0,
+                ptsLost: 0,
+                netPts: 0
+              };
+            });
+
+            matchHistory.value.forEach(match => {
+              if (match.logs && Array.isArray(match.logs)) {
+                match.logs.forEach(log => {
+                  const beyName = log.beyblade;
+                  if (map[beyName]) {
+                    const pts = log.pts || 0;
+                    map[beyName].totalRounds++;
+                    
+                    if (log.winner === 'MY') {
+                      map[beyName].roundWins++;
+                      map[beyName].ptsScored += pts;
+                    } else if (log.winner === 'OPP') {
+                      map[beyName].roundLosses++;
+                      map[beyName].ptsLost += pts;
+                    }
+                  }
+                });
+              }
+            });
+
+            Object.keys(map).forEach(bName => {
+              const item = map[bName];
+              item.roundWinRate = item.totalRounds > 0 
+                ? ((item.roundWins / item.totalRounds) * 100).toFixed(1) 
+                : '0.0';
+              item.netPts = item.ptsScored - item.ptsLost;
+            });
+
+            return map;
+          });
+
+          const getStat = (fullName) => {
+            return statsMap.value[fullName] || {
               totalRounds: 0,
               roundWins: 0,
               roundLosses: 0,
@@ -1133,321 +1175,285 @@
               ptsLost: 0,
               netPts: 0
             };
-          });
-
-          matchHistory.value.forEach(match => {
-            if (match.logs && Array.isArray(match.logs)) {
-              match.logs.forEach(log => {
-                const beyName = log.beyblade;
-                if (map[beyName]) {
-                  const pts = log.pts || 0;
-                  map[beyName].totalRounds++;
-                  
-                  if (log.winner === 'MY') {
-                    map[beyName].roundWins++;
-                    map[beyName].ptsScored += pts;
-                  } else if (log.winner === 'OPP') {
-                    map[beyName].roundLosses++;
-                    map[beyName].ptsLost += pts;
-                  }
-                }
-              });
-            }
-          });
-
-          Object.keys(map).forEach(bName => {
-            const item = map[bName];
-            item.roundWinRate = item.totalRounds > 0 
-              ? ((item.roundWins / item.totalRounds) * 100).toFixed(1) 
-              : '0.0';
-            item.netPts = item.ptsScored - item.ptsLost;
-          });
-
-          return map;
-        });
-
-        const getStat = (fullName) => {
-          return statsMap.value[fullName] || {
-            totalRounds: 0,
-            roundWins: 0,
-            roundLosses: 0,
-            roundWinRate: '0.0',
-            ptsScored: 0,
-            ptsLost: 0,
-            netPts: 0
           };
-        };
 
-        const filteredGroupedConfigs = computed(() => {
-          const query = searchQuery.value.trim().toLowerCase();
-          
-          let filtered = configurations.value.filter(c => {
-            if (!query) return true;
-            return c.fullName.toLowerCase().includes(query) ||
-                   c.bladeName.toLowerCase().includes(query) ||
-                   c.ratchetName.toLowerCase().includes(query) ||
-                   c.bitName.toLowerCase().includes(query);
-          });
-
-          const groups = {};
-          filtered.forEach(item => {
-            const bName = item.bladeName || '其他';
-            if (!groups[bName]) {
-              groups[bName] = {
-                bladeName: bName,
-                bladeImg: item.bladeImg || '',
-                items: [],
-                totalRounds: 0,
-                roundWins: 0,
-                roundLosses: 0,
-                roundWinRate: '0.0',
-                totalPtsScored: 0,
-                totalPtsLost: 0,
-                netPts: 0
-              };
-            }
-            if (!groups[bName].bladeImg && item.bladeImg) {
-              groups[bName].bladeImg = item.bladeImg;
-            }
-            groups[bName].items.push(item);
-          });
-
-          const resultGroupList = Object.keys(groups).map(bladeName => {
-            const grp = groups[bladeName];
+          const filteredGroupedConfigs = computed(() => {
+            const query = searchQuery.value.trim().toLowerCase();
             
-            grp.items.sort((a, b) => {
+            let filtered = configurations.value.filter(c => {
+              if (!query) return true;
+              return c.fullName.toLowerCase().includes(query) ||
+                     c.bladeName.toLowerCase().includes(query) ||
+                     c.ratchetName.toLowerCase().includes(query) ||
+                     c.bitName.toLowerCase().includes(query);
+            });
+
+            const groups = {};
+            filtered.forEach(item => {
+              const bName = item.bladeName || '其他';
+              if (!groups[bName]) {
+                groups[bName] = {
+                  bladeName: bName,
+                  bladeImg: item.bladeImg || '',
+                  items: [],
+                  totalRounds: 0,
+                  roundWins: 0,
+                  roundLosses: 0,
+                  roundWinRate: '0.0',
+                  totalPtsScored: 0,
+                  totalPtsLost: 0,
+                  netPts: 0
+                };
+              }
+              if (!groups[bName].bladeImg && item.bladeImg) {
+                groups[bName].bladeImg = item.bladeImg;
+              }
+              groups[bName].items.push(item);
+            });
+
+            const resultGroupList = Object.keys(groups).map(bladeName => {
+              const grp = groups[bladeName];
+              
+              grp.items.sort((a, b) => {
+                const statA = getStat(a.fullName);
+                const statB = getStat(b.fullName);
+                return statB.totalRounds - statA.totalRounds || parseFloat(statB.roundWinRate) - parseFloat(statA.roundWinRate);
+              });
+
+              grp.items.forEach(c => {
+                const st = getStat(c.fullName);
+                grp.totalRounds += st.totalRounds;
+                grp.roundWins += st.roundWins;
+                grp.roundLosses += st.roundLosses;
+                grp.totalPtsScored += st.ptsScored;
+                grp.totalPtsLost += st.ptsLost;
+              });
+
+              grp.roundWinRate = grp.totalRounds > 0 ? ((grp.roundWins / grp.totalRounds) * 100).toFixed(1) : '0.0';
+              grp.netPts = grp.totalPtsScored - grp.totalPtsLost;
+              return grp;
+            });
+
+            resultGroupList.sort((a, b) => {
+              if (b.totalRounds !== a.totalRounds) {
+                return b.totalRounds - a.totalRounds;
+              }
+              return parseFloat(b.roundWinRate) - parseFloat(a.roundWinRate);
+            });
+
+            return resultGroupList;
+          });
+
+          const sortedConfigurationsForSelect = computed(() => {
+            return [...configurations.value].sort((a, b) => {
               const statA = getStat(a.fullName);
               const statB = getStat(b.fullName);
-              return statB.totalRounds - statA.totalRounds || parseFloat(statB.roundWinRate) - parseFloat(statA.roundWinRate);
+              return statB.totalRounds - statA.totalRounds;
             });
+          });
 
-            grp.items.forEach(c => {
-              const st = getStat(c.fullName);
-              grp.totalRounds += st.totalRounds;
-              grp.roundWins += st.roundWins;
-              grp.roundLosses += st.roundLosses;
-              grp.totalPtsScored += st.ptsScored;
-              grp.totalPtsLost += st.ptsLost;
+          const matchSetup = ref({
+            name: '',
+            date: new Date().toISOString().split('T')[0],
+            selectedBeyblades: ['', '', '']
+          });
+
+          const isBeybladeSelectedInOtherSlots = (fullName, currentSlotIndex) => {
+            return matchSetup.value.selectedBeyblades.some((selectedName, index) => {
+              return index !== currentSlotIndex && selectedName === fullName;
             });
-
-            grp.roundWinRate = grp.totalRounds > 0 ? ((grp.roundWins / grp.totalRounds) * 100).toFixed(1) : '0.0';
-            grp.netPts = grp.totalPtsScored - grp.totalPtsLost;
-            return grp;
-          });
-
-          resultGroupList.sort((a, b) => {
-            if (b.totalRounds !== a.totalRounds) {
-              return b.totalRounds - a.totalRounds;
-            }
-            return parseFloat(b.roundWinRate) - parseFloat(a.roundWinRate);
-          });
-
-          return resultGroupList;
-        });
-
-        const sortedConfigurationsForSelect = computed(() => {
-          return [...configurations.value].sort((a, b) => {
-            const statA = getStat(a.fullName);
-            const statB = getStat(b.fullName);
-            return statB.totalRounds - statA.totalRounds;
-          });
-        });
-
-        const matchSetup = ref({
-          name: '',
-          date: new Date().toISOString().split('T')[0],
-          selectedBeyblades: ['', '', '']
-        });
-
-        const isBeybladeSelectedInOtherSlots = (fullName, currentSlotIndex) => {
-          return matchSetup.value.selectedBeyblades.some((selectedName, index) => {
-            return index !== currentSlotIndex && selectedName === fullName;
-          });
-        };
-
-        const hasDuplicateInMatchSetup = computed(() => {
-          const selected = matchSetup.value.selectedBeyblades.filter(b => b !== '');
-          return new Set(selected).size !== selected.length;
-        });
-
-        const reorderBeyblades = ref(['', '', '']);
-
-        const onReorderSelect = (slotIndex, targetValue) => {
-          const currentVal = reorderBeyblades.value[slotIndex];
-          if (currentVal === targetValue) return;
-
-          const otherSlotIndex = reorderBeyblades.value.findIndex((b, idx) => idx !== slotIndex && b === targetValue);
-          if (otherSlotIndex !== -1) {
-            reorderBeyblades.value[otherSlotIndex] = currentVal;
-          }
-          reorderBeyblades.value[slotIndex] = targetValue;
-        };
-
-        const swapReorderSlots = (idx1, idx2) => {
-          if (idx1 < 0 || idx1 >= 3 || idx2 < 0 || idx2 >= 3) return;
-          const temp = reorderBeyblades.value[idx1];
-          reorderBeyblades.value[idx1] = reorderBeyblades.value[idx2];
-          reorderBeyblades.value[idx2] = temp;
-        };
-
-        const startMatch = () => {
-          if (matchSetup.value.selectedBeyblades.some(b => !b) || hasDuplicateInMatchSetup.value) return;
-
-          activeMatch.value = {
-            id: Date.now(),
-            name: matchSetup.value.name,
-            date: matchSetup.value.date,
-            selectedBeyblades: [...matchSetup.value.selectedBeyblades],
-            myScore: 0,
-            oppScore: 0,
-            currentSlot: 0,
-            currentRound: 1,
-            spinsInRound: 0,
-            logs: []
           };
 
-          reorderBeyblades.value = [...matchSetup.value.selectedBeyblades];
-        };
-
-        const matchWinner = computed(() => {
-          if (!activeMatch.value) return null;
-          if (activeMatch.value.myScore >= 4) return 'MY';
-          if (activeMatch.value.oppScore >= 4) return 'OPP';
-          return null;
-        });
-
-        const recordSpin = (winner, type, pts, isFault) => {
-          if (!activeMatch.value || matchWinner.value) return;
-
-          const currentBeyName = activeMatch.value.selectedBeyblades[activeMatch.value.currentSlot];
-
-          if (winner === 'MY') {
-            activeMatch.value.myScore += pts;
-          } else {
-            activeMatch.value.oppScore += pts;
-          }
-
-          activeMatch.value.spinsInRound++;
-
-          activeMatch.value.logs.unshift({
-            beyblade: currentBeyName,
-            winner,
-            type,
-            pts,
-            isFault,
-            myScoreHistory: activeMatch.value.myScore,
-            oppScoreHistory: activeMatch.value.oppScore
+          const hasDuplicateInMatchSetup = computed(() => {
+            const selected = matchSetup.value.selectedBeyblades.filter(b => b !== '');
+            return new Set(selected).size !== selected.length;
           });
 
-          if (!isFault && !matchWinner.value) {
-            activeMatch.value.currentSlot = (activeMatch.value.currentSlot + 1) % 3;
-          }
-        };
+          const reorderBeyblades = ref(['', '', '']);
 
-        const confirmReorder = () => {
-          if (!activeMatch.value) return;
-          activeMatch.value.selectedBeyblades = [...reorderBeyblades.value];
-          activeMatch.value.currentRound++;
-          activeMatch.value.spinsInRound = 0;
-          activeMatch.value.currentSlot = 0;
-          showReorderModal.value = false;
-        };
+          const onReorderSelect = (slotIndex, targetValue) => {
+            const currentVal = reorderBeyblades.value[slotIndex];
+            if (currentVal === targetValue) return;
 
-        const promptCancelMatch = () => {
-          triggerConfirm(
-            '放棄比賽',
-            '確定要放棄進行中的比賽嗎？分數將不被儲存。',
-            () => {
-              activeMatch.value = null;
+            const otherSlotIndex = reorderBeyblades.value.findIndex((b, idx) => idx !== slotIndex && b === targetValue);
+            if (otherSlotIndex !== -1) {
+              reorderBeyblades.value[otherSlotIndex] = currentVal;
             }
-          );
-        };
+            reorderBeyblades.value[slotIndex] = targetValue;
+          };
 
-        const promptDeleteSingleHistory = (index) => {
-          const match = matchHistory.value[index];
-          triggerConfirm(
-            '刪除對戰紀錄',
-            `確定要刪除「${match.name}」這筆對戰紀錄嗎？`,
-            () => {
-              matchHistory.value.splice(index, 1);
+          const swapReorderSlots = (idx1, idx2) => {
+            if (idx1 < 0 || idx1 >= 3 || idx2 < 0 || idx2 >= 3) return;
+            const temp = reorderBeyblades.value[idx1];
+            reorderBeyblades.value[idx1] = reorderBeyblades.value[idx2];
+            reorderBeyblades.value[idx2] = temp;
+          };
+
+          const startMatch = () => {
+            if (matchSetup.value.selectedBeyblades.some(b => !b) || hasDuplicateInMatchSetup.value) return;
+
+            activeMatch.value = {
+              id: Date.now(),
+              name: matchSetup.value.name,
+              date: matchSetup.value.date,
+              selectedBeyblades: [...matchSetup.value.selectedBeyblades],
+              myScore: 0,
+              oppScore: 0,
+              currentSlot: 0,
+              currentRound: 1,
+              spinsInRound: 0,
+              logs: []
+            };
+
+            reorderBeyblades.value = [...matchSetup.value.selectedBeyblades];
+          };
+
+          const matchWinner = computed(() => {
+            if (!activeMatch.value) return null;
+            if (activeMatch.value.myScore >= 4) return 'MY';
+            if (activeMatch.value.oppScore >= 4) return 'OPP';
+            return null;
+          });
+
+          const recordSpin = (winner, type, pts, isFault) => {
+            if (!activeMatch.value || matchWinner.value) return;
+
+            const currentBeyName = activeMatch.value.selectedBeyblades[activeMatch.value.currentSlot];
+
+            if (winner === 'MY') {
+              activeMatch.value.myScore += pts;
+            } else {
+              activeMatch.value.oppScore += pts;
             }
-          );
-        };
 
-        const promptClearHistory = () => {
-          triggerConfirm(
-            '清空歷史對戰紀錄',
-            '確定要清空所有的歷史對戰紀錄嗎？相關勝率也會歸零。',
-            () => {
-              matchHistory.value = [];
+            activeMatch.value.spinsInRound++;
+
+            activeMatch.value.logs.unshift({
+              beyblade: currentBeyName,
+              winner,
+              type,
+              pts,
+              isFault,
+              myScoreHistory: activeMatch.value.myScore,
+              oppScoreHistory: activeMatch.value.oppScore
+            });
+
+            if (!isFault && !matchWinner.value) {
+              activeMatch.value.currentSlot = (activeMatch.value.currentSlot + 1) % 3;
             }
-          );
-        };
+          };
 
-        const winRates = computed(() => {
-          return configurations.value.map(config => getStat(config.fullName))
-            .sort((a, b) => b.totalRounds - a.totalRounds || parseFloat(b.roundWinRate) - parseFloat(a.roundWinRate));
-        });
+          const confirmReorder = () => {
+            if (!activeMatch.value) return;
+            activeMatch.value.selectedBeyblades = [...reorderBeyblades.value];
+            activeMatch.value.currentRound++;
+            activeMatch.value.spinsInRound = 0;
+            activeMatch.value.currentSlot = 0;
+            showReorderModal.value = false;
+          };
 
-        const handleImgError = (e) => {
-          e.target.src = placeholderImage;
-        };
+          const finishAndCloseMatch = () => {
+            if (!activeMatch.value) return;
+            matchHistory.value.unshift({ ...activeMatch.value, winner: matchWinner.value });
+            activeMatch.value = null;
+            currentTab.value = 'stats';
+          };
 
-        return {
-          currentTab,
-          showDbModal,
-          showReorderModal,
-          searchQuery,
-          confirmModal,
-          closeConfirmModal,
-          executeConfirmAction,
-          placeholderImage,
-          configurations,
-          sortedConfigurationsForSelect,
-          memoryStore,
-          selectedMemoryBlade,
-          selectedMemoryAssist,
-          selectedMemoryRatchet,
-          selectedMemoryBit,
-          applyPartMemory,
-          toggleType,
-          form,
-          previewFullName,
-          isDuplicateConfig,
-          saveConfiguration,
-          promptDeleteConfig,
-          filteredGroupedConfigs,
-          expandedGroups,
-          toggleBladeGroup,
-          getStat,
-          matchSetup,
-          isBeybladeSelectedInOtherSlots,
-          hasDuplicateInMatchSetup,
-          activeMatch,
-          matchHistory,
-          reorderBeyblades,
-          onReorderSelect,
-          swapReorderSlots,
-          startMatch,
-          matchWinner,
-          recordSpin,
-          confirmReorder,
-          finishAndCloseMatch,
-          promptCancelMatch,
-          promptDeleteSingleHistory,
-          promptClearHistory,
-          winRates,
-          handleImgError,
-          isCloudSynced,
-          generatedCode,
-          importCodeInput,
-          copySuccess,
-          generateExportCode,
-          copyExportCode,
-          promptImportCode
-        };
-      }
-    }).mount('#app');
+          const promptCancelMatch = () => {
+            triggerConfirm(
+              '放棄比賽',
+              '確定要放棄進行中的比賽嗎？分數將不被儲存。',
+              () => {
+                activeMatch.value = null;
+              }
+            );
+          };
+
+          const promptDeleteSingleHistory = (index) => {
+            const match = matchHistory.value[index];
+            triggerConfirm(
+              '刪除對戰紀錄',
+              `確定要刪除「${match.name}」這筆對戰紀錄嗎？`,
+              () => {
+                matchHistory.value.splice(index, 1);
+              }
+            );
+          };
+
+          const promptClearHistory = () => {
+            triggerConfirm(
+              '清空歷史對戰紀錄',
+              '確定要清空所有的歷史對戰紀錄嗎？相關勝率也會歸零。',
+              () => {
+                matchHistory.value = [];
+              }
+            );
+          };
+
+          const winRates = computed(() => {
+            return configurations.value.map(config => getStat(config.fullName))
+              .sort((a, b) => b.totalRounds - a.totalRounds || parseFloat(b.roundWinRate) - parseFloat(a.roundWinRate));
+          });
+
+          const handleImgError = (e) => {
+            e.target.src = placeholderImage;
+          };
+
+          return {
+            currentTab,
+            showDbModal,
+            showReorderModal,
+            searchQuery,
+            confirmModal,
+            closeConfirmModal,
+            executeConfirmAction,
+            placeholderImage,
+            configurations,
+            sortedConfigurationsForSelect,
+            memoryStore,
+            selectedMemoryBlade,
+            selectedMemoryAssist,
+            selectedMemoryRatchet,
+            selectedMemoryBit,
+            applyPartMemory,
+            toggleType,
+            form,
+            previewFullName,
+            isDuplicateConfig,
+            saveConfiguration,
+            promptDeleteConfig,
+            filteredGroupedConfigs,
+            expandedGroups,
+            toggleBladeGroup,
+            getStat,
+            matchSetup,
+            isBeybladeSelectedInOtherSlots,
+            hasDuplicateInMatchSetup,
+            activeMatch,
+            matchHistory,
+            reorderBeyblades,
+            onReorderSelect,
+            swapReorderSlots,
+            startMatch,
+            matchWinner,
+            recordSpin,
+            confirmReorder,
+            finishAndCloseMatch,
+            promptCancelMatch,
+            promptDeleteSingleHistory,
+            promptClearHistory,
+            winRates,
+            handleImgError,
+            generatedCode,
+            importCodeInput,
+            copySuccess,
+            generateExportCode,
+            copyExportCode,
+            promptImportCode
+          };
+        }
+      }).mount('#app');
+    });
   </script>
 </body>
 </html>
