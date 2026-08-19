@@ -389,12 +389,12 @@
           <div class="bg-emerald-950/20 border border-emerald-500/40 p-4 rounded-2xl space-y-2.5">
             <div class="text-xs sm:text-sm font-extrabold text-emerald-400">得分</div>
             <div class="grid grid-cols-2 gap-2 text-xs sm:text-sm">
-              <button v-for="btn in spinButtons" :key="btn.type" @click="recordSpin('MY', btn.type, btn.pts, false)" class="p-3 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl transition shadow active:scale-95">
+              <button v-for="btn in spinButtons" :key="btn.type" @click="recordSpin('MY', btn.type, btn.pts, false)" class="p-3 bg-emerald-500/20 hover:bg-emerald-500/35 text-emerald-300 border border-emerald-500/40 font-black rounded-xl transition shadow active:scale-95 backdrop-blur-sm">
                 {{ btn.label }} (+{{ btn.pts }})
               </button>
             </div>
-            <button @click="recordSpin('MY', '失誤', 1, true)" class="w-full p-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs sm:text-sm rounded-xl transition border border-amber-500 active:scale-98 shadow-sm">
-              失誤 (+1) <span class="text-[10px] sm:text-xs opacity-90">(同一陀螺繼續)</span>
+            <button @click="recordSpin('MY', '失誤', 1, true)" class="w-full p-2.5 bg-amber-500/20 hover:bg-amber-500/35 text-amber-300 font-black text-xs sm:text-sm rounded-xl transition border border-amber-500/50 active:scale-98 shadow-sm backdrop-blur-sm">
+              失誤 (+1) <span class="text-[10px] sm:text-xs opacity-80">(同一陀螺繼續)</span>
             </button>
           </div>
 
@@ -402,12 +402,12 @@
           <div class="bg-red-950/20 border border-red-500/40 p-4 rounded-2xl space-y-2.5">
             <div class="text-xs sm:text-sm font-extrabold text-red-400">失分</div>
             <div class="grid grid-cols-2 gap-2 text-xs sm:text-sm">
-              <button v-for="btn in spinButtons" :key="btn.type" @click="recordSpin('OPP', btn.type, btn.pts, false)" class="p-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-xl transition shadow active:scale-95">
+              <button v-for="btn in spinButtons" :key="btn.type" @click="recordSpin('OPP', btn.type, btn.pts, false)" class="p-3 bg-red-500/20 hover:bg-red-500/35 text-red-300 border border-red-500/40 font-black rounded-xl transition shadow active:scale-95 backdrop-blur-sm">
                 {{ btn.label }} (-{{ btn.pts }})
               </button>
             </div>
-            <button @click="recordSpin('OPP', '失誤', 1, true)" class="w-full p-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs sm:text-sm rounded-xl transition border border-amber-500 active:scale-98 shadow-sm">
-              失誤 (-1) <span class="text-[10px] sm:text-xs opacity-90">(同一陀螺繼續)</span>
+            <button @click="recordSpin('OPP', '失誤', 1, true)" class="w-full p-2.5 bg-amber-500/20 hover:bg-amber-500/35 text-amber-300 font-black text-xs sm:text-sm rounded-xl transition border border-amber-500/50 active:scale-98 shadow-sm backdrop-blur-sm">
+              失誤 (-1) <span class="text-[10px] sm:text-xs opacity-80">(同一陀螺繼續)</span>
             </button>
           </div>
         </div>
@@ -418,7 +418,7 @@
           <div v-else class="space-y-2 max-h-56 overflow-y-auto pr-1">
             <div v-for="(log, idx) in activeMatch.logs" :key="idx" class="text-xs sm:text-sm p-2.5 bg-[#111827] rounded-xl border border-slate-800 flex justify-between items-center gap-2 shadow-sm">
               <div class="truncate">
-                <span class="text-slate-500 font-bold mr-1.5">#{ idx + 1 }</span>
+                <span class="text-slate-500 font-bold mr-1.5">#{{ idx + 1 }}</span>
                 <span class="text-slate-200 mr-2 font-bold truncate">{{ log.beyblade }}</span>
                 <span :class="log.winner === 'MY' ? 'text-[#a2ff1f] font-bold' : 'text-red-400 font-bold'">
                   [{{ log.type }} {{ log.winner === 'MY' ? '+' : '-' }}{{ log.pts }}]
