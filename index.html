@@ -30,8 +30,22 @@
   <style>
     @import url('https://fonts.googleapis.com/earlyaccess/notosanstc.css');
     [v-cloak] { display: none; }
+    *, ::before, ::after {
+      box-sizing: border-box;
+    }
+    html, body {
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
     body, input, select, button, textarea, option {
       font-family: 'Noto Sans TC', sans-serif !important;
+      max-width: 100%;
+    }
+    input[type="date"] {
+      -webkit-appearance: none;
+      appearance: none;
+      min-width: 0;
+      width: 100%;
     }
     .fa, .fas, .far, .fal, .fab, .fa-solid, .fa-regular, .fa-brands {
       font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands", sans-serif !important;
@@ -277,14 +291,16 @@
         </div>
 
         <form @submit.prevent="startMatch" class="space-y-5">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="min-w-0">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div class="min-w-0 w-full">
               <label class="block text-xs sm:text-sm font-bold mb-1.5 text-slate-300">比賽名稱</label>
-              <input type="text" v-model="matchSetup.name" placeholder="例如: 8月17日第4場比賽" class="w-full bg-[#080c14] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-[#a2ff1f] focus:ring-1 focus:ring-[#a2ff1f]" required>
+              <input type="text" v-model="matchSetup.name" placeholder="例如: 8月17日第4場比賽" class="w-full max-w-full min-w-0 bg-[#080c14] border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-[#a2ff1f] focus:ring-1 focus:ring-[#a2ff1f] block" required>
             </div>
-            <div class="min-w-0">
+            <div class="min-w-0 w-full">
               <label class="block text-xs sm:text-sm font-bold mb-1.5 text-slate-300">比賽日期</label>
-              <input type="date" v-model="matchSetup.date" class="w-full max-w-full min-w-0 bg-[#080c14] border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-[#a2ff1f] focus:ring-1 focus:ring-[#a2ff1f] [color-scheme:dark]" required>
+              <div class="w-full min-w-0">
+                <input type="date" v-model="matchSetup.date" class="w-full max-w-full min-w-0 bg-[#080c14] border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-[#a2ff1f] focus:ring-1 focus:ring-[#a2ff1f] [color-scheme:dark] block" required>
+              </div>
             </div>
           </div>
 
@@ -301,9 +317,9 @@
             </div>
 
             <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div v-for="slot in [0, 1, 2]" :key="slot" class="bg-[#080c14] p-3 rounded-2xl border border-slate-800 flex flex-col justify-between gap-2">
+              <div v-for="slot in [0, 1, 2]" :key="slot" class="bg-[#080c14] p-3 rounded-2xl border border-slate-800 flex flex-col justify-between gap-2 min-w-0 w-full">
                 <span class="text-xs sm:text-sm font-extrabold text-slate-400">第 {{ slot + 1 }} 順位</span>
-                <select v-model="matchSetup.selectedBeyblades[slot]" class="w-full bg-[#111827] border border-slate-700 rounded-lg px-3 py-2 text-xs sm:text-sm text-slate-100 focus:outline-none focus:border-[#a2ff1f]" required>
+                <select v-model="matchSetup.selectedBeyblades[slot]" class="w-full max-w-full min-w-0 bg-[#111827] border border-slate-700 rounded-lg px-2.5 py-2 text-xs sm:text-sm text-slate-100 focus:outline-none focus:border-[#a2ff1f] truncate" required>
                   <option value="" disabled>-- 請選擇陀螺配置 --</option>
                   <optgroup v-for="(items, bladeName) in groupedConfigurationsForSelect" :key="bladeName" :label="'【' + bladeName + '】'">
                     <option v-for="config in items" :key="config.fullName" :value="config.fullName" :disabled="isBeybladeSelectedInOtherSlots(config.fullName, slot)">
