@@ -30,9 +30,7 @@
   <style>
     @import url('https://fonts.googleapis.com/earlyaccess/notosanstc.css');
     [v-cloak] { display: none; }
-    *, ::before, ::after {
-      box-sizing: border-box;
-    }
+    *, ::before, ::after { box-sizing: border-box; }
     html, body {
       max-width: 100vw;
       overflow-x: hidden;
@@ -59,7 +57,6 @@
     .app-header-notch { background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%); }
     .glow-neon { box-shadow: 0 0 15px rgba(162, 255, 31, 0.4); }
     .glow-yellow { box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
-    .border-neon { border-color: #a2ff1f !important; }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #080c14; }
     ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 6px; }
@@ -80,7 +77,7 @@
     </header>
 
     <!-- 1. 新增配置頁面 -->
-    <section v-if="currentTab === 'create'" class="space-y-4">
+    <section v-show="currentTab === 'create'" class="space-y-4">
       <div class="bg-[#111827] border border-[#a2ff1f]/40 rounded-3xl p-4 sm:p-6 shadow-2xl relative overflow-hidden">
         
         <div class="flex items-center justify-between mb-5 pb-3 border-b border-slate-800">
@@ -152,7 +149,7 @@
                   <label class="block text-[10px] text-slate-400 font-bold mb-1">系列 (#)</label>
                   <select v-model="form.ratchetPrefix" @change="updateRatchetName" class="w-full bg-[#111827] border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-[#a2ff1f]" required>
                     <option value="" disabled>-- 系列 --</option>
-                    <option v-for="n in [1,2,3,4,5,6,7,8,9]" :key="n" :value="n">{{ n }}</option>
+                    <option v-for="n in 9" :key="n" :value="n">{{ n }}</option>
                   </select>
                 </div>
                 <div>
@@ -198,7 +195,7 @@
     </section>
 
     <!-- 2. 配置庫 -->
-    <section v-if="currentTab === 'config_library'" class="space-y-4">
+    <section v-show="currentTab === 'config_library'" class="space-y-4">
       <div class="bg-[#111827] border border-[#a2ff1f]/40 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4">
         
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
@@ -247,7 +244,7 @@
               </h3>
             </div>
 
-            <!-- 核心重點：大尺寸上蓋圖片展示區 -->
+            <!-- 大尺寸上蓋圖片展示區 -->
             <div class="w-full h-32 sm:h-40 md:h-44 bg-[#111827] border border-slate-800 rounded-xl p-2 flex items-center justify-center relative overflow-hidden my-1 shadow-inner group-hover:bg-slate-900 transition-colors">
               <img 
                 :src="group.bladeImg || placeholderImage" 
@@ -280,7 +277,7 @@
     </section>
 
     <!-- 3. 對戰頁面 -->
-    <section v-if="currentTab === 'battle'" class="space-y-4">
+    <section v-show="currentTab === 'battle'" class="space-y-4">
       
       <div v-if="!activeMatch" class="bg-[#111827] border border-[#a2ff1f]/40 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-5">
         <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -360,12 +357,57 @@
           </div>
         </div>
 
-        <div v-if="matchWinner" class="bg-amber-950/30 border-2 border-amber-400/80 p-5 rounded-2xl text-center space-y-3 shadow-lg">
+        <!-- 比賽結束：選取賽事成績選項 -->
+        <div v-if="matchWinner" class="bg-amber-950/30 border-2 border-amber-400/80 p-5 rounded-2xl text-center space-y-4 shadow-lg">
           <h3 class="text-2xl font-black text-amber-400">
             <i class="fa-solid fa-trophy mr-2 text-amber-400"></i> {{ matchWinner === 'MY' ? '獲得比賽勝利！' : '比賽落敗' }}
           </h3>
-          <p class="text-xs sm:text-sm text-slate-300">總分數率先達到 4 分，戰績已成功紀錄！</p>
-          <button @click="finishAndCloseMatch" class="w-full sm:w-auto px-8 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl shadow-md transition text-sm uppercase">
+          <p class="text-xs sm:text-sm text-slate-300">請選擇本場對戰結果分類：</p>
+
+          <!-- 勝/敗 結果選項按鈕組 -->
+          <div class="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+            <template v-if="matchWinner === 'MY'">
+              <button 
+                type="button" 
+                @click="selectedResultTag = '晉級'" 
+                :class="['px-4 sm:px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm border transition-all cursor-pointer', selectedResultTag === '晉級' ? 'bg-[#a2ff1f] text-slate-950 border-[#a2ff1f] shadow-[0_0_12px_rgba(162,255,31,0.5)]' : 'bg-[#080c14] text-slate-300 border-slate-700 hover:border-[#a2ff1f]']"
+              >
+                <i class="fa-solid fa-angles-up mr-1"></i> 晉級
+              </button>
+              <button 
+                type="button" 
+                @click="selectedResultTag = '冠軍'" 
+                :class="['px-4 sm:px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm border transition-all cursor-pointer', selectedResultTag === '冠軍' ? 'bg-amber-400 text-slate-950 border-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.6)]' : 'bg-[#080c14] text-slate-300 border-slate-700 hover:border-amber-400']"
+              >
+                <i class="fa-solid fa-crown mr-1" :class="selectedResultTag === '冠軍' ? 'text-slate-950' : 'text-amber-400'"></i> 冠軍
+              </button>
+            </template>
+            <template v-else>
+              <button 
+                type="button" 
+                @click="selectedResultTag = '一輪遊'" 
+                :class="['px-4 sm:px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm border transition-all cursor-pointer', selectedResultTag === '一輪遊' ? 'bg-red-500 text-white border-red-500 shadow-[0_0_12px_rgba(239,68,68,0.5)]' : 'bg-[#080c14] text-slate-300 border-slate-700 hover:border-red-500']"
+              >
+                <i class="fa-solid fa-arrow-down-long mr-1"></i> 一輪遊
+              </button>
+              <button 
+                type="button" 
+                @click="selectedResultTag = '四強'" 
+                :class="['px-4 sm:px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm border transition-all cursor-pointer', selectedResultTag === '四強' ? 'bg-cyan-500 text-slate-950 border-cyan-500 shadow-[0_0_12px_rgba(6,182,212,0.5)]' : 'bg-[#080c14] text-slate-300 border-slate-700 hover:border-cyan-500']"
+              >
+                <i class="fa-solid fa-award mr-1"></i> 四強
+              </button>
+              <button 
+                type="button" 
+                @click="selectedResultTag = '停止晉級'" 
+                :class="['px-4 sm:px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm border transition-all cursor-pointer', selectedResultTag === '停止晉級' ? 'bg-orange-500 text-white border-orange-500 shadow-[0_0_12px_rgba(249,115,22,0.5)]' : 'bg-[#080c14] text-slate-300 border-slate-700 hover:border-orange-500']"
+              >
+                <i class="fa-solid fa-circle-stop mr-1"></i> 停止晉級
+              </button>
+            </template>
+          </div>
+
+          <button @click="finishAndCloseMatch" class="w-full sm:w-auto px-8 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl shadow-md transition text-sm uppercase cursor-pointer mt-2">
             完成比賽並儲存紀錄
           </button>
         </div>
@@ -417,7 +459,7 @@
           <div v-else class="space-y-2 max-h-56 overflow-y-auto pr-1">
             <div v-for="(log, idx) in activeMatch.logs" :key="idx" class="text-xs sm:text-sm p-2.5 bg-[#111827] rounded-xl border border-slate-800 flex justify-between items-center gap-2 shadow-sm">
               <div class="truncate">
-                <span class="text-slate-500 font-bold mr-1.5">#{{ idx + 1 }}</span>
+                <span class="text-slate-500 font-bold mr-1.5">#{{ activeMatch.logs.length - idx }}</span>
                 <span class="text-slate-200 mr-2 font-bold truncate">{{ log.beyblade }}</span>
                 <span :class="log.winner === 'MY' ? 'text-[#a2ff1f] font-bold' : 'text-red-400 font-bold'">
                   [{{ log.type }} {{ log.winner === 'MY' ? '+' : '-' }}{{ log.pts }}]
@@ -434,8 +476,161 @@
       </div>
     </section>
 
-    <!-- 4. 歷史紀錄與備份 -->
-    <section v-if="currentTab === 'stats'" class="space-y-5">
+    <!-- 4. 歷史紀錄與個人戰績面板 -->
+    <section v-show="currentTab === 'stats'" class="space-y-5">
+      
+      <!-- 個人戰績頁面 (Overwatch UI 風格) -->
+      <div class="bg-[#111827] border border-[#a2ff1f]/40 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-5 relative overflow-hidden">
+        <div class="absolute -right-16 -top-16 w-48 h-48 bg-[#a2ff1f]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- 頂部玩家 Banner 欄 -->
+        <div class="bg-[#080c14] border border-slate-800 rounded-2xl p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 shadow-inner">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <input 
+                  v-if="isEditingName" 
+                  type="text" 
+                  v-model="playerName" 
+                  @blur="isEditingName = false" 
+                  @keyup.enter="isEditingName = false" 
+                  class="bg-[#111827] border border-[#a2ff1f] text-white font-black italic text-xl sm:text-2xl rounded-lg px-2 py-0.5 focus:outline-none w-44 sm:w-56"
+                  autofocus
+                >
+                <h2 v-else @click="isEditingName = true" class="text-xl sm:text-3xl font-black italic text-white truncate cursor-pointer hover:text-[#a2ff1f] transition-colors flex items-center gap-2.5" title="點擊編輯玩家名稱">
+                  <span>{{ playerName || 'BEYBLADER' }}</span>
+                  <i class="fa-solid fa-pen-to-square text-xs sm:text-sm text-slate-500 hover:text-[#a2ff1f]"></i>
+                </h2>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右側當前連勝連敗勳章 (無矩形方框、縮小30%) -->
+          <div class="flex items-center gap-1.5 shrink-0">
+            <i :class="[
+              'fa-solid text-xs sm:text-sm',
+              currentStreak.type === 'WIN' ? 'fa-fire text-[#a2ff1f]' : (currentStreak.type === 'LOSS' ? 'fa-arrow-trend-down text-red-400' : 'fa-minus text-slate-500')
+            ]"></i>
+            <span :class="[
+              'text-[10px] sm:text-xs font-black font-mono leading-none',
+              currentStreak.type === 'WIN' ? 'text-[#a2ff1f]' : (currentStreak.type === 'LOSS' ? 'text-red-400' : 'text-slate-400')
+            ]">
+              {{ currentStreak.count > 0 ? `${currentStreak.count} ${currentStreak.type === 'WIN' ? '連勝' : '連敗'}` : '無紀錄' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- 數據核心主體 (圓形對戰統計 + 橫線長條圖：一輪遊/四強/冠軍) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+          
+          <!-- 左側：圓形總戰績數據儀表 + 橫線長條圖 (一輪遊 / 四強 / 冠軍) -->
+          <div class="lg:col-span-4 bg-[#080c14] border border-slate-800 rounded-2xl p-4 flex flex-col justify-between items-center text-center shadow-inner">
+            <!-- 圓形數據計量環 (可點擊開啟 CAREER STATS 懸浮視窗) -->
+            <div 
+              @click="showCareerStatsModal = true" 
+              class="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-slate-800 flex flex-col items-center justify-center my-2 -translate-y-[6px] shadow-[0_0_20px_rgba(162,255,31,0.15)] bg-radial from-[#a2ff1f]/10 via-transparent to-transparent cursor-pointer transition-all hover:scale-105 hover:border-[#a2ff1f]/60 active:scale-95 group"
+              title="點擊查看 CAREER STATS 生涯統計"
+            >
+              <span class="text-[10px] sm:text-xs font-bold text-slate-400 group-hover:text-[#a2ff1f] transition-colors uppercase flex items-center gap-1">
+                <span>總對戰場次</span>
+              </span>
+              <span class="text-3xl sm:text-4xl font-black font-mono text-[#a2ff1f] my-0.5">{{ overallStats.totalMatches }}</span>
+            </div>
+
+            <!-- 橫線長條圖列表：依序 一輪遊 / 四強 / 冠軍 (Overwatch 風格卡片) -->
+            <div class="w-full space-y-2 text-xs pt-3 border-t border-slate-800/80">
+              <!-- 1. 一輪遊 -->
+              <div class="relative bg-[#111827] border border-slate-800 rounded-lg px-2.5 py-1 flex justify-between items-center overflow-hidden shadow-sm">
+                <div class="absolute left-0 top-0 bottom-0 bg-red-600/80 transition-all duration-500 rounded-l-lg" :style="{ width: getResultTagPercent('一輪遊') + '%' }"></div>
+                <span class="relative z-10 flex items-center gap-1.5 font-black text-white drop-shadow text-[11px]">
+                  <i class="fa-solid fa-arrow-down-long text-red-400 bg-red-950/80 p-0.5 rounded border border-red-500/40 text-[9px]"></i>
+                  <span>一輪遊</span>
+                </span>
+                <span class="relative z-10 font-mono font-black text-white drop-shadow text-[11px]">
+                  {{ resultTagCounts['一輪遊'] }} 回
+                </span>
+              </div>
+
+              <!-- 2. 四強 -->
+              <div class="relative bg-[#111827] border border-slate-800 rounded-lg px-2.5 py-1 flex justify-between items-center overflow-hidden shadow-sm">
+                <div class="absolute left-0 top-0 bottom-0 bg-cyan-500/80 transition-all duration-500 rounded-l-lg" :style="{ width: getResultTagPercent('四強') + '%' }"></div>
+                <span class="relative z-10 flex items-center gap-1.5 font-black text-white drop-shadow text-[11px]">
+                  <i class="fa-solid fa-award text-cyan-300 bg-cyan-950/80 p-0.5 rounded border border-cyan-500/40 text-[9px]"></i>
+                  <span>四強</span>
+                </span>
+                <span class="relative z-10 font-mono font-black text-white drop-shadow text-[11px]">
+                  {{ resultTagCounts['四強'] }} 回
+                </span>
+              </div>
+
+              <!-- 3. 冠軍 -->
+              <div class="relative bg-[#111827] border border-slate-800 rounded-lg px-2.5 py-1 flex justify-between items-center overflow-hidden shadow-sm">
+                <div class="absolute left-0 top-0 bottom-0 bg-amber-400/90 transition-all duration-500 rounded-l-lg shadow-[0_0_12px_rgba(251,191,36,0.6)]" :style="{ width: getResultTagPercent('冠軍') + '%' }"></div>
+                <span class="relative z-10 flex items-center gap-1.5 font-black text-white drop-shadow text-[11px]">
+                  <i class="fa-solid fa-crown text-amber-300 bg-amber-950/80 p-0.5 rounded border border-amber-500/40 text-[9px]"></i>
+                  <span>冠軍</span>
+                </span>
+                <span class="relative z-10 font-mono font-black text-white drop-shadow text-[11px]">
+                  {{ resultTagCounts['冠軍'] }} 回
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右側：MOST PLAYED BLADES 卡片展示 -->
+          <div class="lg:col-span-8 bg-[#080c14] border border-slate-800 rounded-2xl p-4 flex flex-col justify-between space-y-3 shadow-inner">
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+              <span class="text-xs font-black text-slate-200 tracking-wider uppercase flex items-center gap-1.5">
+                <i class="fa-solid fa-trophy text-amber-400"></i> MOST PLAYED BLADES
+              </span>
+              <span class="text-[10px] text-slate-500 font-bold">TOP 3</span>
+            </div>
+
+            <div v-if="top3Blades.length === 0" class="text-center py-10 text-slate-500 text-xs border border-dashed border-slate-800 rounded-xl">
+              尚未有使用上蓋紀錄
+            </div>
+
+            <div v-else class="grid grid-cols-3 gap-2 sm:gap-3 flex-1">
+              <div 
+                v-for="(blade, bIdx) in top3Blades" 
+                :key="blade.bladeName" 
+                @click="openBladeModal(blade.bladeName)"
+                class="bg-[#080c14] rounded-xl cursor-pointer transition-all duration-300 hover:scale-[1.03] border border-slate-800 hover:border-[#a2ff1f]/60 shadow-lg relative overflow-hidden group flex flex-col justify-between h-40 sm:h-52"
+              >
+                <!-- TOP 標籤 -->
+                <div class="absolute top-1.5 left-1.5 z-20 px-1.5 py-0.5 rounded bg-slate-900/80 text-amber-400 border border-amber-400/40 text-[9px] font-black font-mono backdrop-blur-xs">
+                  #{{ bIdx + 1 }}
+                </div>
+
+                <!-- 滿版圖片區 -->
+                <div class="absolute inset-0 p-2 pt-5 pb-8 flex items-center justify-center z-1">
+                  <img 
+                    :src="blade.bladeImg || placeholderImage" 
+                    class="w-full h-full object-contain filter drop-shadow-md group-hover:scale-110 transition-transform duration-300"
+                    @error="$event.target.src = placeholderImage"
+                  >
+                </div>
+
+                <!-- 底部向上淡出的半透明螢光綠光暈特效層 -->
+                <div class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-[#a2ff1f]/35 via-[#a2ff1f]/10 to-transparent pointer-events-none z-0"></div>
+
+                <!-- 底部深色漸層遮罩 + 名稱與回合數 -->
+                <div class="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-[#080c14] via-[#080c14]/90 to-transparent pt-8 pb-2 px-1.5 text-center flex flex-col justify-end">
+                  <h4 class="text-xs sm:text-sm font-black text-white truncate drop-shadow group-hover:text-[#a2ff1f] transition-colors leading-tight">
+                    {{ blade.bladeName }}
+                  </h4>
+                  <div class="text-[10px] sm:text-xs font-mono font-black text-amber-400 mt-0.5 leading-none">
+                    {{ blade.totalRounds }} 回合
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 對戰結果列表 -->
       <div class="bg-[#111827] border border-[#a2ff1f]/40 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4">
         <div class="flex items-center justify-between border-b border-slate-800 pb-3">
           <h2 class="text-xs sm:text-sm font-black text-slate-200 tracking-widest uppercase flex items-center gap-2">
@@ -449,18 +644,23 @@
 
         <div v-else class="divide-y divide-slate-800">
           <div v-for="(history, hIdx) in sortedMatchHistory" :key="history.id || hIdx" class="py-2.5 space-y-2.5 first:pt-0 last:pb-0">
-            
-            <!-- 第一層：比賽名稱（左）與日期（右） -->
             <div class="flex items-center justify-between gap-2">
-              <h3 class="text-xs sm:text-sm font-black text-slate-100 leading-tight break-words min-w-0">
-                {{ history.name }}
-              </h3>
+              <div class="flex items-center gap-2 min-w-0">
+                <h3 class="text-xs sm:text-sm font-black text-slate-100 leading-tight break-words min-w-0">
+                  {{ history.name }}
+                </h3>
+                <span v-if="history.resultTag === '冠軍' || history.resultTag === '一輪遊'" :class="[
+                  'text-[10px] font-black px-1.5 py-0.5 rounded border uppercase shrink-0',
+                  history.resultTag === '冠軍' ? 'bg-amber-400/20 text-amber-400 border-amber-400/40' : 'bg-red-500/20 text-red-400 border-red-500/40'
+                ]">
+                  {{ history.resultTag }}
+                </span>
+              </div>
               <p class="text-[11px] text-slate-400 font-medium leading-none shrink-0">
                 {{ formatDateEnglish(history.date) }}
               </p>
             </div>
 
-            <!-- 第二層：獨立分層比分矩形框 (點擊開啟詳細 Modal) -->
             <div 
               @click="openHistoryModal(history)" 
               class="flex items-center justify-center cursor-pointer transition hover:scale-[1.02] active:scale-98"
@@ -478,14 +678,13 @@
                 <span>{{ history.oppScore }}</span>
               </span>
             </div>
-
           </div>
         </div>
       </div>
     </section>
 
     <!-- 5. 資料備份獨立頁面 -->
-    <section v-if="currentTab === 'backup'" class="space-y-5">
+    <section v-show="currentTab === 'backup'" class="space-y-5">
       <div class="bg-[#111827] border border-[#a2ff1f]/40 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4">
         <h2 class="text-xs sm:text-sm font-black text-slate-200 tracking-widest uppercase flex items-center gap-2 border-b border-slate-800 pb-2.5">
           <i class="fa-solid fa-database text-[#a2ff1f]"></i> 資料備份與還原代碼
@@ -521,14 +720,55 @@
     </section>
 
     <!-- Bottom Dock 導航列 -->
-    <nav class="fixed bottom-0 md:bottom-4 left-0 right-0 z-40 px-3 py-2 md:py-3 bg-[#080c14]/95 text-slate-400 border-t border-slate-800 md:border md:border-[#a2ff1f]/30 md:rounded-full md:max-w-md md:mx-auto backdrop-blur-md shadow-2xl">
-      <div class="max-w-md mx-auto flex items-center justify-around">
-        <button v-for="tab in navTabs" :key="tab.id" @click="currentTab = tab.id" :class="['flex flex-col items-center gap-1 transition-all cursor-pointer', currentTab === tab.id ? (tab.id === 'battle' ? 'text-amber-400' : 'text-[#a2ff1f]') : 'text-slate-400 hover:text-slate-200']">
-          <div :class="['w-8 h-8 rounded-full flex items-center justify-center transition', currentTab === tab.id ? (tab.id === 'battle' ? 'bg-amber-400/20 border border-amber-400 glow-yellow' : 'bg-[#a2ff1f]/20 border border-[#a2ff1f] glow-neon') : '']">
-            <i :class="['fa-solid text-base', tab.icon]"></i>
+    <nav class="fixed bottom-0 left-0 right-0 z-40 pointer-events-none transition-transform duration-300 ease-in-out transform-gpu" :class="isNavVisible ? 'translate-y-0' : 'translate-y-full'">
+      <div class="max-w-md sm:max-w-lg md:max-w-xl mx-auto relative pointer-events-auto px-2">
+        <div class="relative overflow-hidden bg-[#0a0f1a]/95 backdrop-blur-md border-t border-slate-800/80 shadow-[0_-12px_35px_rgba(0,0,0,0.85)] rounded-t-[2.2rem] pt-5 pb-2 px-3">
+          <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#a2ff1f]/35 to-transparent"></div>
+
+          <div class="flex items-end justify-around relative z-10 min-h-[44px]">
+            <button 
+              v-for="tab in navTabs" 
+              :key="tab.id" 
+              @click="currentTab = tab.id" 
+              class="flex flex-col items-center justify-end flex-1 transition-all duration-300 cursor-pointer group py-1"
+            >
+              <div class="relative flex flex-col items-center">
+                <div 
+                  v-if="currentTab === tab.id" 
+                  :class="[
+                    'absolute w-8 h-8 rounded-full blur-sm -z-10 transition-all duration-300',
+                    tab.id === 'battle' ? 'bg-amber-400/30' : 'bg-[#a2ff1f]/30'
+                  ]"
+                ></div>
+
+                <i 
+                  :class="[
+                    'fa-solid transition-all duration-300',
+                    tab.icon,
+                    currentTab === tab.id 
+                      ? (tab.id === 'battle' ? 'text-amber-400 text-2xl -translate-y-1 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]' : 'text-[#a2ff1f] text-2xl -translate-y-1 drop-shadow-[0_0_10px_rgba(162,255,31,0.7)]') 
+                      : 'text-slate-500 text-lg group-hover:text-slate-300'
+                  ]"
+                ></i>
+
+                <div 
+                  :class="[
+                    'h-1 rounded-full transition-all duration-300 mt-1.5',
+                    currentTab === tab.id 
+                      ? (tab.id === 'battle' ? 'w-7 bg-amber-400 shadow-[0_0_10px_#f59e0b]' : 'w-7 bg-[#a2ff1f] shadow-[0_0_12px_#a2ff1f]') 
+                      : 'w-0 bg-transparent'
+                  ]"
+                ></div>
+              </div>
+            </button>
           </div>
-          <span class="text-[10px] sm:text-xs font-bold">{{ tab.label }}</span>
-        </button>
+
+          <div class="text-center pt-1.5 pb-6">
+            <span class="text-xs sm:text-sm text-slate-200 font-normal tracking-widest transition-all duration-300">
+              {{ currentTabLabel }}
+            </span>
+          </div>
+        </div>
       </div>
     </nav>
 
@@ -601,7 +841,6 @@
     <div v-if="activeBladeModalGroup" @click.self="closeBladeModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 z-50 overflow-y-auto">
       <div class="bg-[#111827] border border-slate-800 rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
         
-        <!-- Modal 頂部 Header -->
         <div class="bg-[#080c14] text-white p-5 sm:p-6 relative flex items-center justify-between border-b border-slate-800">
           <div class="flex items-center gap-4 relative z-10">
             <img 
@@ -622,7 +861,6 @@
           </button>
         </div>
 
-        <!-- 統計數據儀表板 -->
         <div class="bg-[#080c14] px-3 py-2.5 border-b border-slate-800 flex items-center justify-around text-center text-xs sm:text-sm">
           <div class="flex items-center gap-1">
             <span class="text-slate-400 font-bold text-[11px] sm:text-xs">總回合:</span>
@@ -649,7 +887,6 @@
           </div>
         </div>
 
-        <!-- 組合卡片清單列表 -->
         <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3">
           <div class="text-xs font-black text-slate-400 tracking-wider uppercase mb-1">
             <i class="fa-solid fa-list-check mr-1 text-[#a2ff1f]"></i> 配置組合戰績明細
@@ -660,11 +897,9 @@
             :key="config.fullName" 
             class="relative bg-[#080c14] border border-slate-800 hover:border-[#a2ff1f]/60 text-slate-100 rounded-2xl p-3.5 sm:p-4 shadow-sm transition-all duration-200 overflow-hidden"
           >
-            <!-- 左側系統標誌色條 -->
             <div :class="['absolute top-0 left-0 bottom-0 w-1.5', config.isCX ? 'bg-[#e4007f]' : (config.isIntegratedRatchet ? 'bg-[#ee7800]' : 'bg-[#a2ff1f]')]"></div>
 
             <div class="pl-2 flex flex-col gap-3">
-              <!-- 上欄：配置名稱與零件按鈕 -->
               <div class="flex items-start justify-between gap-2">
                 <div class="min-w-0">
                   <div class="flex items-center gap-2 flex-wrap mb-1.5">
@@ -679,12 +914,11 @@
                     </span>
                   </div>
 
-                  <!-- 零件膠囊組合列 -->
                   <div class="flex flex-wrap items-center gap-1.5 text-xs text-slate-300 font-bold">
                     <button 
                       v-if="config.isCX" 
                       type="button"
-                      @click.stop="openPartModal('assist', config.assistName)"
+                      @click.stop="openPartModal('assist', config.assistName)" 
                       class="px-2.5 py-1 bg-[#e4007f]/10 hover:bg-[#e4007f]/20 border border-[#e4007f]/40 rounded-lg text-xs sm:text-sm font-black text-[#e4007f] flex items-center transition active:scale-95 cursor-pointer"
                     >
                       <span>{{ config.assistName }}</span>
@@ -693,7 +927,7 @@
                     <button 
                       v-if="!config.isIntegratedRatchet" 
                       type="button"
-                      @click.stop="openPartModal('ratchet', config.ratchetName)"
+                      @click.stop="openPartModal('ratchet', config.ratchetName)" 
                       class="px-2.5 py-1 bg-[#111827] hover:bg-slate-800 border border-slate-700 rounded-lg text-xs sm:text-sm font-black text-slate-200 flex items-center transition active:scale-95 cursor-pointer"
                     >
                       <span>{{ config.ratchetName }}</span>
@@ -701,7 +935,7 @@
 
                     <button 
                       type="button"
-                      @click.stop="openPartModal('bit', config.bitName)"
+                      @click.stop="openPartModal('bit', config.bitName)" 
                       class="px-2.5 py-1 bg-[#111827] hover:bg-slate-800 border border-slate-700 rounded-lg text-xs sm:text-sm font-black text-slate-200 flex items-center transition active:scale-95 cursor-pointer"
                     >
                       <span>{{ config.bitName }}</span>
@@ -709,7 +943,6 @@
                   </div>
                 </div>
 
-                <!-- 刪除按鈕 -->
                 <button 
                   @click.stop="promptDeleteConfig(config.fullName)" 
                   class="w-8 h-8 rounded-xl bg-[#111827] hover:bg-red-950 text-slate-400 hover:text-red-400 border border-slate-700 flex items-center justify-center transition active:scale-95 shrink-0" 
@@ -719,7 +952,6 @@
                 </button>
               </div>
 
-              <!-- 戰績 HUD 數據區塊 -->
               <div class="bg-[#111827] rounded-xl p-3 border border-slate-800 flex flex-col gap-2.5 shadow-inner">
                 <div class="grid grid-cols-3 gap-2 text-center">
                   <div class="flex flex-col justify-center border-r border-slate-800 pr-1">
@@ -746,14 +978,13 @@
                   </div>
                 </div>
 
-                <!-- 進度條 -->
                 <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden flex">
                   <div 
-                    class="bg-[#a2ff1f] h-full transition-all duration-300"
+                    class="bg-[#a2ff1f] h-full transition-all duration-300" 
                     :style="{ width: getStat(config.fullName).roundWinRate + '%' }"
                   ></div>
                   <div 
-                    class="bg-red-500/50 h-full transition-all duration-300"
+                    class="bg-red-500/50 h-full transition-all duration-300" 
                     :style="{ width: (100 - parseFloat(getStat(config.fullName).roundWinRate)) + '%' }"
                   ></div>
                 </div>
@@ -825,15 +1056,22 @@
       </div>
     </div>
 
-    <!-- Modal 6: 歷史戰績對戰明細彈窗 (各回合採升冪排序) -->
+    <!-- Modal 6: 歷史戰績對戰明細彈窗 -->
     <div v-if="selectedHistoryModal" @click.self="closeHistoryModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 z-[60] overflow-y-auto">
       <div class="bg-[#111827] border border-slate-800 rounded-3xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
         
-        <!-- Header -->
         <div class="bg-[#080c14] text-white p-4 sm:p-5 flex items-center justify-between border-b border-slate-800">
           <div>
             <div class="flex items-center gap-2 mb-1">
-              <span class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>{{ formatDateEnglish(selectedHistoryModal.date) }}</span>
+              <span v-if="selectedHistoryModal.resultTag" :class="[
+                'text-[10px] font-black px-1.5 py-0.5 rounded border uppercase shrink-0',
+                selectedHistoryModal.resultTag === '冠軍' ? 'bg-amber-400/20 text-amber-400 border-amber-400/40' :
+                selectedHistoryModal.resultTag === '晉級' ? 'bg-[#a2ff1f]/20 text-[#a2ff1f] border-[#a2ff1f]/40' :
+                selectedHistoryModal.resultTag === '四強' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40' :
+                'bg-red-500/20 text-red-400 border-red-500/40'
+              ]">
+                {{ selectedHistoryModal.resultTag }}
+              </span>
             </div>
             <h3 class="text-lg sm:text-xl font-black text-white leading-tight">
               {{ selectedHistoryModal.name }}
@@ -849,7 +1087,6 @@
           </div>
         </div>
 
-        <!-- 比分 HUD 欄 -->
         <div class="bg-[#080c14] py-3 border-b border-slate-800 flex items-center justify-center">
           <span class="text-2xl sm:text-3xl font-black font-mono">
             <span class="text-[#a2ff1f]">{{ selectedHistoryModal.myScore }}</span>
@@ -858,7 +1095,6 @@
           </span>
         </div>
 
-        <!-- 內容區域 -->
         <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-5">
           <!-- 出戰陣容 -->
           <div class="space-y-2">
@@ -877,16 +1113,16 @@
             </div>
           </div>
 
-          <!-- 各回合對決細節 (升冪排序：從第 1 局至最後一局) -->
+          <!-- 各回合對決細節 -->
           <div class="space-y-2">
             <span class="text-xs font-black text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
               <i class="fa-solid fa-list-ol text-[#a2ff1f]"></i> 各回合對決細節 ({{ (selectedHistoryModal.logs || []).length }} 局)
             </span>
-            <div class="space-y-2">
-              <div v-for="(log, lIdx) in [...(selectedHistoryModal.logs || [])].reverse()" :key="lIdx" class="bg-[#080c14] p-3 rounded-xl border border-slate-800 flex flex-col gap-1.5 shadow-2xs">
+            <div class="space-y-2 flex flex-col-reverse">
+              <div v-for="(log, lIdx) in (selectedHistoryModal.logs || [])" :key="lIdx" class="bg-[#080c14] p-3 rounded-xl border border-slate-800 flex flex-col gap-1.5 shadow-2xs">
                 <div class="flex items-center justify-between text-xs border-b border-slate-800 pb-1.5">
                   <span class="font-black text-slate-500">
-                    第 {{ lIdx + 1 }} 局
+                    第 {{ selectedHistoryModal.logs.length - lIdx }} 局
                   </span>
                   <span class="font-mono font-bold text-slate-300 bg-[#111827] px-2 py-0.5 rounded border border-slate-800">
                     比分：<strong class="text-[#a2ff1f]">{{ log.myScoreHistory }}</strong> - <strong class="text-red-400">{{ log.oppScoreHistory }}</strong>
@@ -909,62 +1145,96 @@
       </div>
     </div>
 
+    <!-- Modal 7: CAREER STATS 生涯統計懸浮視窗 -->
+    <div v-if="showCareerStatsModal" @click.self="showCareerStatsModal = false" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 z-[60] overflow-y-auto">
+      <div class="bg-[#0f172a] border border-[#a2ff1f]/40 rounded-3xl max-w-2xl w-full flex flex-col shadow-2xl overflow-hidden relative">
+        <div class="absolute -right-20 -top-20 w-48 h-48 bg-[#a2ff1f]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- 視窗標頭 Header (參考圖片 CAREER STATS 風格) -->
+        <div class="bg-[#080c14] px-5 py-4 border-b border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#a2ff1f] shadow-[0_0_8px_#a2ff1f]"></span>
+            <h3 class="text-lg sm:text-xl font-black italic tracking-widest text-white uppercase">
+              CAREER STATS
+            </h3>
+          </div>
+          <button @click="showCareerStatsModal = false" class="w-8 h-8 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-full flex items-center justify-center transition shrink-0 cursor-pointer">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+
+        <!-- 4 欄統計內容 (參考圖片四欄排版) -->
+        <div class="p-5 sm:p-6 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+          <!-- 1. 極限勝利 -->
+          <div class="bg-[#080c14] border border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-between shadow-inner">
+            <div class="text-3xl sm:text-4xl font-black font-mono text-white my-1">
+              {{ careerDetailedStats.extremeWins }}
+            </div>
+            <div class="text-xs font-black text-[#a2ff1f] uppercase tracking-wider mb-2">
+              極限勝利
+            </div>
+            <div class="text-[10px] text-slate-400 font-mono border-t border-slate-800/80 pt-2 w-full">
+              <div>平均每場: {{ careerDetailedStats.avgExtreme }} 次</div>
+            </div>
+          </div>
+
+          <!-- 2. 擊飛勝利 -->
+          <div class="bg-[#080c14] border border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-between shadow-inner">
+            <div class="text-3xl sm:text-4xl font-black font-mono text-white my-1">
+              {{ careerDetailedStats.overWins }}
+            </div>
+            <div class="text-xs font-black text-cyan-300 uppercase tracking-wider mb-2">
+              擊飛勝利
+            </div>
+            <div class="text-[10px] text-slate-400 font-mono border-t border-slate-800/80 pt-2 w-full">
+              <div>平均每場: {{ careerDetailedStats.avgOver }} 次</div>
+            </div>
+          </div>
+
+          <!-- 3. 爆裂勝利 -->
+          <div class="bg-[#080c14] border border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-between shadow-inner">
+            <div class="text-3xl sm:text-4xl font-black font-mono text-white my-1">
+              {{ careerDetailedStats.burstWins }}
+            </div>
+            <div class="text-xs font-black text-amber-300 uppercase tracking-wider mb-2">
+              爆裂勝利
+            </div>
+            <div class="text-[10px] text-slate-400 font-mono border-t border-slate-800/80 pt-2 w-full">
+              <div>平均每場: {{ careerDetailedStats.avgBurst }} 次</div>
+            </div>
+          </div>
+
+          <!-- 4. 連續得分 -->
+          <div class="bg-[#080c14] border border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-between shadow-inner">
+            <div class="text-3xl sm:text-4xl font-black font-mono text-white my-1">
+              {{ careerDetailedStats.maxStreakPts }}
+            </div>
+            <div class="text-xs font-black text-purple-300 uppercase tracking-wider mb-2">
+              連續得分
+            </div>
+            <div class="text-[10px] text-slate-400 font-mono border-t border-slate-800/80 pt-2 w-full">
+              <div>平均每場: {{ careerDetailedStats.avgPtsPerMatch }} 分</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-6 pb-4 text-center">
+          <span class="text-[11px] text-slate-500 italic">
+            * 數據根據全站賽事歷史對戰細節自動統計
+          </span>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const { createApp, ref, computed, watch } = Vue;
+      const { createApp, ref, computed, watch, onMounted, onUnmounted } = Vue;
 
       createApp({
         setup() {
-          // --- 通用狀態 ---
-          const currentTab = ref('config_library');
-          const showDbModal = ref(false);
-          const showReorderModal = ref(false);
-          const searchQuery = ref('');
-          const expandedGroups = ref({});
-          const generatedCode = ref('');
-          const importCodeInput = ref('');
-          const copySuccess = ref(false);
-
-          // 歷史戰績彈窗狀態
-          const selectedHistoryModal = ref(null);
-          const openHistoryModal = (history) => { selectedHistoryModal.value = history; };
-          const closeHistoryModal = () => { selectedHistoryModal.value = null; };
-
-          // 英文月份格式化 (例如: Aug 17)
-          const formatDateEnglish = (dateStr) => {
-            if (!dateStr) return '';
-            const parts = dateStr.split('-');
-            if (parts.length === 3) {
-              const monthIndex = parseInt(parts[1], 10) - 1;
-              const day = parseInt(parts[2], 10);
-              const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-              if (monthIndex >= 0 && monthIndex < 12) {
-                return `${months[monthIndex]} ${day}`;
-              }
-            }
-            return dateStr;
-          };
-
-          const navTabs = [
-            { id: 'create', label: '新增配置', icon: 'fa-plus' },
-            { id: 'config_library', label: '配置庫', icon: 'fa-boxes-stacked' },
-            { id: 'battle', label: '對戰', icon: 'fa-trophy' },
-            { id: 'stats', label: '歷史戰績', icon: 'fa-clock-rotate-left' },
-            { id: 'backup', label: '設定', icon: 'fa-gear' }
-          ];
-
-          const spinButtons = [
-            { label: '轉停', type: '轉停勝利', pts: 1 },
-            { label: '擊飛', type: '擊飛勝利', pts: 2 },
-            { label: '爆裂', type: '爆裂勝利', pts: 2 },
-            { label: '極限', type: '極限勝利', pts: 3 }
-          ];
-
-          const placeholderImage = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>';
-
-          // --- 響應式儲存 Helper ---
+          // LocalStorage Helper
           const useStorage = (key, fallback) => {
             let initial = fallback;
             try {
@@ -981,33 +1251,271 @@
             return state;
           };
 
+          // App UI State
+          const currentTab = ref('config_library');
+          const showDbModal = ref(false);
+          const showReorderModal = ref(false);
+          const showCareerStatsModal = ref(false);
+          const searchQuery = ref('');
+          const generatedCode = ref('');
+          const importCodeInput = ref('');
+          const copySuccess = ref(false);
+
+          // 玩家名稱狀態
+          const playerName = useStorage('bey_player_name', 'BEYBLADER');
+          const isEditingName = ref(false);
+
+          // 導航欄滾動隱藏狀態
+          const isNavVisible = ref(true);
+          let lastScrollY = window.scrollY;
+          let isTicking = false;
+
+          const handleScroll = () => {
+            if (!isTicking) {
+              window.requestAnimationFrame(() => {
+                const currentScrollY = window.scrollY;
+                if (currentScrollY > lastScrollY && currentScrollY > 50) {
+                  isNavVisible.value = false;
+                } else {
+                  isNavVisible.value = true;
+                }
+                lastScrollY = currentScrollY;
+                isTicking = false;
+              });
+              isTicking = true;
+            }
+          };
+
+          onMounted(() => {
+            window.addEventListener('scroll', handleScroll, { passive: true });
+          });
+
+          onUnmounted(() => {
+            window.removeEventListener('scroll', handleScroll);
+          });
+
+          // 歷史戰績彈窗
+          const selectedHistoryModal = ref(null);
+          const openHistoryModal = (history) => { 
+            selectedHistoryModal.value = history; 
+          };
+          const closeHistoryModal = () => { 
+            selectedHistoryModal.value = null; 
+          };
+
+          const formatDateEnglish = (dateStr) => {
+            if (!dateStr) return '';
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+              const monthIndex = parseInt(parts[1], 10) - 1;
+              const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              if (monthIndex >= 0 && monthIndex < 12) {
+                return `${months[monthIndex]} ${parseInt(parts[2], 10)}`;
+              }
+            }
+            return dateStr;
+          };
+
+          const navTabs = [
+            { id: 'create', label: '新增配置', icon: 'fa-plus' },
+            { id: 'config_library', label: '配置庫', icon: 'fa-boxes-stacked' },
+            { id: 'battle', label: '對戰', icon: 'fa-trophy' },
+            { id: 'stats', label: '歷史戰績', icon: 'fa-clock-rotate-left' },
+            { id: 'backup', label: '設定', icon: 'fa-gear' }
+          ];
+
+          const currentTabLabel = computed(() => {
+            const current = navTabs.find(tab => tab.id === currentTab.value);
+            return current ? current.label : '';
+          });
+
+          const spinButtons = [
+            { label: '轉停', type: '轉停勝利', pts: 1 },
+            { label: '擊飛', type: '擊飛勝利', pts: 2 },
+            { label: '爆裂', type: '爆裂勝利', pts: 2 },
+            { label: '極限', type: '極限勝利', pts: 3 }
+          ];
+
+          const placeholderImage = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>';
+
+          // Persistent Datastores
           const configurations = useStorage('bey_configs', []);
           const memoryStore = useStorage('bey_part_memory', { blades: [], assists: [], ratchets: [], bits: [] });
           const matchHistory = useStorage('bey_match_history', []);
           const activeMatch = useStorage('bey_active_match', null);
           const favorites = useStorage('bey_favorites', []);
 
-          // --- 最愛（置頂）切換邏輯 ---
-          const isFavoriteBlade = (bladeName) => favorites.value.includes(bladeName);
+          // 生涯項目詳細統計 (極限勝利、擊飛勝利、爆裂勝利、連續得分)
+          const careerDetailedStats = computed(() => {
+            let extremeWins = 0;
+            let overWins = 0;
+            let burstWins = 0;
 
+            const totalMatches = matchHistory.value.length;
+
+            // 1. 建立跨越所有場次的完整時間流（從最舊到最新）
+            const chronologicalMatches = [...matchHistory.value].reverse();
+            
+            let allLogsChronological = [];
+            chronologicalMatches.forEach(match => {
+              if (Array.isArray(match.logs)) {
+                // 生涯勝法統計（僅採計我方勝場）
+                match.logs.forEach(log => {
+                  if (log.winner === 'MY') {
+                    if (log.type === '極限勝利') extremeWins++;
+                    else if (log.type === '擊飛勝利') overWins++;
+                    else if (log.type === '爆裂勝利') burstWins++;
+                  }
+                });
+
+                // match.logs[0] 是最新回合，翻轉後變最舊到最新
+                const cronLogs = [...match.logs].reverse();
+                allLogsChronological.push(...cronLogs);
+              }
+            });
+
+            // 2. 跨場次連續得分計算（只要出現失分/敵方得分，連續得分即中斷）
+            let streakCount = 0;
+            let maxStreakPts = 0;
+            let currentRunPts = 0;
+            let totalMyPoints = 0;
+
+            allLogsChronological.forEach(log => {
+              if (log.winner === 'MY') {
+                const pts = log.pts || 0;
+                totalMyPoints += pts;
+                currentRunPts += pts;
+                if (currentRunPts > maxStreakPts) maxStreakPts = currentRunPts;
+              } else {
+                // 敵方得分（失分），中斷連續
+                if (currentRunPts > 0) {
+                  streakCount++;
+                  currentRunPts = 0;
+                }
+              }
+            });
+
+            if (currentRunPts > 0) {
+              streakCount++;
+              if (currentRunPts > maxStreakPts) maxStreakPts = currentRunPts;
+            }
+
+            const avgPtsPerMatch = totalMatches > 0 ? (totalMyPoints / totalMatches).toFixed(1) : '0.0';
+
+            return {
+              extremeWins,
+              overWins,
+              burstWins,
+              streakTotalPoints: maxStreakPts,
+              streakCount,
+              maxStreakPts,
+              totalMyPoints,
+              avgPtsPerMatch,
+              avgExtreme: totalMatches > 0 ? (extremeWins / totalMatches).toFixed(1) : '0.0',
+              avgOver: totalMatches > 0 ? (overWins / totalMatches).toFixed(1) : '0.0',
+              avgBurst: totalMatches > 0 ? (burstWins / totalMatches).toFixed(1) : '0.0'
+            };
+          });
+
+          // 結果標籤選擇
+          const selectedResultTag = ref('晉級');
+
+          // 全局個人戰績總計
+          const overallStats = computed(() => {
+            const totalMatches = matchHistory.value.length;
+            let totalRounds = 0;
+            let totalWins = 0;
+            let totalLosses = 0;
+            let totalNetPts = 0;
+
+            configurations.value.forEach(c => {
+              const st = getStat(c.fullName);
+              totalRounds += st.totalRounds;
+              totalWins += st.roundWins;
+              totalLosses += st.roundLosses;
+              totalNetPts += st.netPts;
+            });
+
+            const matchWins = matchHistory.value.filter(m => m.winner === 'MY' || m.myScore > m.oppScore).length;
+            const matchLosses = totalMatches - matchWins;
+            const roundWinRate = totalRounds > 0 ? ((totalWins / totalRounds) * 100).toFixed(1) : '0.0';
+
+            return {
+              totalMatches, matchWins, matchLosses,
+              totalRounds, totalWins, totalLosses, roundWinRate, totalNetPts
+            };
+          });
+
+          // 對戰結果計數
+          const resultTagCounts = computed(() => {
+            const counts = { '一輪遊': 0, '四強': 0, '冠軍': 0, '晉級': 0 };
+            matchHistory.value.forEach(m => {
+              if (m.resultTag && counts[m.resultTag] !== undefined) {
+                counts[m.resultTag]++;
+              }
+            });
+            return counts;
+          });
+
+          // 依據三者項目中最大值（Max Baseline）為 100% 滿條計算相對長條比例
+          const getResultTagPercent = (tag) => {
+            const v1 = resultTagCounts.value['一輪遊'] || 0;
+            const v2 = resultTagCounts.value['四強'] || 0;
+            const v3 = resultTagCounts.value['冠軍'] || 0;
+            const maxVal = Math.max(v1, v2, v3);
+            if (!maxVal || maxVal === 0) return 0;
+            const currentVal = resultTagCounts.value[tag] || 0;
+            return (currentVal / maxVal) * 100;
+          };
+
+          // 當前連勝 / 連敗計算
+          const currentStreak = computed(() => {
+            if (!matchHistory.value.length) return { type: 'NONE', count: 0 };
+            const history = sortedMatchHistory.value;
+            if (!history.length) return { type: 'NONE', count: 0 };
+            
+            const firstIsWin = history[0].winner === 'MY' || history[0].myScore > history[0].oppScore;
+            const targetType = firstIsWin ? 'WIN' : 'LOSS';
+            let count = 0;
+
+            for (const m of history) {
+              const isWin = m.winner === 'MY' || m.myScore > m.oppScore;
+              if ((targetType === 'WIN' && isWin) || (targetType === 'LOSS' && !isWin)) {
+                count++;
+              } else {
+                break;
+              }
+            }
+            return { type: targetType, count };
+          });
+
+          // 常用陀螺上蓋 TOP 3
+          const top3Blades = computed(() => {
+            const sortedByRounds = [...filteredGroupedConfigs.value]
+              .filter(g => g.totalRounds > 0)
+              .sort((a, b) => b.totalRounds - a.totalRounds || parseFloat(b.roundWinRate) - parseFloat(a.roundWinRate));
+            return sortedByRounds.slice(0, 3);
+          });
+
+          // 最愛切換
           const toggleFavoriteBlade = (bladeName) => {
             const idx = favorites.value.indexOf(bladeName);
             if (idx >= 0) favorites.value.splice(idx, 1);
             else favorites.value.push(bladeName);
           };
 
-          // --- 上蓋彈窗控制 ---
+          // 上蓋彈窗
           const selectedBladeGroup = ref(null);
           const openBladeModal = (bladeName) => { selectedBladeGroup.value = bladeName; };
           const closeBladeModal = () => { selectedBladeGroup.value = null; };
 
-          // --- 確認彈窗 ---
+          // 確認彈窗
           const confirmModal = ref({ show: false, title: '', message: '', action: null });
           const triggerConfirm = (title, message, action) => { confirmModal.value = { show: true, title, message, action }; };
           const closeConfirmModal = () => { confirmModal.value = { show: false, title: '', message: '', action: null }; };
           const executeConfirmAction = () => { if (typeof confirmModal.value.action === 'function') confirmModal.value.action(); closeConfirmModal(); };
 
-          // --- 陀螺配置表單 ---
+          // 表單控制
           const defaultForm = () => ({
             isCX: false,
             isIntegratedRatchet: false,
@@ -1020,36 +1528,28 @@
             bitName: ''
           });
           const form = ref(defaultForm());
-
           const selectedMemory = ref({ blades: '', assists: '', ratchets: '', bits: '' });
 
           const previewFullName = computed(() => {
-            if (!form.value.bladeName) return '';
             const blade = form.value.bladeName.trim();
             const bit = form.value.bitName.trim();
+            if (!blade || !bit) return '';
+
             if (form.value.isCX) {
               const assist = form.value.assistName.trim();
               const ratchet = form.value.ratchetName.trim();
-              if (!assist || !ratchet || !bit) return '';
-              return `${blade} ${assist} ${ratchet} ${bit}`;
+              return (assist && ratchet) ? `${blade} ${assist} ${ratchet} ${bit}` : '';
             } else if (form.value.isIntegratedRatchet) {
-              if (!bit) return '';
               return `${blade} ${bit}`;
             } else {
               const ratchet = form.value.ratchetName.trim();
-              if (!ratchet || !bit) return '';
-              return `${blade} ${ratchet} ${bit}`;
+              return ratchet ? `${blade} ${ratchet} ${bit}` : '';
             }
           });
 
           const isDuplicateConfig = computed(() => {
-            if (!previewFullName.value) return false;
-            return configurations.value.some(c => c.fullName === previewFullName.value);
+            return previewFullName.value ? configurations.value.some(c => c.fullName === previewFullName.value) : false;
           });
-
-          const toggleBladeGroup = (bladeName) => {
-            expandedGroups.value[bladeName] = !expandedGroups.value[bladeName];
-          };
 
           const toggleType = (typeKey) => {
             form.value[typeKey] = !form.value[typeKey];
@@ -1066,9 +1566,8 @@
           };
 
           const checkAndApplyBladeSystem = (name) => {
-            if (!name) return;
+            if (!name?.trim()) return;
             const trimmed = name.trim();
-            if (!trimmed) return;
 
             const foundMem = (memoryStore.value.blades || []).find(b => b.name === trimmed);
             if (foundMem && (foundMem.isCX !== undefined || foundMem.isIntegratedRatchet !== undefined)) {
@@ -1094,13 +1593,15 @@
                 form.value.bladeName = found.name; 
                 form.value.bladeImg = found.img || ''; 
                 checkAndApplyBladeSystem(found.name);
-              }
-              else if (category === 'assists') { form.value.assistName = found.name; }
-              else if (category === 'ratchets') {
+              } else if (category === 'assists') { 
+                form.value.assistName = found.name; 
+              } else if (category === 'ratchets') {
                 form.value.ratchetName = found.name;
                 const parts = found.name.split('-');
                 if (parts.length === 2) [form.value.ratchetPrefix, form.value.ratchetHeight] = parts;
-              } else if (category === 'bits') { form.value.bitName = found.name; }
+              } else if (category === 'bits') { 
+                form.value.bitName = found.name; 
+              }
             }
             selectedMemory.value[category] = '';
           };
@@ -1110,19 +1611,12 @@
             if (!memoryStore.value[category]) memoryStore.value[category] = [];
             const list = memoryStore.value[category];
             const idx = list.findIndex(i => i.name === name);
-            if (idx >= 0) { 
-              if (img) list[idx].img = img;
-              if (category === 'blades') {
-                list[idx].isCX = isCX;
-                list[idx].isIntegratedRatchet = isIntegratedRatchet;
-              }
-            } else {
-              if (category === 'blades') {
-                list.push({ name, img, isCX, isIntegratedRatchet });
-              } else {
-                list.push({ name, img });
-              }
-            }
+            const itemData = category === 'blades' 
+              ? { name, img: img || (idx >= 0 ? list[idx].img : ''), isCX, isIntegratedRatchet }
+              : { name, img: img || (idx >= 0 ? list[idx].img : '') };
+
+            if (idx >= 0) list[idx] = itemData;
+            else list.push(itemData);
           };
 
           const saveConfiguration = () => {
@@ -1156,7 +1650,7 @@
             });
           };
 
-          // --- 數據統計 ---
+          // 戰績統計
           const statsMap = computed(() => {
             const map = {};
             configurations.value.forEach(config => {
@@ -1202,7 +1696,7 @@
                 groups[bName] = {
                   bladeName: bName, bladeImg: item.bladeImg || '', items: [], totalRounds: 0,
                   roundWins: 0, roundLosses: 0, roundWinRate: '0.0', totalPtsScored: 0, totalPtsLost: 0, netPts: 0,
-                  isFavorite: false
+                  isFavorite: favorites.value.includes(bName)
                 };
               }
               if (!groups[bName].bladeImg && item.bladeImg) groups[bName].bladeImg = item.bladeImg;
@@ -1210,8 +1704,6 @@
             });
 
             return Object.values(groups).map(grp => {
-              grp.isFavorite = isFavoriteBlade(grp.bladeName);
-
               grp.items.sort((a, b) => {
                 const sA = getStat(a.fullName), sB = getStat(b.fullName);
                 return sB.totalRounds - sA.totalRounds || parseFloat(sB.roundWinRate) - parseFloat(sA.roundWinRate);
@@ -1228,10 +1720,7 @@
               grp.netPts = grp.totalPtsScored - grp.totalPtsLost;
               return grp;
             }).sort((a, b) => {
-              const favA = a.isFavorite ? 1 : 0;
-              const favB = b.isFavorite ? 1 : 0;
-              if (favA !== favB) return favB - favA;
-
+              if (a.isFavorite !== b.isFavorite) return b.isFavorite ? 1 : -1;
               return b.totalRounds - a.totalRounds || parseFloat(b.roundWinRate) - parseFloat(a.roundWinRate);
             });
           });
@@ -1241,7 +1730,7 @@
             return filteredGroupedConfigs.value.find(g => g.bladeName === selectedBladeGroup.value) || null;
           });
 
-          // --- 零件對應配置懸浮視窗 ---
+          // 零件彈窗
           const activePartModal = ref(null);
           const openPartModal = (category, name) => {
             if (!name) return;
@@ -1276,7 +1765,7 @@
             return groups;
           });
 
-          // --- 對戰控制 ---
+          // 對戰控制
           const matchSetup = ref({ name: '', date: new Date().toISOString().split('T')[0], selectedBeyblades: ['', '', ''] });
           const reorderBeyblades = ref(['', '', '']);
 
@@ -1313,6 +1802,7 @@
               myScore: 0, oppScore: 0, currentSlot: 0, currentRound: 1, spinsInRound: 0, logs: []
             };
             reorderBeyblades.value = [...matchSetup.value.selectedBeyblades];
+            selectedResultTag.value = '晉級';
           };
 
           const matchWinner = computed(() => {
@@ -1320,6 +1810,11 @@
             if (activeMatch.value.myScore >= 4) return 'MY';
             if (activeMatch.value.oppScore >= 4) return 'OPP';
             return null;
+          });
+
+          watch(matchWinner, (winner) => {
+            if (winner === 'MY') selectedResultTag.value = '晉級';
+            else if (winner === 'OPP') selectedResultTag.value = '一輪遊';
           });
 
           const recordSpin = (winner, type, pts, isFault) => {
@@ -1369,7 +1864,11 @@
 
           const finishAndCloseMatch = () => {
             if (!activeMatch.value) return;
-            matchHistory.value.unshift({ ...activeMatch.value, winner: matchWinner.value });
+            matchHistory.value.unshift({ 
+              ...activeMatch.value, 
+              winner: matchWinner.value,
+              resultTag: selectedResultTag.value 
+            });
             activeMatch.value = null;
             currentTab.value = 'stats';
           };
@@ -1378,7 +1877,7 @@
             triggerConfirm('放棄比賽', '確定要放棄進行中的比賽嗎？分數將不被儲存。', () => { activeMatch.value = null; });
           };
 
-          // --- 戰績排序與備份 ---
+          // 戰績歷史排序
           const sortedMatchHistory = computed(() => {
             return matchHistory.value.map((item, index) => {
               const nameStr = item.name || '';
@@ -1403,13 +1902,15 @@
             });
           };
 
+          // 備份匯出入
           const generateExportCode = () => {
             try {
               const str = JSON.stringify({
                 bey_configs: configurations.value,
                 bey_part_memory: memoryStore.value,
                 bey_match_history: matchHistory.value,
-                bey_favorites: favorites.value
+                bey_favorites: favorites.value,
+                bey_player_name: playerName.value
               });
               generatedCode.value = btoa(encodeURIComponent(str));
               copySuccess.value = false;
@@ -1418,18 +1919,22 @@
             }
           };
 
-          const copyExportCode = () => {
+          const copyExportCode = async () => {
             if (!generatedCode.value) return;
-            navigator.clipboard?.writeText ? navigator.clipboard.writeText(generatedCode.value) : (() => {
-              const ta = document.createElement('textarea');
-              ta.value = generatedCode.value;
-              document.body.appendChild(ta);
-              ta.select();
-              document.execCommand('copy');
-              document.body.removeChild(ta);
-            })();
-            copySuccess.value = true;
-            setTimeout(() => { copySuccess.value = false; }, 3000);
+            try {
+              if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(generatedCode.value);
+              } else {
+                const ta = document.createElement('textarea');
+                ta.value = generatedCode.value;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+              }
+              copySuccess.value = true;
+              setTimeout(() => { copySuccess.value = false; }, 3000);
+            } catch (e) {}
           };
 
           const promptImportCode = () => {
@@ -1442,6 +1947,7 @@
                 if (imported.bey_part_memory) memoryStore.value = imported.bey_part_memory;
                 if (imported.bey_match_history) matchHistory.value = imported.bey_match_history;
                 if (imported.bey_favorites) favorites.value = imported.bey_favorites;
+                if (imported.bey_player_name) playerName.value = imported.bey_player_name;
                 importCodeInput.value = '';
                 triggerConfirm('成功', '所有資料已成功依代碼還原並覆蓋！', () => {});
               } catch (e) {
@@ -1451,21 +1957,21 @@
           };
 
           return {
-            currentTab, showDbModal, showReorderModal, searchQuery, expandedGroups, generatedCode,
+            currentTab, currentTabLabel, isNavVisible, showDbModal, showReorderModal, showCareerStatsModal, searchQuery, generatedCode,
             importCodeInput, copySuccess, navTabs, spinButtons, placeholderImage, configurations,
-            memoryStore, matchHistory, activeMatch, confirmModal, closeConfirmModal, executeConfirmAction,
-            form, selectedMemory, toggleBladeGroup, toggleType, updateRatchetName, applyPartMemory,
-            checkAndApplyBladeSystem,
+            memoryStore, activeMatch, confirmModal, closeConfirmModal, executeConfirmAction,
+            form, selectedMemory, toggleType, updateRatchetName, applyPartMemory, checkAndApplyBladeSystem,
             previewFullName, isDuplicateConfig, saveConfiguration, promptDeleteConfig, getStat,
             filteredGroupedConfigs, groupedConfigurationsForSelect, matchSetup, reorderBeyblades,
             isBeybladeSelectedInOtherSlots, getPartConflictDetails, hasPartConflictInMatchSetup,
-            startMatch, matchWinner, recordSpin, onReorderSelect, swapReorderSlots, confirmReorder,
+            startMatch, matchWinner, selectedResultTag, recordSpin, onReorderSelect, swapReorderSlots, confirmReorder,
             finishAndCloseMatch, promptCancelMatch, sortedMatchHistory, promptDeleteSingleHistory,
             generateExportCode, copyExportCode, promptImportCode,
-            selectedBladeGroup, openBladeModal, closeBladeModal, activeBladeModalGroup,
-            favorites, isFavoriteBlade, toggleFavoriteBlade,
-            activePartModal, openPartModal, closePartModal, activePartConfigs,
-            selectedHistoryModal, openHistoryModal, closeHistoryModal, formatDateEnglish
+            openBladeModal, closeBladeModal, activeBladeModalGroup,
+            toggleFavoriteBlade, activePartModal, openPartModal, closePartModal, activePartConfigs,
+            selectedHistoryModal, openHistoryModal, closeHistoryModal, formatDateEnglish,
+            playerName, isEditingName, overallStats, resultTagCounts, getResultTagPercent, top3Blades, currentStreak,
+            careerDetailedStats
           };
         }
       }).mount('#app');
