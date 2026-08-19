@@ -259,11 +259,6 @@
                 </span>
               </div>
             </div>
-
-            <div class="text-[11px] sm:text-xs font-bold text-slate-400 group-hover:text-slate-200 flex items-center justify-between pt-2 mt-2 border-t border-slate-800">
-              <span>檢視詳細戰績</span>
-              <i class="fa-solid fa-arrow-right-long text-[#a2ff1f] group-hover:translate-x-1 transition-transform"></i>
-            </div>
           </div>
         </div>
 
@@ -283,13 +278,13 @@
 
         <form @submit.prevent="startMatch" class="space-y-5">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
+            <div class="min-w-0">
               <label class="block text-xs sm:text-sm font-bold mb-1.5 text-slate-300">比賽名稱</label>
               <input type="text" v-model="matchSetup.name" placeholder="例如: 8月17日第4場比賽" class="w-full bg-[#080c14] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-[#a2ff1f] focus:ring-1 focus:ring-[#a2ff1f]" required>
             </div>
-            <div>
+            <div class="min-w-0">
               <label class="block text-xs sm:text-sm font-bold mb-1.5 text-slate-300">比賽日期</label>
-              <input type="date" v-model="matchSetup.date" class="w-full bg-[#080c14] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-[#a2ff1f] focus:ring-1 focus:ring-[#a2ff1f]" required>
+              <input type="date" v-model="matchSetup.date" class="w-full max-w-full min-w-0 bg-[#080c14] border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-[#a2ff1f] focus:ring-1 focus:ring-[#a2ff1f] [color-scheme:dark]" required>
             </div>
           </div>
 
