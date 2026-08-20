@@ -94,6 +94,97 @@
     .animate-flame {
       animation: flameFlicker 1.2s ease-in-out infinite;
     }
+
+    @keyframes goldShimmer {
+      0%, 100% {
+        color: #fef08a;
+        text-shadow: 0 0 6px #eab308, 0 0 12px #f59e0b;
+        border-color: rgba(251, 191, 36, 0.9);
+        box-shadow: 0 0 10px rgba(245, 158, 11, 0.5), inset 0 0 6px rgba(253, 224, 71, 0.2);
+      }
+      50% {
+        color: #ffffff;
+        text-shadow: 0 0 2px #fef08a, 0 0 4px #eab308;
+        border-color: rgba(245, 158, 11, 0.4);
+        box-shadow: 0 0 4px rgba(245, 158, 11, 0.2), inset 0 0 2px rgba(253, 224, 71, 0.05);
+      }
+    }
+    .animate-gold-shimmer {
+      animation: goldShimmer 1.8s ease-in-out infinite;
+    }
+
+    @keyframes g3Shimmer {
+      0%, 100% {
+        color: #f8b500;
+        text-shadow: 0 0 6px #f8b500, 0 0 12px #f8b500;
+        border-color: rgba(248, 181, 0, 0.9);
+        box-shadow: 0 0 10px rgba(248, 181, 0, 0.5), inset 0 0 6px rgba(248, 181, 0, 0.2);
+      }
+      50% {
+        color: #ffffff;
+        text-shadow: 0 0 2px #f8b500, 0 0 4px #f8b500;
+        border-color: rgba(248, 181, 0, 0.4);
+        box-shadow: 0 0 4px rgba(248, 181, 0, 0.2), inset 0 0 2px rgba(248, 181, 0, 0.05);
+      }
+    }
+    .animate-g3-shimmer {
+      animation: g3Shimmer 1.8s ease-in-out infinite;
+    }
+
+    @keyframes g2Shimmer {
+      0%, 100% {
+        color: #90c31f;
+        text-shadow: 0 0 6px #90c31f, 0 0 12px #90c31f;
+        border-color: rgba(144, 195, 31, 0.9);
+        box-shadow: 0 0 10px rgba(144, 195, 31, 0.5), inset 0 0 6px rgba(144, 195, 31, 0.2);
+      }
+      50% {
+        color: #ffffff;
+        text-shadow: 0 0 2px #90c31f, 0 0 4px #90c31f;
+        border-color: rgba(144, 195, 31, 0.4);
+        box-shadow: 0 0 4px rgba(144, 195, 31, 0.2), inset 0 0 2px rgba(144, 195, 31, 0.05);
+      }
+    }
+    .animate-g2-shimmer {
+      animation: g2Shimmer 1.8s ease-in-out infinite;
+    }
+
+    @keyframes g1Shimmer {
+      0%, 100% {
+        color: #00a0e9;
+        text-shadow: 0 0 6px #00a0e9, 0 0 12px #00a0e9;
+        border-color: rgba(0, 160, 233, 0.9);
+        box-shadow: 0 0 10px rgba(0, 160, 233, 0.5), inset 0 0 6px rgba(0, 160, 233, 0.2);
+      }
+      50% {
+        color: #ffffff;
+        text-shadow: 0 0 2px #00a0e9, 0 0 4px #00a0e9;
+        border-color: rgba(0, 160, 233, 0.4);
+        box-shadow: 0 0 4px rgba(0, 160, 233, 0.2), inset 0 0 2px rgba(0, 160, 233, 0.05);
+      }
+    }
+    .animate-g1-shimmer {
+      animation: g1Shimmer 1.8s ease-in-out infinite;
+    }
+
+    /* 新增：上蓋勳章閃爍效果 */
+    @keyframes cyanShimmer {
+      0%, 100% {
+        color: #22d3ee;
+        text-shadow: 0 0 4px #06b6d4;
+        border-color: rgba(34, 211, 238, 0.9);
+        box-shadow: 0 0 8px rgba(6, 182, 212, 0.4);
+      }
+      50% {
+        color: #ffffff;
+        text-shadow: 0 0 2px #22d3ee;
+        border-color: rgba(34, 211, 238, 0.4);
+        box-shadow: 0 0 2px rgba(6, 182, 212, 0.2);
+      }
+    }
+    .animate-cyan-shimmer {
+      animation: cyanShimmer 1.8s ease-in-out infinite;
+    }
   </style>
 </head>
 <body class="min-h-screen text-slate-100 pb-28 md:pb-12 pt-3 sm:pt-6 bg-[#080c14]">
@@ -155,11 +246,10 @@
 
               <input type="text" v-model="form.bladeName" @change="checkAndApplyBladeSystem(form.bladeName)" placeholder="戰刃名稱 (例如: 魔導神杖)" class="w-full bg-[#111827] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-[#a2ff1f] focus:ring-1 focus:ring-[#a2ff1f]" required>
               <div>
-                <label class="block text-[10px] text-amber-400 font-bold mb-1 flex items-center justify-between">
-                  <span>戰刃圖片網址 <span class="text-red-400">*必填</span></span>
-                  <span v-if="!form.bladeImg.trim()" class="text-[10px] text-red-400">尚未填寫</span>
+                <label class="block text-[10px] text-amber-400 font-bold mb-1">
+                  戰刃圖片網址
                 </label>
-                <input type="text" v-model="form.bladeImg" placeholder="圖片網址 (必填，可由內建圖鑑擷取)" class="w-full bg-[#111827] border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-300 placeholder-slate-500 focus:outline-none focus:border-[#a2ff1f]" required>
+                <input type="text" v-model="form.bladeImg" placeholder="圖片網址 (可由內建圖鑑擷取)" class="w-full bg-[#111827] border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-300 placeholder-slate-500 focus:outline-none focus:border-[#a2ff1f]" required>
               </div>
             </div>
 
@@ -231,11 +321,6 @@
             <span>已存在完全相同的陀螺組合 ({{ previewFullName }})，請更換零件搭配！</span>
           </div>
 
-          <div v-if="!form.bladeImg.trim()" class="p-3 bg-amber-950/30 border border-amber-500/40 rounded-2xl text-amber-300 text-xs flex items-center gap-2">
-            <i class="fa-solid fa-triangle-exclamation text-amber-400 shrink-0"></i>
-            <span>請填入或從圖鑑擷取「戰刃圖片網址」以完成建置。</span>
-          </div>
-
           <button type="submit" :disabled="isDuplicateConfig || !previewFullName || !form.bladeImg.trim()" class="w-full py-4 bg-[#a2ff1f] hover:bg-[#8ee613] disabled:bg-slate-800 disabled:text-slate-600 text-slate-950 font-black rounded-2xl transition shadow-lg flex items-center justify-center gap-2 text-base uppercase tracking-wider cursor-pointer disabled:cursor-not-allowed">
             <i class="fa-solid fa-floppy-disk"></i> 登錄並儲存配置
           </button>
@@ -277,15 +362,32 @@
             @click="openBladeModal(group.bladeName)"
             :class="['group bg-[#080c14] border hover:border-[#a2ff1f] rounded-2xl p-3 sm:p-4 shadow-md hover:shadow-[0_0_15px_rgba(162,255,31,0.2)] transition-all duration-300 cursor-pointer relative overflow-hidden flex flex-col justify-between', group.isFavorite ? 'border-amber-400/80 ring-1 ring-amber-400/40' : 'border-slate-800']"
           >
-            <button 
-              @click.stop="toggleFavoriteBlade(group.bladeName)" 
-              class="absolute top-2.5 right-2.5 z-10 w-7 h-7 rounded-full bg-[#111827]/80 backdrop-blur-sm border border-slate-700 flex items-center justify-center transition hover:scale-110 active:scale-95 shadow-sm cursor-pointer"
-              :title="group.isFavorite ? '取消置頂' : '設為最愛置頂'"
-            >
-              <i :class="['fa-star text-xs transition-colors', group.isFavorite ? 'fa-solid text-amber-400' : 'fa-regular text-slate-500 hover:text-amber-400']"></i>
-            </button>
+            <!-- 右上角區塊：上蓋勳章與最愛按鈕 (向左偏移並套用閃爍動畫) -->
+            <div class="absolute top-2.5 right-2.5 z-10 flex items-center gap-1.5 mr-0.5">
+              <span 
+                v-if="group.totalRounds >= 8 && group.roundWins < 8" 
+                class="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-black border border-cyan-400/80 bg-cyan-950/80 backdrop-blur-xs shadow-xs animate-cyan-shimmer" 
+                title="羈絆：比賽回合達 8 回以上"
+              >
+                羈絆
+              </span>
+              <span 
+                v-if="group.roundWins >= 8" 
+                class="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-black border border-amber-400/80 bg-amber-950/80 backdrop-blur-xs shadow-xs animate-gold-shimmer" 
+                title="精熟：勝場回合達 8 回以上"
+              >
+                精熟
+              </span>
+              <button 
+                @click.stop="toggleFavoriteBlade(group.bladeName)" 
+                class="w-7 h-7 rounded-full bg-[#111827]/80 backdrop-blur-sm border border-slate-700 flex items-center justify-center transition hover:scale-110 active:scale-95 shadow-sm cursor-pointer"
+                :title="group.isFavorite ? '取消置頂' : '設為最愛置頂'"
+              >
+                <i :class="['fa-star text-xs transition-colors', group.isFavorite ? 'fa-solid text-amber-400' : 'fa-regular text-slate-500 hover:text-amber-400']"></i>
+              </button>
+            </div>
 
-            <div class="flex items-center justify-between gap-1.5 mb-1.5 pr-6">
+            <div class="flex items-center justify-between gap-1.5 mb-1.5 pr-20">
               <h3 class="text-sm sm:text-base font-black text-slate-100 group-hover:text-[#a2ff1f] transition-colors truncate flex items-center gap-1.5">
                 <img 
                   :src="group.bladeName.includes('龍騎士') ? 'https://beyblade.phstudy.org/images/icons/icon_spin_left.png' : 'https://beyblade.phstudy.org/images/icons/icon_spin_right.png'" 
@@ -447,9 +549,9 @@
             <span :class="['px-2 py-0.5 rounded text-[10px] font-black shrink-0', activeMatch.stadiumType === '無限盤' ? 'bg-[#e4007f]/20 text-[#e4007f] border border-[#e4007f]/40' : 'bg-[#ee7800]/20 text-[#ee7800] border border-[#ee7800]/40']">
               {{ activeMatch.stadiumType || '標準盤' }}
             </span>
-            <!-- 站位標籤 (銀白色) -->
-            <span class="px-2 py-0.5 rounded text-[10px] font-black shrink-0 bg-slate-200 text-slate-950 border border-slate-300">
-              {{ activeMatch.matchSide || 'B-side' }}
+            <!-- 站位標籤 (僅非無限盤顯示) -->
+            <span v-if="activeMatch.stadiumType !== '無限盤' && activeMatch.matchSide" class="px-2 py-0.5 rounded text-[10px] font-black shrink-0 bg-slate-200 text-slate-950 border border-slate-300">
+              {{ activeMatch.matchSide }}
             </span>
           </div>
           <button @click="promptCancelMatch" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white text-xs font-bold rounded-full border border-slate-700 transition shrink-0 ml-2 cursor-pointer">
@@ -624,6 +726,23 @@
                   <span>{{ playerName || 'BEYBLADER' }}</span>
                   <i class="fa-solid fa-pen-to-square text-xs sm:text-sm text-slate-500 hover:text-[#a2ff1f]"></i>
                 </h2>
+              </div>
+
+              <!-- 勳章展示區塊 -->
+              <div v-if="unlockedBadges.length" class="flex flex-wrap items-center gap-1.5 mt-2">
+                <span 
+                  v-for="badge in unlockedBadges" 
+                  :key="badge.name"
+                  :class="[
+                    'px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-black tracking-wide border select-none',
+                    badge.type === 'g3' ? 'animate-g3-shimmer border-[#f8b500]/80 bg-[#f8b500]/10' :
+                    badge.type === 'g2' ? 'animate-g2-shimmer border-[#90c31f]/80 bg-[#90c31f]/10' :
+                    badge.type === 'g1' ? 'animate-g1-shimmer border-[#00a0e9]/80 bg-[#00a0e9]/10' :
+                    'border-amber-300/80 text-amber-200 bg-amber-950/40 animate-gold-shimmer'
+                  ]"
+                >
+                  {{ badge.name }}
+                </span>
               </div>
             </div>
           </div>
@@ -948,7 +1067,7 @@
       </div>
     </div>
 
-    <!-- Modal 2: 內建圖鑑 (自動偵測頁面圖片 ≤5張) -->
+    <!-- Modal 2: 內建圖鑑 -->
     <div v-if="showDbModal" @click.self="showDbModal = false" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 z-50">
       <div class="bg-[#111827] border border-slate-800 rounded-3xl p-4 sm:p-5 w-full max-w-4xl h-[88vh] flex flex-col shadow-2xl">
         <div class="flex justify-between items-center pb-3 border-b border-slate-800">
@@ -958,52 +1077,8 @@
           <button @click="showDbModal = false" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center font-bold transition cursor-pointer">✕</button>
         </div>
 
-        <!-- 自動擷取圖片面板 -->
-        <div class="bg-[#080c14] p-3 border-b border-slate-800 space-y-2">
-          <div class="flex items-center justify-between text-xs">
-            <span class="font-bold text-slate-300 flex items-center gap-1.5">
-              <i class="fa-solid fa-camera text-[#a2ff1f]"></i> 自動圖片偵測區
-            </span>
-            <span v-if="detectedImages.length > 5" class="text-amber-400 font-bold">
-              <i class="fa-solid fa-triangle-exclamation mr-1"></i>偵測到 {{ detectedImages.length }} 張圖片 (>5張)，不進行自動抓取
-            </span>
-            <span v-else-if="detectedImages.length > 0" class="text-[#a2ff1f] font-bold">
-              偵測到 {{ detectedImages.length }} 張圖片 (≤5張)，請點選要帶入的圖片
-            </span>
-            <span v-else class="text-slate-500">
-              尚無選擇圖片，請於下方圖庫網頁中右鍵「複製圖片網址」或由系統抓取
-            </span>
-          </div>
-
-          <!-- 候選圖片清單 -->
-          <div v-if="detectedImages.length > 0 && detectedImages.length <= 5" class="flex items-center gap-3 overflow-x-auto py-1">
-            <div 
-              v-for="imgUrl in detectedImages" 
-              :key="imgUrl" 
-              @click="selectedDetectedImage = imgUrl"
-              :class="['w-16 h-16 rounded-xl border-2 p-1 bg-[#111827] cursor-pointer shrink-0 transition-all flex items-center justify-center relative', selectedDetectedImage === imgUrl ? 'border-[#a2ff1f] ring-2 ring-[#a2ff1f]/40 scale-105' : 'border-slate-700 opacity-70 hover:opacity-100']"
-            >
-              <img :src="imgUrl" class="max-w-full max-h-full object-contain">
-              <span v-if="selectedDetectedImage === imgUrl" class="absolute -top-1 -right-1 w-4 h-4 bg-[#a2ff1f] text-slate-950 rounded-full flex items-center justify-center text-[10px] font-black">✓</span>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between gap-2 pt-1">
-            <button @click="scanIframeImages" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-lg border border-slate-700 transition cursor-pointer">
-              <i class="fa-solid fa-rotate mr-1"></i>重新偵測頁面圖片
-            </button>
-            <button 
-              @click="confirmSelectedDetectedImage" 
-              :disabled="!selectedDetectedImage" 
-              class="px-4 py-1.5 bg-[#a2ff1f] hover:bg-[#8ee613] disabled:bg-slate-800 disabled:text-slate-600 text-slate-950 font-black text-xs rounded-lg transition shadow cursor-pointer disabled:cursor-not-allowed"
-            >
-              確認貼到戰刃網址
-            </button>
-          </div>
-        </div>
-
         <div class="flex-1 my-2 bg-[#080c14] rounded-2xl overflow-hidden relative border border-slate-800 shadow-inner">
-          <iframe id="dbIframe" @load="scanIframeImages" src="https://beyblade.phstudy.org/index.html" class="w-full h-full border-0"></iframe>
+          <iframe id="dbIframe" src="https://beyblade.phstudy.org/index.html" class="w-full h-full border-0"></iframe>
         </div>
       </div>
     </div>
@@ -1246,7 +1321,7 @@
 
     <!-- Modal 6: 歷史戰績對戰明細 (多輪陣容歷史) -->
     <div v-if="selectedHistoryModal" @click.self="closeHistoryModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 z-[60] overflow-y-auto">
-      <div class="bg-[#111827] border border-slate-800 rounded-3xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="bg-[#111827] border border-slate-800 rounded-3xl max-w-xl w-full max-h-[93vh] flex flex-col shadow-2xl overflow-hidden">
         
         <div class="bg-[#080c14] text-white p-4 sm:p-5 flex items-center justify-between border-b border-slate-800">
           <div>
@@ -1259,15 +1334,20 @@
               ]">
                 {{ selectedHistoryModal.matchCategory }}
               </span>
-              <span v-if="selectedHistoryModal.resultTag === '冠軍'" class="text-[10px] font-black px-1.5 py-0.5 rounded border uppercase shrink-0 bg-amber-400/20 text-amber-400 border-amber-400/40">
-                冠軍
+              <span v-if="['一輪遊', '四強', '冠軍'].includes(selectedHistoryModal.resultTag)" :class="[
+                'text-[10px] font-black px-1.5 py-0.5 rounded border uppercase shrink-0',
+                selectedHistoryModal.resultTag === '冠軍' ? 'bg-amber-400/20 text-amber-400 border-amber-400/40' :
+                selectedHistoryModal.resultTag === '四強' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40' :
+                'bg-red-500/20 text-red-400 border-red-500/40'
+              ]">
+                {{ selectedHistoryModal.resultTag }}
               </span>
               <span :class="['text-[10px] font-black px-1.5 py-0.5 rounded border shrink-0', selectedHistoryModal.stadiumType === '無限盤' ? 'bg-[#e4007f]/20 text-[#e4007f] border-[#e4007f]/40' : 'bg-[#ee7800]/20 text-[#ee7800] border-[#ee7800]/40']">
                 {{ selectedHistoryModal.stadiumType || '標準盤' }}
               </span>
-              <!-- 站位標籤 (銀白色) -->
-              <span class="text-[10px] font-black px-1.5 py-0.5 rounded border shrink-0 bg-slate-200 text-slate-950 border-slate-300">
-                {{ selectedHistoryModal.matchSide || 'B-side' }}
+              <!-- 站位標籤 (僅非無限盤顯示) -->
+              <span v-if="selectedHistoryModal.stadiumType !== '無限盤' && selectedHistoryModal.matchSide" class="text-[10px] font-black px-1.5 py-0.5 rounded border shrink-0 bg-slate-200 text-slate-950 border-slate-300">
+                {{ selectedHistoryModal.matchSide }}
               </span>
             </div>
             <h3 class="text-lg sm:text-xl font-black text-white leading-tight">
@@ -1437,16 +1517,16 @@
                 </div>
               </div>
 
-              <!-- 極限勝利 -->
+              <!-- 爆裂勝利 -->
               <div class="bg-[#080c14] border border-slate-800 rounded-2xl p-3 flex flex-col items-center justify-between shadow-inner">
                 <div class="text-2xl sm:text-3xl font-black font-mono text-slate-100 my-1">
-                  {{ careerDetailedStats.extremeWins }}
+                  {{ careerDetailedStats.burstWins }}
                 </div>
                 <div class="text-xs font-black text-[#a2ff1f] uppercase tracking-wider mb-2">
-                  極限勝利
+                  爆裂勝利
                 </div>
                 <div class="text-[10px] text-slate-400 border-t border-slate-800/80 pt-1.5 w-full">
-                  極限勝次數
+                  爆裂勝次數
                 </div>
               </div>
 
@@ -1463,16 +1543,16 @@
                 </div>
               </div>
 
-              <!-- 爆裂勝利 -->
+              <!-- 極限勝利 -->
               <div class="bg-[#080c14] border border-slate-800 rounded-2xl p-3 flex flex-col items-center justify-between shadow-inner">
                 <div class="text-2xl sm:text-3xl font-black font-mono text-slate-100 my-1">
-                  {{ careerDetailedStats.burstWins }}
+                  {{ careerDetailedStats.extremeWins }}
                 </div>
                 <div class="text-xs font-black text-[#a2ff1f] uppercase tracking-wider mb-2">
-                  爆裂勝利
+                  極限勝利
                 </div>
                 <div class="text-[10px] text-slate-400 border-t border-slate-800/80 pt-1.5 w-full">
-                  爆裂勝次數
+                  極限勝次數
                 </div>
               </div>
 
@@ -1590,7 +1670,7 @@
 
     <!-- Modal 8: 成就達成場次對戰列表彈窗 (純展示) -->
     <div v-if="activeAchievementModal" @click.self="closeAchievementModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 z-[70] overflow-y-auto">
-      <div class="bg-[#111827] border border-[#a2ff1f]/40 rounded-3xl max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="bg-[#111827] border border-[#a2ff1f]/40 rounded-3xl max-w-lg w-full max-h-[88vh] flex flex-col shadow-2xl overflow-hidden">
         
         <div class="bg-[#080c14] text-white p-4 sm:p-5 flex items-center justify-between border-b border-slate-800">
           <div>
@@ -1627,8 +1707,8 @@
                 <span :class="['text-[10px] font-black px-1.5 py-0.5 rounded border shrink-0', match.stadiumType === '無限盤' ? 'bg-[#e4007f]/20 text-[#e4007f] border-[#e4007f]/40' : 'bg-[#ee7800]/20 text-[#ee7800] border-[#ee7800]/40']">
                   {{ match.stadiumType || '標準盤' }}
                 </span>
-                <span class="text-[10px] font-black px-1.5 py-0.5 rounded border shrink-0 bg-slate-200 text-slate-950 border-slate-300">
-                  {{ match.matchSide || 'B-side' }}
+                <span v-if="match.stadiumType !== '無限盤' && match.matchSide" class="text-[10px] font-black px-1.5 py-0.5 rounded border shrink-0 bg-slate-200 text-slate-950 border-slate-300">
+                  {{ match.matchSide }}
                 </span>
               </div>
               <div class="font-black text-sm sm:text-base text-white truncate">
@@ -1654,7 +1734,7 @@
 
     <!-- Modal 9: 賽事詳情與對戰設定視窗 -->
     <div v-if="showMatchDetailsModal" @click.self="showMatchDetailsModal = false" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 z-[60] overflow-y-auto">
-      <div class="bg-[#111827] border border-[#a2ff1f]/40 rounded-3xl max-w-lg w-full max-h-[90vh] flex flex-col p-5 sm:p-6 shadow-2xl relative overflow-hidden">
+      <div class="bg-[#111827] border border-[#a2ff1f]/40 rounded-3xl max-w-lg w-full max-h-[93vh] flex flex-col p-5 sm:p-6 shadow-2xl relative overflow-hidden">
         <div class="flex items-center justify-between border-b border-slate-800 pb-3 shrink-0">
           <h3 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
             <i class="fa-solid fa-trophy text-amber-500"></i> 賽事詳情與對戰設定
@@ -1680,7 +1760,7 @@
             <div class="grid grid-cols-2 gap-2 bg-[#111827] p-1.5 rounded-xl border border-slate-800">
               <button 
                 type="button" 
-                @click="matchSetup.stadiumType = '標準盤'"
+                @click="matchSetup.stadiumType = '標準盤'; if(!matchSetup.matchSide) matchSetup.matchSide = 'B-side';"
                 :class="['py-2 rounded-lg text-xs font-black transition cursor-pointer flex items-center justify-center gap-1.5', matchSetup.stadiumType === '標準盤' ? 'bg-[#ee7800] text-white shadow-md' : 'text-slate-400 hover:text-white']"
               >
                 <i class="fa-solid text-xs" :class="matchSetup.stadiumType === '標準盤' ? 'fa-circle-dot' : 'fa-circle text-slate-600'"></i>
@@ -1688,7 +1768,7 @@
               </button>
               <button 
                 type="button" 
-                @click="matchSetup.stadiumType = '無限盤'"
+                @click="matchSetup.stadiumType = '無限盤'; matchSetup.matchSide = '';"
                 :class="['py-2 rounded-lg text-xs font-black transition cursor-pointer flex items-center justify-center gap-1.5', matchSetup.stadiumType === '無限盤' ? 'bg-[#e4007f] text-white shadow-md' : 'text-slate-400 hover:text-white']"
               >
                 <i class="fa-solid text-xs" :class="matchSetup.stadiumType === '無限盤' ? 'fa-circle-dot' : 'fa-circle text-slate-600'"></i>
@@ -1697,8 +1777,8 @@
             </div>
           </div>
 
-          <!-- 比賽站位切換器 (銀白色膠囊按鈕) -->
-          <div class="p-3 bg-[#080c14] rounded-2xl border border-slate-800 space-y-2">
+          <!-- 比賽站位切換器 (銀白色膠囊按鈕，無限盤不顯示) -->
+          <div v-if="matchSetup.stadiumType !== '無限盤'" class="p-3 bg-[#080c14] rounded-2xl border border-slate-800 space-y-2">
             <label class="block text-xs font-bold text-slate-300">比賽站位</label>
             <div class="grid grid-cols-2 gap-2 bg-[#111827] p-1.5 rounded-xl border border-slate-800">
               <button 
@@ -1920,41 +2000,6 @@
             { bladeName: '', bladeImg: '', isCX: false, isIntegratedRatchet: false, assistName: '', ratchetName: '', bitName: '' },
             { bladeName: '', bladeImg: '', isCX: false, isIntegratedRatchet: false, assistName: '', ratchetName: '', bitName: '' }
           ]);
-
-          // 內建圖鑑自動圖片偵測狀態
-          const detectedImages = ref([]);
-          const selectedDetectedImage = ref('');
-
-          const scanIframeImages = () => {
-            try {
-              const iframe = document.getElementById('dbIframe');
-              if (!iframe || !iframe.contentWindow) return;
-              const doc = iframe.contentDocument || iframe.contentWindow.document;
-              if (!doc) return;
-
-              const imgs = Array.from(doc.querySelectorAll('img'));
-              const urls = imgs
-                .map(i => i.src)
-                .filter(src => src && !src.startsWith('data:') && !src.includes('placeholder'));
-              
-              const uniqueUrls = Array.from(new Set(urls));
-              detectedImages.value = uniqueUrls;
-              if (uniqueUrls.length > 0 && uniqueUrls.length <= 5) {
-                selectedDetectedImage.value = uniqueUrls[0];
-              } else {
-                selectedDetectedImage.value = '';
-              }
-            } catch (e) {
-              detectedImages.value = [];
-              selectedDetectedImage.value = '';
-            }
-          };
-
-          const confirmSelectedDetectedImage = () => {
-            if (!selectedDetectedImage.value) return;
-            form.value.bladeImg = selectedDetectedImage.value;
-            showDbModal.value = false;
-          };
 
           // 通用確認彈窗狀態
           const confirmModal = ref({ show: false, title: '', message: '', action: null });
@@ -2421,13 +2466,14 @@
 
           const startMatch = () => {
             if (matchSetup.value.selectedBeyblades.some(b => !b) || hasPartConflictInMatchSetup.value || !matchSetup.value.name.trim()) return;
+            const side = matchSetup.value.stadiumType === '無限盤' ? '' : (matchSetup.value.matchSide || 'B-side');
             activeMatch.value = {
               id: Date.now(), 
               name: matchSetup.value.name, 
               date: matchSetup.value.date,
               stadiumType: matchSetup.value.stadiumType || '標準盤',
               matchCategory: matchSetup.value.matchCategory || '交流賽',
-              matchSide: matchSetup.value.matchSide || 'B-side',
+              matchSide: side,
               selectedBeyblades: [...matchSetup.value.selectedBeyblades],
               rostersByRound: [[...matchSetup.value.selectedBeyblades]],
               myScore: 0, oppScore: 0, currentSlot: 0, currentRound: 1, spinsInRound: 0, logs: []
@@ -2730,6 +2776,48 @@
             };
           });
 
+          // 解鎖勳章計算
+          const unlockedBadges = computed(() => {
+            const badges = [];
+            const stats = careerDetailedStats.value;
+
+            if (stats.spinWins >= 24) badges.push({ name: '旋轉大師', type: 'gold' });
+            if (stats.overWins >= 16) badges.push({ name: '擊飛宗師', type: 'gold' });
+            if (stats.burstWins >= 13) badges.push({ name: '爆裂惡魔', type: 'gold' });
+            if (stats.extremeWins >= 8) badges.push({ name: '極限至尊', type: 'gold' });
+
+            let leftSpinMatchCount = 0;
+            let hasG3Champ = false;
+            let hasG2Champ = false;
+            let hasG1Champ = false;
+
+            matchHistory.value.forEach(match => {
+              const selected = match.selectedBeyblades || [];
+              let leftCount = 0;
+              selected.forEach(bName => {
+                if (bName && (bName.includes('龍騎士') || bName.includes('左'))) {
+                  leftCount++;
+                }
+              });
+              if (leftCount >= 2) {
+                leftSpinMatchCount++;
+              }
+
+              if (match.resultTag === '冠軍') {
+                if (match.matchCategory === 'G3') hasG3Champ = true;
+                if (match.matchCategory === 'G2') hasG2Champ = true;
+                if (match.matchCategory === 'G1') hasG1Champ = true;
+              }
+            });
+
+            if (leftSpinMatchCount >= 10) badges.push({ name: '左旋混亂', type: 'gold' });
+            if (hasG3Champ) badges.push({ name: 'G3冠軍', type: 'g3' });
+            if (hasG2Champ) badges.push({ name: 'G2冠軍', type: 'g2' });
+            if (hasG1Champ) badges.push({ name: 'G1冠軍', type: 'g1' });
+
+            return badges;
+          });
+
           // 成就對戰場次彈窗
           const openAchievementMatches = (achievementTitle) => {
             const matches = matchHistory.value.filter(match => {
@@ -2957,9 +3045,7 @@
             // Stats
             getStat, sortedMatchHistory, promptDeleteSingleHistory, formatDateEnglish,
             playerName, isEditingName, overallStats, bSideStats, xSideStats, resultTagCounts, getResultTagPercent, top3Blades, currentStreak,
-            isStreakPtsActive, careerDetailedStats,
-            // Iframe DB
-            scanIframeImages, detectedImages, selectedDetectedImage, confirmSelectedDetectedImage,
+            isStreakPtsActive, careerDetailedStats, unlockedBadges,
             // Backup
             searchQuery, generatedCode, importCodeInput, copySuccess,
             generateExportCode, copyExportCode, promptImportCode
