@@ -362,41 +362,35 @@
             @click="openBladeModal(group.bladeName)"
             :class="['group bg-[#080c14] border hover:border-[#a2ff1f] rounded-2xl p-3 sm:p-4 shadow-md hover:shadow-[0_0_15px_rgba(162,255,31,0.2)] transition-all duration-300 cursor-pointer relative overflow-hidden flex flex-col justify-between', group.isFavorite ? 'border-amber-400/80 ring-1 ring-amber-400/40' : 'border-slate-800']"
           >
-            <!-- 右上角區塊：上蓋勳章與最愛按鈕 (向左偏移並套用閃爍動畫) -->
-            <div class="absolute top-2.5 right-2.5 z-10 flex items-center gap-1.5 mr-0.5">
-              <span 
-                v-if="group.totalRounds >= 8 && group.roundWins < 8" 
-                class="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-black border border-cyan-400/80 bg-cyan-950/80 backdrop-blur-xs shadow-xs animate-cyan-shimmer" 
-                title="羈絆：比賽回合達 8 回以上"
-              >
-                羈絆
-              </span>
-              <span 
-                v-if="group.roundWins >= 8" 
-                class="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-black border border-amber-400/80 bg-amber-950/80 backdrop-blur-xs shadow-xs animate-gold-shimmer" 
-                title="精熟：勝場回合達 8 回以上"
-              >
-                精熟
-              </span>
-              <button 
-                @click.stop="toggleFavoriteBlade(group.bladeName)" 
-                class="w-7 h-7 rounded-full bg-[#111827]/80 backdrop-blur-sm border border-slate-700 flex items-center justify-center transition hover:scale-110 active:scale-95 shadow-sm cursor-pointer"
-                :title="group.isFavorite ? '取消置頂' : '設為最愛置頂'"
-              >
-                <i :class="['fa-star text-xs transition-colors', group.isFavorite ? 'fa-solid text-amber-400' : 'fa-regular text-slate-500 hover:text-amber-400']"></i>
-              </button>
-            </div>
-
-            <div class="flex items-center justify-between gap-1.5 mb-1.5 pr-20">
-              <h3 class="text-sm sm:text-base font-black text-slate-100 group-hover:text-[#a2ff1f] transition-colors truncate flex items-center gap-1.5">
+            <!-- 標頭列：戰刃名稱與勳章 (採用 Flex 排版，避免絕對定位覆蓋名稱) -->
+            <div class="flex items-center justify-between gap-1.5 mb-1.5 min-w-0">
+              <h3 class="text-xs sm:text-base font-black text-slate-100 group-hover:text-[#a2ff1f] transition-colors flex items-center gap-1 min-w-0 flex-1">
                 <img 
                   :src="group.bladeName.includes('龍騎士') ? 'https://beyblade.phstudy.org/images/icons/icon_spin_left.png' : 'https://beyblade.phstudy.org/images/icons/icon_spin_right.png'" 
                   :alt="group.bladeName.includes('龍騎士') ? '左迴旋' : '右迴旋'" 
                   :title="group.bladeName.includes('龍騎士') ? '左迴旋' : '右迴旋'" 
-                  class="w-4 h-4 object-contain shrink-0" 
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain shrink-0" 
                 />
-                <span>{{ group.bladeName }}</span>
+                <span class="truncate min-w-0 flex-1">{{ group.bladeName }}</span>
               </h3>
+
+              <!-- 上蓋勳章標籤區塊 (Flex 右側，絕對不與名稱重疊) -->
+              <div v-if="group.totalRounds >= 8" class="flex items-center gap-1 shrink-0">
+                <span 
+                  v-if="group.roundWins < 16" 
+                  class="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-black border border-cyan-400/80 bg-cyan-950/80 backdrop-blur-xs shadow-xs animate-cyan-shimmer" 
+                  title="羈絆：比賽回合達 8 回以上"
+                >
+                  羈絆
+                </span>
+                <span 
+                  v-else 
+                  class="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-black border border-amber-400/80 bg-amber-950/80 backdrop-blur-xs shadow-xs animate-gold-shimmer" 
+                  title="精熟：勝場回合達 16 回以上"
+                >
+                  精熟
+                </span>
+              </div>
             </div>
 
             <div class="w-full h-32 sm:h-40 md:h-44 bg-[#111827] border border-slate-800 rounded-xl p-2 flex items-center justify-center relative overflow-hidden my-1 shadow-inner group-hover:bg-slate-900 transition-colors">
@@ -1102,7 +1096,7 @@
 
     <!-- Modal 4: 戰刃詳細戰績 -->
     <div v-if="activeBladeModalGroup" @click.self="closeBladeModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 z-50 overflow-y-auto">
-      <div class="bg-[#111827] border border-slate-800 rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="bg-[#111827] border border-slate-800 rounded-3xl max-w-2xl w-full max-h-[93vh] flex flex-col shadow-2xl overflow-hidden">
         
         <div class="bg-[#080c14] text-white p-5 sm:p-6 relative flex items-center justify-between border-b border-slate-800">
           <div class="flex items-center gap-4 relative z-10">
@@ -1114,7 +1108,14 @@
             <div>
               <div class="text-xs text-[#a2ff1f] font-extrabold tracking-widest uppercase">BLADE PROFILE</div>
               <h2 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-                {{ activeBladeModalGroup.bladeName }}
+                <span>{{ activeBladeModalGroup.bladeName }}</span>
+                <button 
+                  @click="toggleFavoriteBlade(activeBladeModalGroup.bladeName)" 
+                  class="text-amber-400 hover:scale-110 active:scale-95 transition cursor-pointer p-1 ml-1"
+                  :title="activeBladeModalGroup.isFavorite ? '取消最愛置頂' : '設為最愛置頂'"
+                >
+                  <i :class="[activeBladeModalGroup.isFavorite ? 'fa-solid fa-star text-amber-400' : 'fa-regular fa-star text-slate-500 hover:text-amber-400']"></i>
+                </button>
               </h2>
               <p class="text-xs text-slate-400 mt-1">共收錄 {{ activeBladeModalGroup.items.length }} 款陀螺配置組合</p>
             </div>
@@ -2289,7 +2290,20 @@
               grp.netPts = grp.totalPtsScored - grp.totalPtsLost;
               return grp;
             }).sort((a, b) => {
+              // 1. 最愛戰刃優先置頂
               if (a.isFavorite !== b.isFavorite) return a.isFavorite ? -1 : 1;
+
+              // 2. 有精熟勳章優先 (勝場 >= 16)
+              const aMastery = a.roundWins >= 16;
+              const bMastery = b.roundWins >= 16;
+              if (aMastery !== bMastery) return aMastery ? -1 : 1;
+
+              // 3. 有羈絆勳章優先 (總回合 >= 8 且 勝場 < 16)
+              const aBond = a.totalRounds >= 8 && a.roundWins < 16;
+              const bBond = b.totalRounds >= 8 && b.roundWins < 16;
+              if (aBond !== bBond) return aBond ? -1 : 1;
+
+              // 4. 總回合數多者優先
               return b.totalRounds - a.totalRounds || parseFloat(b.roundWinRate) - parseFloat(a.roundWinRate);
             });
           });
