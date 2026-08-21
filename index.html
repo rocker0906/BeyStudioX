@@ -2906,7 +2906,7 @@
 
           // B-side 與 X-side 戰績統計
           const bSideStats = computed(() => {
-            const bMatches = matchHistory.value.filter(m => (m.matchSide || 'B-side') === 'B-side');
+            const bMatches = matchHistory.value.filter(m => m.stadiumType !== '無限盤' && m.matchSide === 'B-side');
             if (!bMatches.length) return { total: 0, wins: 0, rate: '0.0' };
             const wins = bMatches.filter(m => m.winner === 'MY' || m.myScore > m.oppScore).length;
             return {
@@ -2917,7 +2917,7 @@
           });
 
           const xSideStats = computed(() => {
-            const xMatches = matchHistory.value.filter(m => m.matchSide === 'X-side');
+            const xMatches = matchHistory.value.filter(m => m.stadiumType !== '無限盤' && m.matchSide === 'X-side');
             if (!xMatches.length) return { total: 0, wins: 0, rate: '0.0' };
             const wins = xMatches.filter(m => m.winner === 'MY' || m.myScore > m.oppScore).length;
             return {
