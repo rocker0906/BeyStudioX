@@ -49,7 +49,6 @@
     }
 
     [v-cloak] { display: none; }
-    *, ::before, ::after { box-sizing: border-box; }
     
     html, body {
       max-width: 100vw;
@@ -286,33 +285,37 @@
           {{ searchQuery ? '搜尋不到符合關鍵字的陀螺配置' : '尚未登錄任何陀螺配置' }}
         </div>
 
-        <!-- 卡片網格：手機端 3 排並列 -->
-        <div v-else class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
+        <!-- 卡片網格 -->
+        <div v-else class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
           <div 
             v-for="group in filteredGroupedConfigs" 
             :key="group.bladeName" 
             @click="openBladeModal(group.bladeName)"
-            :class="['group bg-[#080c14] border hover:border-[#a2ff1f] rounded-2xl p-2 sm:p-4 shadow-md hover:shadow-[0_0_15px_rgba(162,255,31,0.2)] transition-all duration-300 cursor-pointer relative overflow-hidden flex flex-col justify-between', group.isFavorite ? 'border-amber-400/80 ring-1 ring-amber-400/40' : 'border-slate-800']"
+            :class="['group bg-[#080c14] border hover:border-[#a2ff1f] rounded-2xl p-3 sm:p-4 shadow-md hover:shadow-[0_0_15px_rgba(162,255,31,0.2)] transition-all duration-300 cursor-pointer relative overflow-hidden flex flex-col justify-between', group.isFavorite ? 'border-amber-400/80 ring-1 ring-amber-400/40' : 'border-slate-800']"
           >
-            <!-- 頂部資訊列：迴旋方向圖示 (左上) 與 勳章標籤 (右上) -->
-            <div class="flex items-center justify-between gap-1 mb-1 min-w-0">
-              <img 
-                :src="group.bladeName.includes('龍騎士') ? 'https://beyblade.phstudy.org/images/icons/icon_spin_left.png' : 'https://beyblade.phstudy.org/images/icons/icon_spin_right.png'" 
-                :alt="group.bladeName.includes('龍騎士') ? '左迴旋' : '右迴旋'" 
-                class="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain shrink-0" 
-              />
+            <!-- 標頭列：戰刃名稱與勳章 -->
+            <div class="flex items-center justify-between gap-1.5 mb-1.5 min-w-0">
+              <h3 class="text-xs sm:text-base font-black text-slate-100 group-hover:text-[#a2ff1f] transition-colors flex items-center gap-1 min-w-0 flex-1">
+                <img 
+                  :src="group.bladeName.includes('龍騎士') ? 'https://beyblade.phstudy.org/images/icons/icon_spin_left.png' : 'https://beyblade.phstudy.org/images/icons/icon_spin_right.png'" 
+                  :alt="group.bladeName.includes('龍騎士') ? '左迴旋' : '右迴旋'" 
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain shrink-0" 
+                />
+                <span class="truncate min-w-0 flex-1">{{ group.bladeName }}</span>
+              </h3>
 
+              <!-- 上蓋勳章標籤區塊 -->
               <div v-if="group.totalRounds >= 8" class="flex items-center gap-1 shrink-0">
                 <span 
                   v-if="group.roundWins < 16" 
-                  class="px-1 py-0.2 rounded text-[8px] sm:text-[10px] font-black border border-cyan-400/80 bg-cyan-950/80 backdrop-blur-xs shadow-xs animate-cyan-shimmer" 
+                  class="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-black border border-cyan-400/80 bg-cyan-950/80 backdrop-blur-xs shadow-xs animate-cyan-shimmer" 
                   title="羈絆：比賽回合達 8 回以上"
                 >
                   羈絆
                 </span>
                 <span 
                   v-else 
-                  class="px-1 py-0.2 rounded text-[8px] sm:text-[10px] font-black border border-amber-400/80 bg-amber-950/80 backdrop-blur-xs shadow-xs animate-gold-shimmer" 
+                  class="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-black border border-amber-400/80 bg-amber-950/80 backdrop-blur-xs shadow-xs animate-gold-shimmer" 
                   title="精熟：勝場回合達 16 回以上"
                 >
                   精熟
@@ -320,8 +323,7 @@
               </div>
             </div>
 
-            <!-- 戰刃圖片縮圖 -->
-            <div class="w-full h-20 sm:h-36 md:h-40 bg-[#111827] border border-slate-800 rounded-xl p-1 sm:p-2 flex items-center justify-center relative overflow-hidden my-0.5 shadow-inner group-hover:bg-slate-900 transition-colors">
+            <div class="w-full h-32 sm:h-40 md:h-44 bg-[#111827] border border-slate-800 rounded-xl p-2 flex items-center justify-center relative overflow-hidden my-1 shadow-inner group-hover:bg-slate-900 transition-colors">
               <img 
                 :src="group.bladeImg || placeholderImage" 
                 class="w-full h-full object-contain filter drop-shadow-md group-hover:scale-110 transition-transform duration-300" 
@@ -329,20 +331,20 @@
               >
             </div>
 
-            <!-- 戰刃名稱 (縮圖正下方，文字置中) -->
-            <h3 class="text-[11px] sm:text-base font-black text-slate-100 group-hover:text-[#a2ff1f] transition-colors text-center truncate my-1 px-0.5">
-              {{ group.bladeName }}
-            </h3>
-
-            <!-- 數據資訊欄位 (僅顯示總回合與勝率) -->
-            <div class="grid grid-cols-2 gap-1 bg-[#111827] p-1.5 rounded-xl border border-slate-800 text-center mt-0.5">
+            <div class="grid grid-cols-3 gap-1 sm:gap-2 bg-[#111827] p-2 rounded-xl border border-slate-800 text-center mt-1.5">
               <div>
-                <span class="block text-[8px] sm:text-[10px] font-bold text-slate-500 leading-none mb-0.5">總回合</span>
-                <span class="text-[10px] sm:text-sm font-black text-slate-200 leading-tight">{{ group.totalRounds }}</span>
+                <span class="block text-[9px] sm:text-[10px] font-bold text-slate-500">總回合</span>
+                <span class="text-xs sm:text-sm font-black text-slate-200">{{ group.totalRounds }}</span>
               </div>
               <div>
-                <span class="block text-[8px] sm:text-[10px] font-bold text-slate-500 leading-none mb-0.5">勝率</span>
-                <span class="text-[10px] sm:text-sm font-black text-[#a2ff1f] leading-tight">{{ group.roundWinRate }}%</span>
+                <span class="block text-[9px] sm:text-[10px] font-bold text-slate-500">勝率</span>
+                <span class="text-xs sm:text-sm font-black text-[#a2ff1f]">{{ group.roundWinRate }}%</span>
+              </div>
+              <div>
+                <span class="block text-[9px] sm:text-[10px] font-bold text-slate-500">淨勝分</span>
+                <span :class="['text-xs sm:text-sm font-black', group.netPts >= 0 ? 'text-[#a2ff1f]' : 'text-red-400']">
+                  {{ group.netPts >= 0 ? '+' : '' }}{{ group.netPts }}
+                </span>
               </div>
             </div>
           </div>
@@ -394,7 +396,7 @@
                 <span v-else-if="isSlotConflicted(slot)" class="text-[10px] text-red-400 font-mono font-bold bg-red-950/50 px-2 py-0.5 rounded border border-red-500/40">未就緒</span>
               </div>
 
-              <!-- 當前選定組合預覽 (含軸心小圖示) -->
+              <!-- 當前選定組合預覽 -->
               <div class="text-[11px] font-black text-slate-300 flex items-center flex-wrap gap-1.5 break-all">
                 <span class="text-slate-500 font-normal shrink-0">組合：</span>
                 <span class="text-[#a2ff1f]">{{ matchSetup.selectedBeyblades[slot] || '尚未完成零件搭配' }}</span>
@@ -2230,7 +2232,6 @@
                   isFavorite: favorites.value.includes(bName)
                 };
               }
-              if (!groups[bName].bladeImg && item.bladeImg) groups[bName].bladeImg = item.bladeImg;
               groups[bName].items.push(item);
             });
 
@@ -2742,22 +2743,7 @@
           const closeAchievementModal = () => { activeAchievementModal.value = null; };
 
           const overallStats = computed(() => {
-            const totalMatches = matchHistory.value.length;
-            let totalRounds = 0, totalWins = 0, totalLosses = 0, totalNetPts = 0;
-
-            configurations.value.forEach(c => {
-              const st = getStat(c.fullName);
-              totalRounds += st.totalRounds;
-              totalWins += st.roundWins;
-              totalLosses += st.roundLosses;
-              totalNetPts += st.netPts;
-            });
-
-            const matchWins = matchHistory.value.filter(m => m.winner === 'MY' || m.myScore > m.oppScore).length;
-            const matchLosses = totalMatches - matchWins;
-            const roundWinRate = totalRounds > 0 ? ((totalWins / totalRounds) * 100).toFixed(1) : '0.0';
-
-            return { totalMatches, matchWins, matchLosses, totalRounds, totalWins, totalLosses, roundWinRate, totalNetPts };
+            return { totalMatches: matchHistory.value.length };
           });
 
           const bSideStats = computed(() => {
@@ -2775,7 +2761,7 @@
           });
 
           const resultTagCounts = computed(() => {
-            const counts = { '一輪遊': 0, '四強': 0, '冠軍': 0, '晉級': 0 };
+            const counts = { '一輪遊': 0, '四強': 0, '冠軍': 0 };
             matchHistory.value.forEach(m => {
               if (m.resultTag && counts[m.resultTag] !== undefined) counts[m.resultTag]++;
             });
@@ -2808,10 +2794,7 @@
                 bey_favorites: favorites.value,
                 bey_player_name: playerName.value
               };
-              const jsonStr = JSON.stringify(rawData);
-              generatedCode.value = (typeof LZString !== 'undefined') 
-                ? LZString.compressToBase64(jsonStr) 
-                : btoa(encodeURIComponent(jsonStr));
+              generatedCode.value = LZString.compressToBase64(JSON.stringify(rawData));
               copySuccess.value = false;
             } catch (e) {
               triggerConfirm('錯誤', '無法產生備份代碼！', () => {});
@@ -2841,16 +2824,8 @@
             if (!codeStr) return;
             triggerConfirm('警告：覆蓋舊有資料', '匯入代碼將會【完全覆蓋】目前的陀螺配置與歷史對戰紀錄，確定要繼續執行嗎？', () => {
               try {
-                let imported = null;
-                if (typeof LZString !== 'undefined') {
-                  const decompressed = LZString.decompressFromBase64(codeStr);
-                  if (decompressed) {
-                    try { imported = JSON.parse(decompressed); } catch (e) {}
-                  }
-                }
-                if (!imported) {
-                  imported = JSON.parse(decodeURIComponent(atob(codeStr)));
-                }
+                const decompressed = LZString.decompressFromBase64(codeStr);
+                const imported = JSON.parse(decompressed);
 
                 if (imported.bey_configs) configurations.value = imported.bey_configs;
                 if (imported.bey_part_memory) memoryStore.value = imported.bey_part_memory;
