@@ -124,12 +124,17 @@
   <div id="app" v-cloak class="max-w-md sm:max-w-2xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto px-3 sm:px-6">
 
     <!-- Header -->
-    <header class="app-header-notch text-white rounded-2xl md:rounded-3xl p-3.5 sm:p-4 mb-5 border border-[#a2ff1f]/30 relative overflow-hidden shadow-2xl text-center">
+    <header class="app-header-notch text-white rounded-2xl md:rounded-3xl p-3.5 sm:p-4 mb-5 border border-[#a2ff1f]/30 relative overflow-hidden shadow-2xl">
       <div class="absolute -right-8 -top-8 w-32 h-32 bg-[#a2ff1f]/10 rounded-full blur-3xl pointer-events-none"></div>
-      <h1 class="text-lg sm:text-xl font-black tracking-wide text-white relative z-10 flex items-center justify-center gap-2">
-        <span class="w-2.5 h-2.5 rounded-full bg-[#a2ff1f] shadow-[0_0_8px_#a2ff1f]"></span>
-        <span>BeyStudioX</span>
-      </h1>
+      <div class="relative z-10 flex items-center justify-between">
+        <h1 class="text-lg sm:text-xl font-black tracking-wide text-white flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#a2ff1f] shadow-[0_0_8px_#a2ff1f]"></span>
+          <span>BeyStudioX</span>
+        </h1>
+        <span class="text-xs sm:text-sm font-mono font-bold text-slate-400 select-none">
+          - 1.0.7
+        </span>
+      </div>
     </header>
 
     <!-- Tab 1: 新增配置 -->
