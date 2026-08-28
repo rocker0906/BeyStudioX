@@ -1387,21 +1387,27 @@
               <span>連續記錄</span>
             </h4>
             <div class="grid grid-cols-2 gap-3 text-center">
-              <div class="bg-[#080c14] border border-slate-800 rounded-2xl p-3.5 flex flex-col items-center justify-between shadow-inner relative overflow-hidden">
+              <div @click="openStreakWinsModal" class="bg-[#080c14] border border-slate-800 hover:border-[#a2ff1f]/60 rounded-2xl p-3.5 flex flex-col items-center justify-between shadow-inner relative overflow-hidden cursor-pointer transition active:scale-95 group" title="點擊查看最高連勝場次明細">
                 <div class="flex items-center gap-1.5 my-1">
-                  <span class="text-2xl sm:text-3xl font-black font-mono text-slate-100">{{ careerDetailedStats.maxStreakWins }}</span>
+                  <span class="text-2xl sm:text-3xl font-black font-mono text-slate-100 group-hover:text-[#a2ff1f] transition-colors">{{ careerDetailedStats.maxStreakWins }}</span>
                   <i v-if="currentStreak.type === 'WIN' && currentStreak.count > 0" class="fa-solid fa-fire text-orange-500 text-base animate-flame" title="連續進行中"></i>
                 </div>
-                <div class="text-xs font-black text-[#a2ff1f] uppercase tracking-wider mb-2">連續勝利</div>
+                <div class="text-xs font-black text-[#a2ff1f] uppercase tracking-wider mb-2 flex items-center gap-1">
+                  <span>連續勝利</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                </div>
                 <div class="text-[10px] text-slate-400 border-t border-slate-800/80 pt-1.5 w-full">最高連勝紀錄</div>
               </div>
 
-              <div class="bg-[#080c14] border border-slate-800 rounded-2xl p-3.5 flex flex-col items-center justify-between shadow-inner relative overflow-hidden">
+              <div @click="openStreakPtsModal" class="bg-[#080c14] border border-slate-800 hover:border-[#a2ff1f]/60 rounded-2xl p-3.5 flex flex-col items-center justify-between shadow-inner relative overflow-hidden cursor-pointer transition active:scale-95 group" title="點擊查看最高連續得分回合明細">
                 <div class="flex items-center gap-1.5 my-1">
-                  <span class="text-2xl sm:text-3xl font-black font-mono text-slate-100">{{ careerDetailedStats.maxStreakPts }}</span>
+                  <span class="text-2xl sm:text-3xl font-black font-mono text-slate-100 group-hover:text-[#a2ff1f] transition-colors">{{ careerDetailedStats.maxStreakPts }}</span>
                   <i v-if="isStreakPtsActive" class="fa-solid fa-fire text-orange-500 text-base animate-flame" title="連續進行中"></i>
                 </div>
-                <div class="text-xs font-black text-[#a2ff1f] uppercase tracking-wider mb-2">連續得分</div>
+                <div class="text-xs font-black text-[#a2ff1f] uppercase tracking-wider mb-2 flex items-center gap-1">
+                  <span>連續得分</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                </div>
                 <div class="text-[10px] text-slate-400 border-t border-slate-800/80 pt-1.5 w-full">最高連續得分</div>
               </div>
             </div>
@@ -1462,7 +1468,7 @@
               <div @click="openAchievementMatches('讓三の追四')" class="bg-[#080c14] border border-slate-800 hover:border-[#a2ff1f]/60 rounded-2xl p-3 flex flex-col items-center justify-between shadow-inner cursor-pointer transition active:scale-95">
                 <div class="text-2xl sm:text-3xl font-black font-mono text-slate-100 my-1">{{ careerDetailedStats.reverseComeback }}</div>
                 <div class="text-xs font-black text-[#a2ff1f] uppercase tracking-wider mb-2">讓三の追四</div>
-                <div class="text-[10px] text-slate-400 border-t border-slate-800/80 pt-1.5 w-full leading-tight">逆轉勝</div>
+                <div class="text-[10px] text-slate-400 border-t border-slate-800/80 pt-1.5 w-full leading-tight">0:3 逆轉勝</div>
               </div>
             </div>
           </div>
@@ -1784,6 +1790,135 @@
       </div>
     </div>
 
+    <!-- Modal 13: 最高連續得分回合記錄列表彈窗 -->
+    <div v-if="showStreakPtsModal" @click.self="closeStreakPtsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 z-[70] overflow-y-auto">
+      <div class="bg-[#111827] border border-[#a2ff1f]/40 rounded-3xl max-w-lg w-full max-h-[88vh] flex flex-col shadow-2xl overflow-hidden">
+        
+        <div class="bg-[#080c14] text-white p-4 sm:p-5 flex items-center justify-between border-b border-slate-800">
+          <div>
+            <div class="text-xs text-[#a2ff1f] font-extrabold tracking-widest uppercase flex items-center gap-1.5">
+              <i class="fa-solid fa-fire text-orange-500"></i> STREAK POINTS HISTORY
+            </div>
+            <h3 class="text-lg sm:text-xl font-black text-white leading-tight mt-0.5">
+              最高連續得分紀錄（{{ careerDetailedStats.maxStreakPts }} 分）
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">累計連續 {{ (careerDetailedStats.bestStreakLogs || []).length }} 個勝出回合</p>
+          </div>
+          <button @click="closeStreakPtsModal" class="w-8 h-8 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-full flex items-center justify-center transition shrink-0 cursor-pointer">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-2.5">
+          <div v-if="!careerDetailedStats.bestStreakLogs?.length" class="text-center py-8 text-slate-500 text-xs sm:text-sm">
+            尚未有連續得分紀錄
+          </div>
+          <div 
+            v-for="(log, idx) in careerDetailedStats.bestStreakLogs" 
+            :key="idx" 
+            class="bg-[#080c14] border border-slate-800 hover:border-slate-700 rounded-2xl p-3.5 shadow-sm flex flex-col gap-2 transition"
+          >
+            <div class="flex items-center justify-between text-xs border-b border-slate-800/80 pb-1.5">
+              <div class="flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-[#a2ff1f]/20 text-[#a2ff1f] border border-[#a2ff1f]/40 font-mono font-black text-[10px] flex items-center justify-center">
+                  #{{ idx + 1 }}
+                </span>
+                <span class="font-black text-amber-400 font-mono">
+                  R{{ log.round }}-P{{ log.slot + 1 }}
+                </span>
+                <span class="text-slate-400 font-mono text-[11px]">
+                  {{ formatDateShortMonth(log.matchDate) }}
+                </span>
+              </div>
+              <span class="text-xs font-bold text-slate-300 truncate max-w-[150px]">
+                {{ log.matchName }}
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between gap-2 flex-wrap text-xs">
+              <span class="font-bold text-slate-100 break-all flex-1 min-w-[120px]">
+                {{ log.beyblade }}
+              </span>
+              <span class="px-2.5 py-0.5 rounded-md font-extrabold text-xs shrink-0 flex items-center gap-1 bg-emerald-950/60 text-[#a2ff1f] border border-emerald-500/50">
+                <span>{{ log.type }}</span>
+                <span class="font-mono font-black">+{{ log.pts }}</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Modal 14: 最高連續勝利場次記錄列表彈窗 -->
+    <div v-if="showStreakWinsModal" @click.self="closeStreakWinsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 z-[70] overflow-y-auto">
+      <div class="bg-[#111827] border border-[#a2ff1f]/40 rounded-3xl max-w-lg w-full max-h-[88vh] flex flex-col shadow-2xl overflow-hidden">
+        
+        <div class="bg-[#080c14] text-white p-4 sm:p-5 flex items-center justify-between border-b border-slate-800">
+          <div>
+            <div class="text-xs text-[#a2ff1f] font-extrabold tracking-widest uppercase flex items-center gap-1.5">
+              <i class="fa-solid fa-trophy text-amber-400"></i> WIN STREAK MATCHES
+            </div>
+            <h3 class="text-lg sm:text-xl font-black text-white leading-tight mt-0.5">
+              最高連勝紀錄（{{ careerDetailedStats.maxStreakWins }} 連勝）
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">累計連續勝出 {{ (careerDetailedStats.bestStreakMatches || []).length }} 場比賽</p>
+          </div>
+          <button @click="closeStreakWinsModal" class="w-8 h-8 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-full flex items-center justify-center transition shrink-0 cursor-pointer">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-2.5">
+          <div v-if="!careerDetailedStats.bestStreakMatches?.length" class="text-center py-8 text-slate-500 text-xs sm:text-sm">
+            尚未有連勝場次紀錄
+          </div>
+          <div 
+            v-for="(match, idx) in careerDetailedStats.bestStreakMatches" 
+            :key="match.id || idx" 
+            class="bg-[#080c14] border border-slate-800 hover:border-slate-700 rounded-2xl p-3.5 shadow-sm flex items-center justify-between gap-3 transition"
+          >
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2 mb-1 flex-wrap">
+                <span class="w-5 h-5 rounded-full bg-[#a2ff1f]/20 text-[#a2ff1f] border border-[#a2ff1f]/40 font-mono font-black text-[10px] flex items-center justify-center shrink-0">
+                  #{{ idx + 1 }}
+                </span>
+                <span v-if="['G3', 'G2', 'G1'].includes(match.matchCategory)" :class="[
+                  'text-[10px] font-black px-1.5 py-0.5 rounded border uppercase shrink-0',
+                  match.matchCategory === 'G3' ? 'bg-[#f8b500]/20 text-[#f8b500] border-[#f8b500]/40' :
+                  match.matchCategory === 'G2' ? 'bg-[#90c31f]/20 text-[#90c31f] border-[#90c31f]/40' :
+                  'bg-[#00a0e9]/20 text-[#00a0e9] border-[#00a0e9]/40'
+                ]">
+                  {{ match.matchCategory }}
+                </span>
+                <span :class="['text-[10px] font-black px-1.5 py-0.5 rounded border shrink-0', match.stadiumType === '無限盤' ? 'bg-[#e4007f]/20 text-[#e4007f] border border-[#e4007f]/40' : 'bg-[#ee7800]/20 text-[#ee7800] border border-[#ee7800]/40']">
+                  {{ match.stadiumType || '標準盤' }}
+                </span>
+                <span v-if="match.stadiumType !== '無限盤' && match.matchSide" class="text-[10px] font-black px-1.5 py-0.5 rounded border shrink-0 bg-slate-200 text-slate-950 border-slate-300">
+                  {{ match.matchSide }}
+                </span>
+              </div>
+              <div class="font-black text-sm sm:text-base text-white truncate">
+                {{ match.name }}
+              </div>
+              <div class="text-xs text-slate-400 font-mono mt-0.5">
+                {{ formatDateEnglish(match.date) }}
+              </div>
+            </div>
+
+            <div class="bg-[#111827] px-3 py-1.5 rounded-xl border border-slate-800 text-center shrink-0">
+              <span class="text-sm sm:text-base font-black font-mono">
+                <span class="text-[#a2ff1f]">{{ match.myScore }}</span>
+                <span class="text-slate-600 mx-1">:</span>
+                <span class="text-red-400">{{ match.oppScore }}</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
   <script>
@@ -1880,6 +2015,8 @@
           const showSelectBladeModal = ref(false);
           const showBladeMemoryModal = ref(false);
           const selectingSlotIndex = ref(0);
+          const showStreakPtsModal = ref(false);
+          const showStreakWinsModal = ref(false);
 
           const selectedHistoryModal = ref(null);
           const selectedBladeGroup = ref(null);
@@ -1965,6 +2102,24 @@
 
           const closeConfigHistoryModal = () => {
             activeConfigHistoryModal.value = null;
+          };
+
+          const openStreakWinsModal = () => {
+            if (careerDetailedStats.value.maxStreakWins > 0) {
+              showStreakWinsModal.value = true;
+            }
+          };
+          const closeStreakWinsModal = () => {
+            showStreakWinsModal.value = false;
+          };
+
+          const openStreakPtsModal = () => {
+            if (careerDetailedStats.value.maxStreakPts > 0) {
+              showStreakPtsModal.value = true;
+            }
+          };
+          const closeStreakPtsModal = () => {
+            showStreakPtsModal.value = false;
           };
 
           const openPartModal = (category, name) => {
@@ -2606,6 +2761,10 @@
             let finishExtreme = 0, finishOver = 0, finishBurst = 0, finishOppFault = 0;
             let maxStreakWins = 0, curStreakWins = 0;
             let maxStreakPts = 0, currentRunPts = 0;
+            let bestStreakLogs = [];
+            let currentStreakLogs = [];
+            let bestStreakMatches = [];
+            let currentStreakMatches = [];
 
             const chronologicalMatches = [...matchHistory.value].reverse();
 
@@ -2613,14 +2772,19 @@
               const isWin = match.winner === 'MY' || match.myScore > match.oppScore;
               if (isWin) {
                 curStreakWins++;
-                if (curStreakWins > maxStreakWins) maxStreakWins = curStreakWins;
+                currentStreakMatches.push(match);
+                if (curStreakWins > maxStreakWins) {
+                  maxStreakWins = curStreakWins;
+                  bestStreakMatches = [...currentStreakMatches];
+                }
               } else {
                 curStreakWins = 0;
+                currentStreakMatches = [];
               }
 
               let matchSpinWins = 0;
               let matchExtremeWins = 0;
-              let oppReach3Pts = false;
+              let reached0to3 = false;
 
               if (Array.isArray(match.logs)) {
                 const chronologicalLogs = [...match.logs].reverse();
@@ -2629,7 +2793,20 @@
                   if (log.winner === 'MY') {
                     const pts = log.pts || 0;
                     currentRunPts += pts;
-                    if (currentRunPts > maxStreakPts) maxStreakPts = currentRunPts;
+                    currentStreakLogs.push({
+                      ...log,
+                      matchId: match.id,
+                      matchName: match.name,
+                      matchDate: match.date,
+                      matchCategory: match.matchCategory,
+                      stadiumType: match.stadiumType,
+                      matchSide: match.matchSide
+                    });
+
+                    if (currentRunPts > maxStreakPts) {
+                      maxStreakPts = currentRunPts;
+                      bestStreakLogs = [...currentStreakLogs];
+                    }
 
                     if (log.type === '轉停勝利') { spinWins++; matchSpinWins++; }
                     else if (log.type === '極限勝利') { extremeWins++; matchExtremeWins++; }
@@ -2637,9 +2814,10 @@
                     else if (log.type === '爆裂勝利') { burstWins++; }
                   } else {
                     currentRunPts = 0;
+                    currentStreakLogs = [];
                   }
 
-                  if (log.oppScoreHistory >= 3) oppReach3Pts = true;
+                  if (log.myScoreHistory === 0 && log.oppScoreHistory === 3) reached0to3 = true;
                 });
 
                 if (matchExtremeWins >= 2) extremeFeast++;
@@ -2647,7 +2825,7 @@
 
                 if (isWin) {
                   if (match.oppScore === 0) shutoutWins++;
-                  if (oppReach3Pts) reverseComeback++;
+                  if (reached0to3) reverseComeback++;
 
                   const lastLog = match.logs[0];
                   if (lastLog?.winner === 'MY') {
@@ -2661,7 +2839,7 @@
             });
 
             return {
-              maxStreakWins, maxStreakPts, spinWins, extremeWins, overWins, burstWins,
+              maxStreakWins, bestStreakMatches, maxStreakPts, bestStreakLogs, spinWins, extremeWins, overWins, burstWins,
               extremeFeast, staminaWill, shutoutWins, reverseComeback,
               finishExtreme, finishOver, finishBurst, finishOppFault
             };
@@ -2704,7 +2882,7 @@
               const isWin = match.winner === 'MY' || match.myScore > match.oppScore;
               let matchSpinWins = 0;
               let matchExtremeWins = 0;
-              let oppReach3Pts = false;
+              let reached0to3 = false;
 
               if (Array.isArray(match.logs)) {
                 match.logs.forEach(log => {
@@ -2712,14 +2890,14 @@
                     if (log.type === '轉停勝利') matchSpinWins++;
                     if (log.type === '極限勝利') matchExtremeWins++;
                   }
-                  if (log.oppScoreHistory >= 3) oppReach3Pts = true;
+                  if (log.myScoreHistory === 0 && log.oppScoreHistory === 3) reached0to3 = true;
                 });
               }
 
               if (achievementTitle === '極限の狂熱') return matchExtremeWins >= 2;
               if (achievementTitle === '持久の意志') return matchSpinWins >= 4;
               if (achievementTitle === '完封の勝利') return isWin && match.oppScore === 0;
-              if (achievementTitle === '讓三の追四') return isWin && oppReach3Pts;
+              if (achievementTitle === '讓三の追四') return isWin && reached0to3;
 
               const lastLog = match.logs?.[0];
               if (!isWin || !lastLog) return false;
@@ -2844,6 +3022,8 @@
           return {
             currentTab, currentTabLabel, isNavVisible, navTabs,
             showDbModal, showReorderModal, showCareerStatsModal, showMatchDetailsModal, showSelectBladeModal, showBladeMemoryModal,
+            showStreakWinsModal, openStreakWinsModal, closeStreakWinsModal,
+            showStreakPtsModal, openStreakPtsModal, closeStreakPtsModal,
             confirmModal, closeConfirmModal, executeConfirmAction,
             selectedBladeGroup, openBladeModal, closeBladeModal, activeBladeModalGroup,
             activePartModal, openPartModal, closePartModal, activePartConfigs,
