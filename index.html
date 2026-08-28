@@ -1360,52 +1360,13 @@
                   </span>
                 </div>
                 <div class="flex items-center justify-between gap-2 flex-wrap text-xs">
-                  <div class="flex-1 min-w-[140px]">
-                    <div v-if="!log._isEditingOpp" class="flex items-center gap-1.5 flex-wrap">
-                      <img 
-                        :src="getBladeImgByBeyblade(log.beyblade)" 
-                        class="w-6 h-6 object-contain shrink-0 filter drop-shadow-sm" 
-                        @error="$event.target.src = placeholderImage"
-                      >
-                      <span class="font-bold text-slate-100 break-all">{{ log.beyblade }}</span>
-                      <template v-if="log.oppBeyblade?.trim()">
-                        <span class="text-slate-400 font-normal">vs.</span>
-                        <span class="font-bold text-slate-100 break-all">{{ log.oppBeyblade.trim() }}</span>
-                      </template>
-                      <button 
-                        type="button" 
-                        @click.stop="log._isEditingOpp = true" 
-                        class="text-slate-500 hover:text-[#a2ff1f] transition p-1 cursor-pointer inline-flex items-center gap-1 text-[10px]" 
-                        :title="log.oppBeyblade ? '修改對手陀螺名稱' : '新增對手陀螺名稱'"
-                      >
-                        <i class="fa-solid fa-pen-to-square"></i>
-                        <span v-if="!log.oppBeyblade?.trim()" class="text-[10px] text-slate-500 hover:text-[#a2ff1f] underline">對手陀螺</span>
-                      </button>
-                    </div>
-                    <div v-else class="flex items-center gap-1.5 my-1">
-                      <img 
-                        :src="getBladeImgByBeyblade(log.beyblade)" 
-                        class="w-6 h-6 object-contain shrink-0 filter drop-shadow-sm" 
-                        @error="$event.target.src = placeholderImage"
-                      >
-                      <span class="text-[10px] text-slate-400 font-bold shrink-0">vs.</span>
-                      <input 
-                        type="text" 
-                        v-model="log.oppBeyblade" 
-                        @blur="log._isEditingOpp = false" 
-                        @keyup.enter="log._isEditingOpp = false" 
-                        placeholder="輸入陀螺名稱" 
-                        class="bg-[#111827] border border-[#a2ff1f] text-xs text-slate-100 font-bold rounded-lg px-2 py-1 focus:outline-none flex-1 min-w-[120px]"
-                        autofocus
-                      >
-                      <button 
-                        type="button" 
-                        @click.stop="log._isEditingOpp = false" 
-                        class="px-2 py-1 bg-[#a2ff1f] text-slate-950 rounded-lg text-[10px] font-black cursor-pointer shadow-xs hover:bg-[#8ee613]"
-                      >
-                        儲存
-                      </button>
-                    </div>
+                  <div class="flex items-center gap-1.5 flex-1 min-w-[120px]">
+                    <img 
+                      :src="getBladeImgByBeyblade(log.beyblade)" 
+                      class="w-6 h-6 object-contain shrink-0 filter drop-shadow-sm" 
+                      @error="$event.target.src = placeholderImage"
+                    >
+                    <span class="font-bold text-slate-100 break-all">{{ log.beyblade }}</span>
                   </div>
                   <span :class="['px-2.5 py-0.5 rounded-md font-extrabold text-xs shrink-0 flex items-center gap-1', log.winner === 'MY' ? 'bg-emerald-950/60 text-[#a2ff1f] border border-emerald-500/50' : 'bg-red-950/60 text-red-400 border border-red-500/50']">
                     <span>{{ log.type }}</span>
@@ -2189,9 +2150,6 @@
 
           const openHistoryModal = (history) => { selectedHistoryModal.value = history; };
           const closeHistoryModal = () => { 
-            if (selectedHistoryModal.value?.logs) {
-              selectedHistoryModal.value.logs.forEach(l => { if (l._isEditingOpp) l._isEditingOpp = false; });
-            }
             selectedHistoryModal.value = null; 
           };
           const openBladeModal = (bladeName) => { selectedBladeGroup.value = bladeName; };
