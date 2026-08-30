@@ -29,6 +29,7 @@
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -492,9 +493,26 @@
               {{ activeMatch.matchSide }}
             </span>
           </div>
-          <button @click="promptCancelMatch" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white text-xs font-bold rounded-full border border-slate-700 transition shrink-0 ml-2 cursor-pointer">
-            放棄比賽
-          </button>
+          <div class="flex items-center gap-2 shrink-0 ml-2">
+            <button 
+              type="button" 
+              @click="undoLastSpin" 
+              :disabled="!canUndoSpin"
+              :class="[
+                'px-2.5 py-1 rounded-full text-xs font-bold transition flex items-center gap-1 border',
+                canUndoSpin 
+                  ? 'bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 border-amber-400/40 cursor-pointer shadow-xs' 
+                  : 'bg-slate-800 text-slate-600 border-slate-800 opacity-50 cursor-not-allowed'
+              ]"
+              title="復原上一動得分/失誤"
+            >
+              <i class="fa-solid fa-rotate-left text-[11px]"></i>
+              <span>復原</span>
+            </button>
+            <button @click="promptCancelMatch" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white text-xs font-bold rounded-full border border-slate-700 transition cursor-pointer">
+              放棄比賽
+            </button>
+          </div>
         </div>
 
         <!-- 整合型戰況面板 -->
@@ -596,7 +614,17 @@
 
         <!-- 當前對戰歷程 -->
         <div class="bg-[#080c14] border border-slate-800 rounded-2xl p-3">
-          <span class="text-xs font-bold text-slate-400 mb-1.5 block">當前對戰歷程</span>
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-bold text-slate-400">當前對戰歷程</span>
+            <button 
+              v-if="canUndoSpin" 
+              type="button" 
+              @click="undoLastSpin" 
+              class="text-[11px] font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 cursor-pointer transition"
+            >
+              <i class="fa-solid fa-rotate-left"></i> 復原上一動
+            </button>
+          </div>
           <div v-if="activeMatch.logs.length === 0" class="text-xs text-slate-500 text-center py-2">暫無回合紀錄</div>
           <div v-else class="space-y-1.5 max-h-36 overflow-y-auto pr-1">
             <div v-for="(log, idx) in activeMatch.logs" :key="idx" class="text-xs p-2 bg-[#111827] rounded-xl border border-slate-800 flex justify-between items-center gap-1.5">
@@ -800,10 +828,19 @@
 
       <!-- 對戰結果列表 -->
       <div class="bg-[#111827] border border-[#a2ff1f]/40 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-          <h2 class="text-xs sm:text-sm font-black text-slate-200 tracking-widest uppercase flex items-center gap-2">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3 gap-2">
+          <h2 class="text-xs sm:text-sm font-black text-slate-200 tracking-widest uppercase flex items-center gap-2 truncate">
             <i class="fa-solid fa-clock-rotate-left text-[#a2ff1f]"></i> 對戰結果一覽
           </h2>
+          <button 
+            type="button" 
+            @click="openSeriesModal" 
+            class="px-3 py-1.5 bg-[#a2ff1f]/10 hover:bg-[#a2ff1f]/20 text-[#a2ff1f] border border-[#a2ff1f]/40 rounded-xl text-xs font-black transition flex items-center gap-1.5 cursor-pointer shadow-sm shrink-0"
+            title="查看依賽事名稱合併的系列賽歷史賽果"
+          >
+            <i class="fa-solid fa-list-check"></i>
+            <span>系列賽一覽</span>
+          </button>
         </div>
 
         <div v-if="sortedMatchHistory.length === 0" class="text-center py-12 text-slate-500 border border-dashed border-slate-800 rounded-2xl text-xs sm:text-sm">
@@ -1998,6 +2035,462 @@
       </div>
     </div>
 
+    <!-- Modal 16: 系列賽歷史賽果一覽視窗 -->
+    <div v-if="showSeriesModal" @click.self="showSeriesModal = false" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 z-[60] overflow-y-auto">
+      <div class="bg-[#111827] border border-[#a2ff1f]/40 rounded-3xl max-w-lg w-full max-h-[88vh] flex flex-col shadow-2xl overflow-hidden">
+        
+        <div class="bg-[#080c14] text-white p-4 sm:p-5 flex items-center justify-between border-b border-slate-800">
+          <div>
+            <div class="text-xs text-[#a2ff1f] font-extrabold tracking-widest uppercase flex items-center gap-1.5">
+              <i class="fa-solid fa-list-check"></i> TOURNAMENT SERIES
+            </div>
+            <h3 class="text-lg sm:text-xl font-black text-white leading-tight mt-0.5">
+              系列賽歷史賽果一覽
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">共收錄 {{ seriesList.length }} 個系列賽事</p>
+          </div>
+          <button @click="showSeriesModal = false" class="w-8 h-8 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-full flex items-center justify-center transition shrink-0 cursor-pointer">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3">
+          <div v-if="seriesList.length === 0" class="text-center py-12 text-slate-500 text-xs sm:text-sm">
+            目前暫無任何系列賽事紀錄
+          </div>
+
+          <div 
+            v-for="series in seriesList" 
+            :key="series.seriesName"
+            @click="openSeriesRecapModal(series)"
+            class="bg-[#080c14] border border-slate-800 hover:border-[#a2ff1f] rounded-2xl p-3.5 sm:p-4 shadow-sm transition-all duration-200 flex flex-col gap-2.5 cursor-pointer hover:scale-[1.01] active:scale-98 group"
+            title="點擊查看此系列賽 MATCH RECAP 戰報卡"
+          >
+            <!-- 標題與標籤 -->
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5 mb-1 flex-wrap">
+                  <span v-if="['G3', 'G2', 'G1'].includes(series.matchCategory)" :class="[
+                    'text-[10px] font-black px-1.5 py-0.5 rounded border uppercase shrink-0',
+                    series.matchCategory === 'G3' ? 'bg-[#f8b500]/20 text-[#f8b500] border-[#f8b500]/40' :
+                    series.matchCategory === 'G2' ? 'bg-[#90c31f]/20 text-[#90c31f] border-[#90c31f]/40' :
+                    'bg-[#00a0e9]/20 text-[#00a0e9] border-[#00a0e9]/40'
+                  ]">
+                    {{ series.matchCategory }}
+                  </span>
+                  <span v-if="series.bestTag" :class="[
+                    'text-[10px] font-black px-1.5 py-0.5 rounded border uppercase shrink-0',
+                    series.bestTag === '冠軍' ? 'bg-amber-400/20 text-amber-400 border-amber-400/40' :
+                    series.bestTag === '四強' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40' :
+                    series.bestTag === '晉級' ? 'bg-[#a2ff1f]/20 text-[#a2ff1f] border-[#a2ff1f]/40' :
+                    series.bestTag === '一輪遊' ? 'bg-red-500/20 text-red-400 border-red-500/40' :
+                    series.bestTag === '停止晉級' ? 'bg-orange-500/20 text-orange-400 border-orange-500/40' :
+                    'bg-slate-800 text-slate-400 border-slate-700'
+                  ]">
+                    {{ series.bestTag }}
+                  </span>
+                </div>
+                <h4 class="font-black text-base text-white group-hover:text-[#a2ff1f] transition-colors truncate">
+                  {{ series.seriesName }}
+                </h4>
+              </div>
+
+              <!-- 總戰績標籤 -->
+              <div class="bg-[#111827] px-3 py-1.5 rounded-xl border border-slate-800 text-center shrink-0 font-mono flex items-center gap-2">
+                <span class="text-xs font-black">
+                  <span class="text-[#a2ff1f]">{{ series.wins }}W</span>
+                  <span class="text-slate-600 mx-0.5">/</span>
+                  <span class="text-red-400">{{ series.losses }}L</span>
+                </span>
+                <i class="fa-solid fa-chevron-right text-xs text-slate-500 group-hover:text-[#a2ff1f] transition-colors"></i>
+              </div>
+            </div>
+
+            <!-- 底部摘要 -->
+            <div class="flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-800/80 pt-2 font-mono">
+              <span>共出戰 {{ series.matches.length }} 場比賽 ({{ series.totalRounds }} 回合)</span>
+              <span>{{ formatDateEnglish(series.latestDate) }}</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Modal 17: MATCH RECAP 對戰戰報卡視窗 (依設計圖實作) -->
+    <div v-if="activeSeriesRecapModal" @click.self="closeSeriesRecapModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 z-[70] overflow-y-auto">
+      <div class="max-w-xl w-full flex flex-col my-auto space-y-3">
+        
+        <!-- 戰報卡頂部控制列 -->
+        <div class="flex items-center justify-between px-1">
+          <div class="flex items-center gap-2 text-white font-black text-xs sm:text-sm tracking-wider uppercase">
+            <span class="w-2.5 h-2.5 bg-amber-400 rotate-45 shadow-[0_0_8px_rgba(251,191,36,0.8)]"></span>
+            <span>MATCH RECAP 對戰戰報卡</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button 
+              @click="downloadRecapPng" 
+              :disabled="isGeneratingPng"
+              class="px-3.5 py-1.5 bg-[#a2ff1f] hover:bg-[#8ee613] disabled:opacity-50 text-slate-950 text-xs font-black rounded-full flex items-center gap-1.5 transition shadow-[0_0_12px_rgba(162,255,31,0.4)] cursor-pointer"
+            >
+              <i class="fa-solid text-xs" :class="isGeneratingPng ? 'fa-spinner fa-spin' : 'fa-download'"></i>
+              <span>{{ isGeneratingPng ? '產生中...' : '下載 PNG' }}</span>
+            </button>
+            <button @click="closeSeriesRecapModal" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center font-bold transition cursor-pointer">
+              ✕
+            </button>
+          </div>
+        </div>
+
+        <!-- 戰報卡本體 (供 html2canvas 擷取輸出) -->
+        <div id="recapCardElement" class="bg-[#080c14] border-2 border-[#a2ff1f]/90 rounded-3xl p-4 sm:p-6 shadow-[0_0_30px_rgba(162,255,31,0.15)] relative overflow-hidden space-y-4 sm:space-y-5">
+          
+          <!-- 背景大型浮水印 -->
+          <div class="absolute right-0 bottom-3 text-7xl sm:text-8xl font-black italic text-slate-800/20 pointer-events-none select-none tracking-tighter">
+            BEYSTUDIO
+          </div>
+
+          <!-- Header 資訊區 -->
+          <div class="flex items-start justify-between gap-3 relative z-10">
+            <div class="space-y-1.5 min-w-0 flex-1">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-2 py-0.5 bg-[#a2ff1f] text-slate-950 font-black text-[10px] sm:text-xs rounded-md uppercase tracking-wider shadow-sm">
+                  MATCH RECAP
+                </span>
+                <span v-if="activeSeriesRecapModal.matchCategory" :class="[
+                  'px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-black uppercase border',
+                  activeSeriesRecapModal.matchCategory === 'G3' ? 'bg-[#f8b500]/20 text-[#f8b500] border-[#f8b500]/40' :
+                  activeSeriesRecapModal.matchCategory === 'G2' ? 'bg-[#90c31f]/20 text-[#90c31f] border-[#90c31f]/40' :
+                  activeSeriesRecapModal.matchCategory === 'G1' ? 'bg-[#00a0e9]/20 text-[#00a0e9] border-[#00a0e9]/40' :
+                  'bg-amber-950/40 text-amber-400 border-amber-500/40'
+                ]">
+                  {{ activeSeriesRecapModal.matchCategory }}
+                </span>
+              </div>
+
+              <h2 class="text-xl sm:text-2xl font-black italic tracking-wide text-white truncate drop-shadow-md">
+                {{ playerName || 'BEYBLADER' }}
+              </h2>
+
+              <p class="text-[11px] sm:text-xs text-slate-400 font-mono flex items-center gap-1.5 flex-wrap">
+                <span class="text-slate-200 font-bold">{{ activeSeriesRecapModal.seriesName }}</span>
+                <span>·</span>
+                <span>{{ formatDateEnglish(activeSeriesRecapModal.latestDate) }}</span>
+                <span>·</span>
+                <span>{{ activeSeriesRecapModal.stadiumType || '標準盤' }}</span>
+              </p>
+            </div>
+
+            <!-- 戰果大徽章 (以系列賽最後一場賽果為主) -->
+            <div v-if="activeSeriesRecapModal.bestTag" class="shrink-0">
+              <div :class="[
+                'px-3.5 py-1.5 rounded-xl font-black text-xs sm:text-sm flex items-center gap-1.5 shadow-lg border',
+                activeSeriesRecapModal.bestTag === '冠軍' ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-[0_0_15px_rgba(251,191,36,0.6)]' :
+                activeSeriesRecapModal.bestTag === '四強' ? 'bg-cyan-500 text-slate-950 border-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.5)]' :
+                activeSeriesRecapModal.bestTag === '晉級' ? 'bg-[#a2ff1f] text-slate-950 border-[#a2ff1f] shadow-[0_0_15px_rgba(162,255,31,0.5)]' :
+                activeSeriesRecapModal.bestTag === '一輪遊' ? 'bg-red-600 text-white border-red-500 shadow-[0_0_15px_rgba(220,38,38,0.5)]' :
+                'bg-orange-500 text-white border-orange-400'
+              ]">
+                <i v-if="activeSeriesRecapModal.bestTag === '冠軍'" class="fa-solid fa-crown text-xs"></i>
+                <span>{{ activeSeriesRecapModal.bestTag }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 1. 最有價值陀螺 (移至最上方第一區塊) -->
+          <div v-if="activeSeriesRecapModal.mvpBeyblade" class="bg-gradient-to-br from-amber-950/40 via-[#111827] to-[#080c14] border-2 border-amber-400/80 rounded-2xl p-3.5 sm:p-4 relative z-10 shadow-[0_0_20px_rgba(251,191,36,0.15)] space-y-3">
+            <div class="flex items-center justify-between border-b border-amber-400/30 pb-2">
+              <span class="text-xs font-black text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
+                <i class="fa-solid fa-crown text-sm animate-pulse"></i> 最有價值陀螺
+              </span>
+            </div>
+
+            <div class="flex items-center gap-3 sm:gap-4">
+              <div class="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center shrink-0">
+                <img 
+                  :src="getBladeImgByBeyblade(activeSeriesRecapModal.mvpBeyblade.name)" 
+                  class="w-full h-full object-contain filter drop-shadow-lg"
+                  @error="$event.target.src = placeholderImage"
+                >
+              </div>
+
+              <div class="min-w-0 flex-1 space-y-1">
+                <h3 class="text-sm sm:text-base font-black text-white truncate">
+                  {{ activeSeriesRecapModal.mvpBeyblade.name }}
+                </h3>
+                <div class="text-[11px] text-amber-300 font-mono font-bold flex items-center gap-2 flex-wrap">
+                  <span>出戰 {{ activeSeriesRecapModal.mvpBeyblade.rounds }} 局</span>
+                  <span>·</span>
+                  <span class="text-[#a2ff1f]">{{ activeSeriesRecapModal.mvpBeyblade.wins }} 勝 {{ activeSeriesRecapModal.mvpBeyblade.losses }} 負</span>
+                  <span>·</span>
+                  <span>勝率 {{ activeSeriesRecapModal.mvpBeyblade.winRate }}%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- MVP 戰績表現矩陣 -->
+            <div class="grid grid-cols-3 gap-2 bg-[#080c14] p-2.5 rounded-xl border border-slate-800 text-center font-mono">
+              <div>
+                <span class="block text-[9px] text-slate-400 font-bold uppercase">得分貢獻</span>
+                <span class="text-sm sm:text-base font-black text-[#a2ff1f]">+{{ activeSeriesRecapModal.mvpBeyblade.score }} 分</span>
+              </div>
+              <div class="border-x border-slate-800">
+                <span class="block text-[9px] text-slate-400 font-bold uppercase">終結次數</span>
+                <span class="text-sm sm:text-base font-black text-amber-400">
+                  {{ activeSeriesRecapModal.mvpBeyblade.finishes.extreme + activeSeriesRecapModal.mvpBeyblade.finishes.burst + activeSeriesRecapModal.mvpBeyblade.finishes.over }} 次
+                </span>
+              </div>
+              <div>
+                <span class="block text-[9px] text-slate-400 font-bold uppercase">淨勝分貢獻</span>
+                <span :class="['text-sm sm:text-base font-black', activeSeriesRecapModal.mvpBeyblade.netPts >= 0 ? 'text-[#a2ff1f]' : 'text-red-400']">
+                  {{ activeSeriesRecapModal.mvpBeyblade.netPts >= 0 ? '+' : '' }}{{ activeSeriesRecapModal.mvpBeyblade.netPts }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. 參戰陣容 (移至第二區塊，無縮圖外框、無順位及MVP字眼) -->
+          <div class="space-y-2 relative z-10">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-shield-halved text-[#a2ff1f]"></i> 參戰陣容
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div 
+                v-for="(bey, bIdx) in activeSeriesRecapModal.roster" 
+                :key="bIdx"
+                class="bg-[#111827]/80 rounded-xl p-2 border border-slate-800 flex items-center gap-2.5 transition shadow-sm"
+              >
+                <!-- 小縮圖 (純粹呈現，無外框背景) -->
+                <img 
+                  :src="getBladeImgByBeyblade(bey.fullName)" 
+                  class="w-8 h-8 object-contain shrink-0 filter drop-shadow" 
+                  @error="$event.target.src = placeholderImage"
+                >
+
+                <!-- 陀螺名稱 -->
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-black text-white truncate leading-tight">
+                    {{ bey.fullName }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. 得分方式統計比例長條圖 -->
+          <div class="bg-[#111827]/80 border border-slate-800 rounded-2xl p-3.5 sm:p-4 space-y-3 relative z-10 shadow-inner">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-chart-pie text-[#a2ff1f]"></i> 得分方式比例統計 ({{ activeSeriesRecapModal.totalMyScore }} 分)
+              </span>
+              <span class="text-[10px] font-mono font-bold text-slate-400">
+                共 {{ activeSeriesRecapModal.scoringStats.totalWinRounds }} 個勝出回合
+              </span>
+            </div>
+
+            <!-- 多色堆疊長條圖 -->
+            <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden flex border border-slate-800">
+              <div 
+                v-if="activeSeriesRecapModal.scoringStats.extreme.pts > 0" 
+                class="bg-emerald-400 h-full transition-all duration-500" 
+                :style="{ width: activeSeriesRecapModal.scoringStats.extreme.percent + '%' }"
+                :title="`極限勝利: ${activeSeriesRecapModal.scoringStats.extreme.pts}分`"
+              ></div>
+              <div 
+                v-if="activeSeriesRecapModal.scoringStats.burst.pts > 0" 
+                class="bg-yellow-400 h-full transition-all duration-500" 
+                :style="{ width: activeSeriesRecapModal.scoringStats.burst.percent + '%' }"
+                :title="`爆裂勝利: ${activeSeriesRecapModal.scoringStats.burst.pts}分`"
+              ></div>
+              <div 
+                v-if="activeSeriesRecapModal.scoringStats.over.pts > 0" 
+                class="bg-cyan-400 h-full transition-all duration-500" 
+                :style="{ width: activeSeriesRecapModal.scoringStats.over.percent + '%' }"
+                :title="`擊飛勝利: ${activeSeriesRecapModal.scoringStats.over.pts}分`"
+              ></div>
+              <div 
+                v-if="activeSeriesRecapModal.scoringStats.spin.pts > 0" 
+                class="bg-indigo-400 h-full transition-all duration-500" 
+                :style="{ width: activeSeriesRecapModal.scoringStats.spin.percent + '%' }"
+                :title="`轉停勝利: ${activeSeriesRecapModal.scoringStats.spin.pts}分`"
+              ></div>
+              <div 
+                v-if="activeSeriesRecapModal.scoringStats.fault.pts > 0" 
+                class="bg-amber-500 h-full transition-all duration-500" 
+                :style="{ width: activeSeriesRecapModal.scoringStats.fault.percent + '%' }"
+                :title="`對手失誤: ${activeSeriesRecapModal.scoringStats.fault.pts}分`"
+              ></div>
+            </div>
+
+            <!-- 得分方式指標標籤列 -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-1.5 pt-1 text-center font-mono">
+              <div class="bg-[#080c14] p-1.5 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-center gap-1 text-[10px] text-emerald-400 font-bold">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> 極限 (+3)
+                </div>
+                <div class="text-xs sm:text-sm font-black text-white mt-0.5">
+                  {{ activeSeriesRecapModal.scoringStats.extreme.count }} <span class="text-[10px] text-slate-500 font-normal">回 ({{ activeSeriesRecapModal.scoringStats.extreme.pts }}分)</span>
+                </div>
+              </div>
+
+              <div class="bg-[#080c14] p-1.5 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-center gap-1 text-[10px] text-yellow-400 font-bold">
+                  <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span> 爆裂 (+2)
+                </div>
+                <div class="text-xs sm:text-sm font-black text-white mt-0.5">
+                  {{ activeSeriesRecapModal.scoringStats.burst.count }} <span class="text-[10px] text-slate-500 font-normal">回 ({{ activeSeriesRecapModal.scoringStats.burst.pts }}分)</span>
+                </div>
+              </div>
+
+              <div class="bg-[#080c14] p-1.5 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-center gap-1 text-[10px] text-cyan-400 font-bold">
+                  <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> 擊飛 (+2)
+                </div>
+                <div class="text-xs sm:text-sm font-black text-white mt-0.5">
+                  {{ activeSeriesRecapModal.scoringStats.over.count }} <span class="text-[10px] text-slate-500 font-normal">回 ({{ activeSeriesRecapModal.scoringStats.over.pts }}分)</span>
+                </div>
+              </div>
+
+              <div class="bg-[#080c14] p-1.5 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-center gap-1 text-[10px] text-indigo-400 font-bold">
+                  <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span> 轉停 (+1)
+                </div>
+                <div class="text-xs sm:text-sm font-black text-white mt-0.5">
+                  {{ activeSeriesRecapModal.scoringStats.spin.count }} <span class="text-[10px] text-slate-500 font-normal">回 ({{ activeSeriesRecapModal.scoringStats.spin.pts }}分)</span>
+                </div>
+              </div>
+
+              <div class="bg-[#080c14] p-1.5 rounded-xl border border-slate-800 col-span-2 sm:col-span-1">
+                <div class="flex items-center justify-center gap-1 text-[10px] text-amber-400 font-bold">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> 失誤 (+1)
+                </div>
+                <div class="text-xs sm:text-sm font-black text-white mt-0.5">
+                  {{ activeSeriesRecapModal.scoringStats.fault.count }} <span class="text-[10px] text-slate-500 font-normal">回 ({{ activeSeriesRecapModal.scoringStats.fault.pts }}分)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. 戰鬥精華 HIGHLIGHTS (依賽事場次獨立區隔，呈現各自的 B-side / X-side 站位標籤) -->
+          <div class="space-y-3 relative z-10">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-bolt text-amber-400"></i> 戰鬥精華 HIGHLIGHTS
+              </span>
+              <span class="text-[10px] font-mono text-slate-400">
+                共 {{ activeSeriesRecapModal.matchStages.length }} 場賽事 · {{ activeSeriesRecapModal.allLogs.length }} 局對決
+              </span>
+            </div>
+
+            <!-- 各賽事場次卡片清單 (自然展開向下延伸，無內部滾動條) -->
+            <div class="space-y-3">
+              <div 
+                v-for="stage in activeSeriesRecapModal.matchStages" 
+                :key="stage.matchId"
+                class="bg-[#111827]/90 border border-slate-800/90 rounded-2xl p-3 sm:p-3.5 space-y-2.5 shadow-sm"
+              >
+                <!-- 場次頂部標頭：場次名稱、純文字站位與戰果標籤 -->
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-2 flex-wrap gap-1.5">
+                  <div class="flex items-center gap-2 min-w-0 flex-wrap">
+                    <span class="px-2 py-0.5 bg-slate-800 text-amber-400 font-mono font-black text-[10px] sm:text-xs rounded-md border border-slate-700 shrink-0">
+                      MATCH {{ stage.matchIndex }}
+                    </span>
+                    <h4 class="font-black text-xs sm:text-sm text-white truncate">
+                      {{ stage.matchName }}
+                    </h4>
+                    <!-- 純文字站位標籤 (無外框與背景) -->
+                    <span v-if="stage.stadiumType !== '無限盤' && stage.matchSide" class="text-[11px] font-bold font-mono text-slate-400 shrink-0">
+                      · {{ stage.matchSide }}
+                    </span>
+                  </div>
+
+                  <div class="flex items-center gap-1.5 shrink-0 font-mono">
+                    <span v-if="stage.resultTag" :class="[
+                      'text-[9px] sm:text-[10px] font-black px-1.5 py-0.5 rounded border uppercase shrink-0',
+                      stage.resultTag === '冠軍' ? 'bg-amber-400/20 text-amber-400 border-amber-400/40' :
+                      stage.resultTag === '四強' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40' :
+                      stage.resultTag === '晉級' ? 'bg-[#a2ff1f]/20 text-[#a2ff1f] border-[#a2ff1f]/40' :
+                      stage.resultTag === '一輪遊' ? 'bg-red-500/20 text-red-400 border-red-500/40' :
+                      'bg-orange-500/20 text-orange-400 border-orange-500/40'
+                    ]">
+                      {{ stage.resultTag }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- 該場比賽內的回合記錄 -->
+                <div class="space-y-1.5">
+                  <div 
+                    v-for="(log, lIdx) in stage.logs" 
+                    :key="lIdx"
+                    class="bg-[#080c14] border border-slate-800/80 rounded-xl p-2 sm:p-2.5 flex items-center justify-between gap-2 text-xs"
+                  >
+                    <!-- 左側：輪次順位標籤、陀螺縮圖與名稱 -->
+                    <div class="flex items-center gap-2 min-w-0 flex-1">
+                      <span class="px-1.5 py-0.5 bg-[#111827] text-amber-400 font-mono font-black text-[10px] rounded border border-slate-800 shrink-0">
+                        R{{ log.round }}-P{{ log.slot + 1 }}
+                      </span>
+                      
+                      <div class="flex items-center gap-1.5 min-w-0 flex-1">
+                        <img 
+                          :src="getBladeImgByBeyblade(log.beyblade)" 
+                          class="w-5 h-5 object-contain shrink-0 filter drop-shadow-sm" 
+                          @error="$event.target.src = placeholderImage"
+                        >
+                        <span class="font-bold text-slate-200 truncate">
+                          {{ log.beyblade }}
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- 右側：得分型態標籤與比分歷程 -->
+                    <div class="flex items-center gap-2 shrink-0 font-mono">
+                      <span class="text-[10px] text-slate-400 hidden sm:inline-block">
+                        比分：<strong class="text-[#a2ff1f]">{{ log.myScoreHistory }}</strong> - <strong class="text-red-400">{{ log.oppScoreHistory }}</strong>
+                      </span>
+
+                      <span :class="[
+                        'px-2 py-0.5 rounded-lg text-[11px] font-black border flex items-center gap-1 shadow-xs',
+                        log.winner === 'MY' ? 'bg-emerald-950/80 text-[#a2ff1f] border-emerald-500/60' : 'bg-red-950/80 text-red-400 border-red-500/60'
+                      ]">
+                        <span>{{ log.type }}</span>
+                        <span>{{ log.winner === 'MY' ? '+' : '-' }}{{ log.pts }}</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 底部總比分 (純文字呈現，無外框與底色) -->
+                <div class="flex items-center justify-end pt-2 border-t border-slate-800/60 text-xs font-mono">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-slate-400 text-[11px]">總比分</span>
+                    <span class="font-black text-sm text-[#a2ff1f]">{{ stage.myScore }}</span>
+                    <span class="text-slate-600 font-bold">:</span>
+                    <span class="font-black text-sm text-red-400">{{ stage.oppScore }}</span>
+                    <span :class="['ml-1 font-black text-xs', stage.isWin ? 'text-[#a2ff1f]' : 'text-red-400']">
+                      ({{ stage.isWin ? 'WIN' : 'LOSE' }})
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 底部品牌標語列 -->
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/80 text-[10px] sm:text-[11px] text-slate-500 font-bold relative z-10">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-[#a2ff1f]"></span>
+              <span class="text-slate-300">BeyStudioX Tracker</span>
+            </div>
+            <span class="tracking-widest uppercase">POWERED BY BEYSTUDIOX</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -2096,6 +2589,9 @@
           const selectingSlotIndex = ref(0);
           const showStreakPtsModal = ref(false);
           const showStreakWinsModal = ref(false);
+          const showSeriesModal = ref(false);
+          const activeSeriesRecapModal = ref(null);
+          const isGeneratingPng = ref(false);
 
           const selectedHistoryModal = ref(null);
           const selectedBladeGroup = ref(null);
@@ -2154,6 +2650,265 @@
           };
           const openBladeModal = (bladeName) => { selectedBladeGroup.value = bladeName; };
           const closeBladeModal = () => { selectedBladeGroup.value = null; };
+
+          const openSeriesModal = () => {
+            showSeriesModal.value = true;
+          };
+
+          const openSeriesRecapModal = (series) => {
+            if (!series || !series.matches?.length) return;
+
+            let totalMyScore = 0;
+            let totalOppScore = 0;
+            const allLogs = [];
+            const beyStats = {};
+
+            const scoringStats = {
+              totalWinRounds: 0,
+              extreme: { count: 0, pts: 0, percent: 0 },
+              burst: { count: 0, pts: 0, percent: 0 },
+              over: { count: 0, pts: 0, percent: 0 },
+              spin: { count: 0, pts: 0, percent: 0 },
+              fault: { count: 0, pts: 0, percent: 0 }
+            };
+
+            // 統計該系列賽所有對戰分數、局數與得分方式
+            series.matches.forEach(match => {
+              totalMyScore += (match.myScore || 0);
+              totalOppScore += (match.oppScore || 0);
+
+              if (Array.isArray(match.logs)) {
+                match.logs.forEach(log => {
+                  allLogs.push({
+                    ...log,
+                    matchName: match.name
+                  });
+
+                  const bName = log.beyblade;
+                  if (bName) {
+                    if (!beyStats[bName]) {
+                      beyStats[bName] = { 
+                        name: bName, 
+                        score: 0, 
+                        ptsLost: 0,
+                        wins: 0, 
+                        losses: 0, 
+                        rounds: 0,
+                        finishes: { extreme: 0, burst: 0, over: 0, spin: 0 }
+                      };
+                    }
+                    beyStats[bName].rounds++;
+                    if (log.winner === 'MY') {
+                      beyStats[bName].wins++;
+                      beyStats[bName].score += (log.pts || 0);
+                      scoringStats.totalWinRounds++;
+
+                      if (log.isFault) {
+                        scoringStats.fault.count++;
+                        scoringStats.fault.pts += (log.pts || 1);
+                      } else if (log.type === '極限勝利') {
+                        scoringStats.extreme.count++;
+                        scoringStats.extreme.pts += (log.pts || 3);
+                        beyStats[bName].finishes.extreme++;
+                      } else if (log.type === '爆裂勝利') {
+                        scoringStats.burst.count++;
+                        scoringStats.burst.pts += (log.pts || 2);
+                        beyStats[bName].finishes.burst++;
+                      } else if (log.type === '擊飛勝利') {
+                        scoringStats.over.count++;
+                        scoringStats.over.pts += (log.pts || 2);
+                        beyStats[bName].finishes.over++;
+                      } else if (log.type === '轉停勝利') {
+                        scoringStats.spin.count++;
+                        scoringStats.spin.pts += (log.pts || 1);
+                        beyStats[bName].finishes.spin++;
+                      }
+                    } else if (log.winner === 'OPP') {
+                      beyStats[bName].losses++;
+                      beyStats[bName].ptsLost += (log.pts || 0);
+                    }
+                  }
+                });
+              }
+            });
+
+            // 計算各得分方式所佔比例
+            if (totalMyScore > 0) {
+              scoringStats.extreme.percent = Math.round((scoringStats.extreme.pts / totalMyScore) * 100);
+              scoringStats.burst.percent = Math.round((scoringStats.burst.pts / totalMyScore) * 100);
+              scoringStats.over.percent = Math.round((scoringStats.over.pts / totalMyScore) * 100);
+              scoringStats.spin.percent = Math.round((scoringStats.spin.pts / totalMyScore) * 100);
+              scoringStats.fault.percent = Math.round((scoringStats.fault.pts / totalMyScore) * 100);
+            }
+
+            // 計算各陀螺勝率與 MVP 陀螺 (加權：勝場*3 + 得分*1.5 + 終結次數*2)
+            let mvpBeyblade = null;
+            let maxMvpScore = -1;
+            Object.values(beyStats).forEach(st => {
+              st.winRate = st.rounds > 0 ? Math.round((st.wins / st.rounds) * 100) : 0;
+              st.netPts = st.score - st.ptsLost;
+              const weight = st.wins * 3 + st.score * 1.5 + (st.finishes.extreme + st.finishes.burst) * 2;
+              if (weight > maxMvpScore) {
+                maxMvpScore = weight;
+                mvpBeyblade = st;
+              }
+            });
+
+            // 取得陣容列表（以最新一場比賽的參戰陣容為基礎）
+            const latestMatch = series.matches[0] || {};
+            const rosterBeys = latestMatch.selectedBeyblades || ['', '', ''];
+            const roster = rosterBeys.map((bName, idx) => ({
+              slot: idx,
+              fullName: bName,
+              isMvp: mvpBeyblade && bName === mvpBeyblade.name
+            }));
+
+            // 依比賽時序升冪整理各賽事場次與內部回合紀錄
+            const sortedMatchesAsc = [...series.matches].sort((a, b) => {
+              if (a.date !== b.date) return a.date.localeCompare(b.date);
+              return (a.id || 0) - (b.id || 0);
+            });
+
+            const allLogsAscending = [];
+            const matchStages = sortedMatchesAsc.map((match, mIdx) => {
+              const isWin = match.winner === 'MY' || match.myScore > match.oppScore;
+              // match.logs 內部以 unshift 存放（最後局在 index 0），反轉為時序升冪排列
+              const chronologicalLogs = Array.isArray(match.logs) ? [...match.logs].reverse() : [];
+              
+              chronologicalLogs.forEach(log => {
+                allLogsAscending.push({
+                  ...log,
+                  matchName: match.name
+                });
+              });
+
+              return {
+                matchIndex: mIdx + 1,
+                matchId: match.id || mIdx,
+                matchName: match.name || `第 ${mIdx + 1} 場對決`,
+                matchCategory: match.matchCategory,
+                stadiumType: match.stadiumType,
+                matchSide: match.matchSide,
+                resultTag: match.resultTag || '',
+                myScore: match.myScore || 0,
+                oppScore: match.oppScore || 0,
+                isWin,
+                logs: chronologicalLogs
+              };
+            });
+
+            activeSeriesRecapModal.value = {
+              seriesName: series.seriesName,
+              matchCategory: series.matchCategory,
+              bestTag: series.bestTag,
+              latestDate: series.latestDate,
+              stadiumType: latestMatch.stadiumType || '標準盤',
+              matchSide: latestMatch.matchSide || '',
+              totalMyScore,
+              totalOppScore,
+              scoringStats,
+              roster,
+              mvpBeyblade,
+              allLogs: allLogsAscending,
+              matchStages
+            };
+          };
+
+          const closeSeriesRecapModal = () => {
+            activeSeriesRecapModal.value = null;
+          };
+
+          const downloadRecapPng = async () => {
+            const cardEl = document.getElementById('recapCardElement');
+            if (!cardEl || typeof html2canvas === 'undefined' || isGeneratingPng.value) return;
+
+            try {
+              isGeneratingPng.value = true;
+              const canvas = await html2canvas(cardEl, {
+                scale: 2,
+                backgroundColor: '#080c14',
+                useCORS: true,
+                allowTaint: true
+              });
+
+              const imageUri = canvas.toDataURL('image/png');
+              const link = document.createElement('a');
+              const seriesName = (activeSeriesRecapModal.value?.seriesName || 'Series').replace(/[\s/\\:*?"<>|]/g, '_');
+              link.download = `BeyStudioX_Recap_${seriesName}.png`;
+              link.href = imageUri;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            } catch (e) {
+              console.error('產生戰報圖片失敗:', e);
+            } finally {
+              isGeneratingPng.value = false;
+            }
+          };
+
+          const normalizeSeriesName = (name) => {
+            if (!name) return '未命名賽事';
+            let cleaned = name.trim();
+            // 移除後綴常見的輪次標記：如 R2~R9, Final, Round 2, -2, _3, 空格加純數字 2, 3 等
+            cleaned = cleaned.replace(/[\s\-_]*(?:final|finals|決賽|總決賽)$/i, '');
+            cleaned = cleaned.replace(/[\s\-_]*(?:r[1-9]|round[\s\-_]*[1-9])$/i, '');
+            cleaned = cleaned.replace(/[\s\-_]+[1-9]$/i, '');
+            cleaned = cleaned.replace(/第[1-9一二三四五六七八九十]+[輪場局]/g, '');
+            cleaned = cleaned.trim();
+            return cleaned || name.trim();
+          };
+
+          const seriesList = computed(() => {
+            const groups = {};
+
+            matchHistory.value.forEach(match => {
+              const seriesKey = normalizeSeriesName(match.name);
+              if (!groups[seriesKey]) {
+                groups[seriesKey] = {
+                  seriesName: seriesKey,
+                  matchCategory: match.matchCategory || '交流賽',
+                  latestDate: match.date,
+                  matches: [],
+                  wins: 0,
+                  losses: 0,
+                  totalRounds: 0,
+                  bestTag: ''
+                };
+              }
+
+              const grp = groups[seriesKey];
+              grp.matches.push(match);
+
+              const isWin = match.winner === 'MY' || match.myScore > match.oppScore;
+              if (isWin) grp.wins++;
+              else grp.losses++;
+
+              if (Array.isArray(match.logs)) {
+                grp.totalRounds += match.logs.length;
+              }
+            });
+
+            return Object.values(groups).map(grp => {
+              // 依時間與 ID 排序找出該系列賽最後一場（最新）賽事紀錄
+              grp.matches.sort((a, b) => {
+                if (a.date !== b.date) return b.date.localeCompare(a.date);
+                return (b.id || 0) - (a.id || 0);
+              });
+
+              const latestMatch = grp.matches[0];
+              if (latestMatch) {
+                grp.latestDate = latestMatch.date;
+                grp.matchCategory = latestMatch.matchCategory || grp.matchCategory;
+                // 戰果標籤以系列賽最後一場賽事紀錄的標籤為主
+                grp.bestTag = latestMatch.resultTag || '';
+              }
+
+              return grp;
+            }).sort((a, b) => {
+              if (a.latestDate !== b.latestDate) return b.latestDate.localeCompare(a.latestDate);
+              return b.matches.length - a.matches.length;
+            });
+          });
 
           const openConfigHistoryModal = (fullName) => {
             const logs = [];
@@ -2745,6 +3500,11 @@
             if (!activeMatch.value || matchWinner.value) return;
             const currentBey = activeMatch.value.selectedBeyblades[activeMatch.value.currentSlot];
 
+            // 儲存上一動狀態 Snapshot，供 Undo 復原使用
+            const prevRound = activeMatch.value.currentRound;
+            const prevSlot = activeMatch.value.currentSlot;
+            const prevSpins = activeMatch.value.spinsInRound;
+
             if (winner === 'MY') activeMatch.value.myScore += pts;
             else activeMatch.value.oppScore += pts;
 
@@ -2753,8 +3513,11 @@
               beyblade: currentBey, 
               oppBeyblade: '',
               winner, type, pts, isFault,
-              round: activeMatch.value.currentRound,
-              slot: activeMatch.value.currentSlot,
+              round: prevRound,
+              slot: prevSlot,
+              prevRoundSnapshot: prevRound,
+              prevSlotSnapshot: prevSlot,
+              prevSpinsSnapshot: prevSpins,
               myScoreHistory: activeMatch.value.myScore, 
               oppScoreHistory: activeMatch.value.oppScore
             });
@@ -2767,6 +3530,39 @@
               reorderBeyblades.value = [...activeMatch.value.selectedBeyblades];
               showReorderModal.value = true;
             }
+          };
+
+          const canUndoSpin = computed(() => {
+            return !!(activeMatch.value && Array.isArray(activeMatch.value.logs) && activeMatch.value.logs.length > 0);
+          });
+
+          const undoLastSpin = () => {
+            if (!activeMatch.value || !canUndoSpin.value) return;
+            const lastLog = activeMatch.value.logs.shift();
+            if (!lastLog) return;
+
+            // 回溯分數
+            if (lastLog.winner === 'MY') {
+              activeMatch.value.myScore = Math.max(0, activeMatch.value.myScore - (lastLog.pts || 0));
+            } else if (lastLog.winner === 'OPP') {
+              activeMatch.value.oppScore = Math.max(0, activeMatch.value.oppScore - (lastLog.pts || 0));
+            }
+
+            // 回溯輪次、出場順位與單輪出戰計數
+            if (lastLog.prevRoundSnapshot !== undefined) {
+              activeMatch.value.currentRound = lastLog.prevRoundSnapshot;
+            }
+            if (lastLog.prevSlotSnapshot !== undefined) {
+              activeMatch.value.currentSlot = lastLog.prevSlotSnapshot;
+            }
+            if (lastLog.prevSpinsSnapshot !== undefined) {
+              activeMatch.value.spinsInRound = lastLog.prevSpinsSnapshot;
+            } else {
+              activeMatch.value.spinsInRound = Math.max(0, activeMatch.value.spinsInRound - 1);
+            }
+
+            // 如果剛好觸發了重排彈窗，復原時自動關閉
+            showReorderModal.value = false;
           };
 
           const onReorderSelect = (slotIndex, targetVal) => {
@@ -3155,6 +3951,8 @@
             showDbModal, showReorderModal, showCareerStatsModal, showMatchDetailsModal, showSelectBladeModal, showBladeMemoryModal,
             showStreakWinsModal, openStreakWinsModal, closeStreakWinsModal,
             showStreakPtsModal, openStreakPtsModal, closeStreakPtsModal,
+            showSeriesModal, openSeriesModal, seriesList, normalizeSeriesName,
+            activeSeriesRecapModal, openSeriesRecapModal, closeSeriesRecapModal, downloadRecapPng, isGeneratingPng,
             confirmModal, closeConfirmModal, executeConfirmAction,
             selectedBladeGroup, openBladeModal, closeBladeModal, activeBladeModalGroup,
             activePartModal, openPartModal, closePartModal, activePartConfigs,
@@ -3171,7 +3969,7 @@
             isSlotConflicted, swapTeamSlots,
             matchSetup, openMatchDetailsModal, reorderBeyblades, activeMatch, placeholderImage,
             getPartConflictDetails, hasPartConflictInMatchSetup,
-            startMatch, matchWinner, selectedResultTag, recordSpin, onReorderSelect, swapReorderSlots, confirmReorder,
+            startMatch, matchWinner, selectedResultTag, recordSpin, canUndoSpin, undoLastSpin, onReorderSelect, swapReorderSlots, confirmReorder,
             finishAndCloseMatch, promptCancelMatch, getMatchRoundRosters, getSlotStatusInRound,
             getBladeImgByBeyblade,
             getStat, sortedMatchHistory, promptDeleteSingleHistory, formatDateEnglish, formatDateShortMonth,
