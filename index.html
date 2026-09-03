@@ -289,7 +289,7 @@
               </div>
               <div>
                 <span class="block text-[9px] sm:text-[10px] font-bold text-slate-500">NAP</span>
-                <span :class="['text-xs sm:text-sm font-black', parseFloat(group.nap) >= 0 ? 'text-[#a2ff1f]' : 'text-red-400']">{{ group.nap }}</span>
+                <span :class="['text-xs sm:text-sm font-black', parseFloat(group.nap) >= 0 ? 'text-[#a2ff1f]' : 'text-red-400']">{{ Math.abs(parseFloat(group.nap || 0)).toFixed(2) }}</span>
               </div>
             </div>
           </div>
