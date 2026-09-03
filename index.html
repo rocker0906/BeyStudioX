@@ -538,16 +538,16 @@
 
         <!-- 數據核心 -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch relative">
-          <!-- B-side 環 (左上角，靠近中央環) -->
-          <div class="absolute left-2 sm:left-4 top-2 sm:top-3 w-16 h-16 sm:w-20 sm:h-20 rounded-full p-[2.5px] shadow-lg group transition-all duration-500 z-30 pointer-events-none" :style="{ background: `conic-gradient(#a2ff1f ${bSideStats.rate}%, #1e293b ${bSideStats.rate}%)` }">
+          <!-- B-side 環 (左上角，靠近中央環但不重疊) -->
+          <div class="absolute left-7 sm:left-10 lg:left-8 top-2 sm:top-3 w-16 h-16 sm:w-20 sm:h-20 rounded-full p-[2.5px] shadow-lg group transition-all duration-500 z-30 pointer-events-none" :style="{ background: `conic-gradient(#a2ff1f ${bSideStats.rate}%, #1e293b ${bSideStats.rate}%)` }">
             <div class="w-full h-full rounded-full bg-[#111827] flex flex-col items-center justify-center">
               <span class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase">{{ bSideStats.label }}</span>
               <span class="text-sm sm:text-base font-black font-mono text-[#a2ff1f] leading-none my-0.5">{{ bSideStats.rate }}%</span>
             </div>
           </div>
 
-          <!-- X-side 環 (右上角，靠近中央環) -->
-          <div class="absolute right-2 sm:right-4 top-2 sm:top-3 w-16 h-16 sm:w-20 sm:h-20 rounded-full p-[2.5px] shadow-lg group transition-all duration-500 z-30 pointer-events-none" :style="{ background: `conic-gradient(#a2ff1f ${xSideStats.rate}%, #1e293b ${xSideStats.rate}%)` }">
+          <!-- X-side 環 (右上角，靠近中央環但不重疊) -->
+          <div class="absolute right-7 sm:right-10 lg:right-auto lg:left-[calc(33.333333%-5.5rem)] top-2 sm:top-3 w-16 h-16 sm:w-20 sm:h-20 rounded-full p-[2.5px] shadow-lg group transition-all duration-500 z-30 pointer-events-none" :style="{ background: `conic-gradient(#a2ff1f ${xSideStats.rate}%, #1e293b ${xSideStats.rate}%)` }">
             <div class="w-full h-full rounded-full bg-[#111827] flex flex-col items-center justify-center">
               <span class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase">{{ xSideStats.label }}</span>
               <span class="text-sm sm:text-base font-black font-mono text-[#a2ff1f] leading-none my-0.5">{{ xSideStats.rate }}%</span>
@@ -1466,7 +1466,8 @@
                         <span class="font-bold text-slate-100 truncate text-xs sm:text-sm">{{ log.beyblade }}</span>
                       </div>
                     </div>
-                    <div class="flex items-center gap-3 shrink-0 font-mono">
+                    <div class="flex items-center gap-1.5 shrink-0 font-mono">
+                      <span class="text-[11px] text-slate-400 font-normal">比分:</span>
                       <span class="text-xs sm:text-sm font-black"><strong class="text-[#a2ff1f]">{{ log.myScoreHistory }}</strong> <span class="text-slate-600 mx-0.5">:</span> <strong class="text-red-400">{{ log.oppScoreHistory }}</strong></span>
                     </div>
                   </div>
