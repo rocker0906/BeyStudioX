@@ -133,7 +133,7 @@
           <span>BeyStudioX</span>
         </h1>
         <span class="text-xs sm:text-sm font-mono font-bold text-slate-400 select-none">
-          - 1.0.9
+          - 1.0.10
         </span>
       </div>
     </header>
@@ -778,11 +778,11 @@
             </div>
           </div>
 
-          <!-- 右側：MOST PLAYED BLADES -->
+          <!-- 右側：常用戰刃 -->
           <div class="lg:col-span-8 bg-[#080c14] border border-slate-800 rounded-2xl p-4 flex flex-col justify-between space-y-3 shadow-inner">
             <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
               <span class="text-xs font-black text-slate-200 tracking-wider uppercase flex items-center gap-1.5">
-                <i class="fa-solid fa-trophy text-amber-400"></i> MOST PLAYED BLADES
+                <i class="fa-solid fa-trophy text-amber-400"></i> 常用戰刃
               </span>
               <span class="text-[10px] text-slate-500 font-bold">TOP 3</span>
             </div>
@@ -1182,44 +1182,35 @@
                 </button>
               </div>
 
-              <!-- 點擊此戰績數據區塊彈出歷史對戰回合卡片視窗 -->
-              <div class="bg-[#111827] rounded-xl p-3 border border-slate-800 flex flex-col gap-2.5 shadow-inner">
-                <div 
-                  @click="openConfigHistoryModal(config.fullName)"
-                  class="grid grid-cols-3 gap-2 text-center cursor-pointer hover:bg-slate-800/60 p-2 rounded-xl transition border border-transparent hover:border-[#a2ff1f]/40 group/stat"
-                  title="點擊查看對戰回合紀錄"
-                >
-                  <div class="flex flex-col justify-center border-r border-slate-800 pr-1">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover/stat:text-[#a2ff1f] transition-colors">
-                      勝率
-                    </span>
-                    <span class="text-base sm:text-lg font-black text-[#a2ff1f] leading-tight">
-                      {{ getStat(config.fullName).roundWinRate }}%
-                    </span>
+              <!-- 點擊此戰績數據區塊彈出歷史對戰回合卡片視窗 (簡潔緊緻版) -->
+              <div 
+                @click="openConfigHistoryModal(config.fullName)"
+                class="bg-[#111827] rounded-xl p-2.5 border border-slate-800 hover:border-[#a2ff1f]/50 cursor-pointer transition flex flex-col gap-1.5 shadow-inner group"
+                title="點擊查看對戰回合紀錄"
+              >
+                <!-- 長條圖上方：勝率、勝負局數、淨勝分緊湊呈現在同一列 -->
+                <div class="flex items-center justify-between text-xs font-mono">
+                  <div class="flex items-baseline gap-1.5">
+                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">勝率</span>
+                    <span class="text-sm font-black text-[#a2ff1f] leading-none">{{ getStat(config.fullName).roundWinRate }}%</span>
                   </div>
 
-                  <div class="flex flex-col justify-center border-r border-slate-800 pr-1">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover/stat:text-[#a2ff1f] transition-colors">
-                      勝 / 負
-                    </span>
-                    <span class="text-base sm:text-lg font-black font-mono leading-tight">
+                  <div class="flex items-center gap-2 text-[11px]">
+                    <span class="font-bold">
                       <span class="text-[#a2ff1f]">{{ getStat(config.fullName).roundWins }}W</span>
                       <span class="text-slate-600 mx-0.5">/</span>
                       <span class="text-red-400">{{ getStat(config.fullName).roundLosses }}L</span>
                     </span>
-                  </div>
-
-                  <div class="flex flex-col justify-center">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 group-hover/stat:text-[#a2ff1f] transition-colors">
-                      淨勝分
+                    <span class="text-slate-700">·</span>
+                    <span :class="['font-black', getStat(config.fullName).netPts >= 0 ? 'text-[#a2ff1f]' : 'text-red-400']">
+                      {{ getStat(config.fullName).netPts >= 0 ? '+' : '' }}{{ getStat(config.fullName).netPts }}分
                     </span>
-                    <span :class="['text-base sm:text-lg font-black leading-tight', getStat(config.fullName).netPts >= 0 ? 'text-[#a2ff1f]' : 'text-red-400']">
-                      {{ getStat(config.fullName).netPts >= 0 ? '+' : '' }}{{ getStat(config.fullName).netPts }}
-                    </span>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-slate-500 group-hover:text-[#a2ff1f] transition-transform group-hover:translate-x-0.5 ml-0.5"></i>
                   </div>
                 </div>
 
-                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden flex">
+                <!-- 長條圖本體 -->
+                <div class="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden flex">
                   <div 
                     class="bg-[#a2ff1f] h-full transition-all duration-300" 
                     :style="{ width: getStat(config.fullName).roundWinRate + '%' }"
@@ -2387,8 +2378,8 @@
           </div>
 
           <!-- 4. 戰鬥精華 HIGHLIGHTS (依賽事場次獨立區隔，呈現各自的 B-side / X-side 站位標籤) -->
-          <div class="space-y-3 relative z-10">
-            <div class="flex items-center justify-between">
+          <div class="space-y-4 relative z-10">
+            <div class="flex items-center justify-between px-1">
               <span class="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                 <i class="fa-solid fa-bolt text-amber-400"></i> 戰鬥精華 HIGHLIGHTS
               </span>
@@ -2397,15 +2388,15 @@
               </span>
             </div>
 
-            <!-- 各賽事場次卡片清單 (自然展開向下延伸，無內部滾動條) -->
-            <div class="space-y-3">
+            <!-- 各賽事場次清單 (移除外框，各回合寬度最大化延展) -->
+            <div class="space-y-4">
               <div 
                 v-for="stage in activeSeriesRecapModal.matchStages" 
                 :key="stage.matchId"
-                class="bg-[#111827]/90 border border-slate-800/90 rounded-2xl p-3 sm:p-3.5 space-y-2.5 shadow-sm"
+                class="space-y-2.5"
               >
                 <!-- 場次頂部標頭：場次名稱、純文字站位與戰果標籤 -->
-                <div class="flex items-center justify-between border-b border-slate-800/80 pb-2 flex-wrap gap-1.5">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2 px-1 flex-wrap gap-1.5">
                   <div class="flex items-center gap-2 min-w-0 flex-wrap">
                     <span class="px-2 py-0.5 bg-slate-800 text-amber-400 font-mono font-black text-[10px] sm:text-xs rounded-md border border-slate-700 shrink-0">
                       MATCH {{ stage.matchIndex }}
@@ -2433,39 +2424,39 @@
                   </div>
                 </div>
 
-                <!-- 該場比賽內的回合記錄 -->
-                <div class="space-y-1.5">
+                <!-- 該場比賽內的回合記錄 (寬度延展至最大化) -->
+                <div class="space-y-2 w-full">
                   <div 
                     v-for="(log, lIdx) in stage.logs" 
                     :key="lIdx"
-                    class="bg-[#080c14] border border-slate-800/80 rounded-xl p-2 sm:p-2.5 flex items-center justify-between gap-2 text-xs"
+                    class="bg-[#080c14] border border-slate-800/90 rounded-xl p-2.5 sm:p-3 flex items-center justify-between gap-2.5 text-xs w-full shadow-sm"
                   >
                     <!-- 左側：輪次順位標籤、陀螺縮圖與名稱 -->
-                    <div class="flex items-center gap-2 min-w-0 flex-1">
-                      <span class="px-1.5 py-0.5 bg-[#111827] text-amber-400 font-mono font-black text-[10px] rounded border border-slate-800 shrink-0">
+                    <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                      <span class="px-2 py-0.5 bg-[#111827] text-amber-400 font-mono font-black text-[11px] rounded border border-slate-800 shrink-0">
                         R{{ log.round }}-P{{ log.slot + 1 }}
                       </span>
                       
-                      <div class="flex items-center gap-1.5 min-w-0 flex-1">
+                      <div class="flex items-center gap-2 min-w-0 flex-1">
                         <img 
                           :src="getBladeImgByBeyblade(log.beyblade)" 
-                          class="w-5 h-5 object-contain shrink-0 filter drop-shadow-sm" 
+                          class="w-6 h-6 object-contain shrink-0 filter drop-shadow-sm" 
                           @error="$event.target.src = placeholderImage"
                         >
-                        <span class="font-bold text-slate-200 truncate">
+                        <span class="font-bold text-slate-100 truncate text-xs sm:text-sm">
                           {{ log.beyblade }}
                         </span>
                       </div>
                     </div>
 
                     <!-- 右側：得分型態標籤與比分歷程 -->
-                    <div class="flex items-center gap-2 shrink-0 font-mono">
-                      <span class="text-[10px] text-slate-400 hidden sm:inline-block">
+                    <div class="flex items-center gap-3 shrink-0 font-mono">
+                      <span class="text-[11px] text-slate-400 hidden sm:inline-block">
                         比分：<strong class="text-[#a2ff1f]">{{ log.myScoreHistory }}</strong> - <strong class="text-red-400">{{ log.oppScoreHistory }}</strong>
                       </span>
 
                       <span :class="[
-                        'px-2 py-0.5 rounded-lg text-[11px] font-black border flex items-center gap-1 shadow-xs',
+                        'px-2.5 py-1 rounded-lg text-xs font-black border flex items-center gap-1 shadow-xs',
                         log.winner === 'MY' ? 'bg-emerald-950/80 text-[#a2ff1f] border-emerald-500/60' : 'bg-red-950/80 text-red-400 border-red-500/60'
                       ]">
                         <span>{{ log.type }}</span>
@@ -2476,7 +2467,7 @@
                 </div>
 
                 <!-- 底部總比分 (純文字呈現，無外框與底色) -->
-                <div class="flex items-center justify-end pt-2 border-t border-slate-800/60 text-xs font-mono">
+                <div class="flex items-center justify-end pt-1 px-1 text-xs font-mono">
                   <div class="flex items-center gap-1.5">
                     <span class="text-slate-400 text-[11px]">總比分</span>
                     <span class="font-black text-sm text-[#a2ff1f]">{{ stage.myScore }}</span>
