@@ -1467,10 +1467,7 @@
                       </div>
                     </div>
                     <div class="flex items-center gap-3 shrink-0 font-mono">
-                      <span class="text-[11px] text-slate-400 hidden sm:inline-block"><strong class="text-[#a2ff1f]">{{ log.myScoreHistory }}</strong> - <strong class="text-red-400">{{ log.oppScoreHistory }}</strong></span>
-                      <span :class="['px-2.5 py-1 rounded-lg text-xs font-black border flex items-center gap-1 shadow-xs', log.winner === 'MY' ? 'bg-emerald-950/80 text-[#a2ff1f] border-emerald-500/60' : 'bg-red-950/80 text-red-400 border-red-500/60']">
-                        <span>{{ log.type.replace('勝利', '') }}</span>
-                      </span>
+                      <span class="text-xs sm:text-sm font-black"><strong class="text-[#a2ff1f]">{{ log.myScoreHistory }}</strong> <span class="text-slate-600 mx-0.5">:</span> <strong class="text-red-400">{{ log.oppScoreHistory }}</strong></span>
                     </div>
                   </div>
                 </div>
